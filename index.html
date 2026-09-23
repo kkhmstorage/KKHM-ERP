@@ -572,12 +572,29 @@
 
             window.currentTab = menu[0].id;
             menu.forEach(item => {
-                const btn = document.createElement('button'); btn.className = `nav-item w-full flex items-center gap-3 px-4 py-3.5 rounded-xl text-sm font-medium transition-all text-slate-400 hover:text-white hover:bg-slate-800 ${window.currentTab === item.id ? 'active' : ''}`;
+                const btn = document.createElement('button'); 
+                btn.className = `nav-item w-full flex items-center gap-3 px-4 py-3.5 rounded-xl text-sm font-medium transition-all text-slate-400 hover:text-white hover:bg-slate-800 ${window.currentTab === item.id ? 'active' : ''}`;
+                btn.setAttribute('data-tab', item.id);
                 btn.innerHTML = `<i class="fas ${item.icon} w-5 text-center"></i> ${item.label}`;
-                btn.onclick = () => { window.currentTab = item.id; document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active')); btn.classList.add('active'); if(window.innerWidth < 768) window.toggleSidebar(); window.renderApp(); };
+                btn.onclick = () => { window.switchTab(item.id); };
                 nav.appendChild(btn);
             });
         }
+
+        window.switchTab = function(tabId) {
+            window.currentTab = tabId;
+            document.querySelectorAll('.nav-item').forEach(b => {
+                if(b.getAttribute('data-tab') === tabId) b.classList.add('active');
+                else b.classList.remove('active');
+            });
+            if(window.innerWidth < 768) {
+                const sidebar = document.getElementById('sidebar');
+                if(sidebar && !sidebar.classList.contains('-translate-x-full')) {
+                    sidebar.classList.add('-translate-x-full');
+                }
+            }
+            window.renderApp();
+        };
 
         window.renderApp = function() {
             const content = document.getElementById('mainContent'); let html = '';
@@ -667,8 +684,15 @@
 
         // 3. MAIN UI MODULES
         window.renderDashboard = function() {
-            const total = db.students.length; const inCampus = db.students.filter(s => s.leaveStatus === 'In Campus').length; const onLeave = total - inCampus;
-            const classes = {}; db.students.forEach(s => { if(!classes[s.class]) classes[s.class] = { total: 0, leave: 0 }; classes[s.class].total++; if(s.leaveStatus === 'On Leave') classes[s.class].leave++; });
+            const total = db.students.length; 
+            const inCampus = db.students.filter(s => s.leaveStatus === 'In Campus').length; 
+            const onLeave = total - inCampus;
+            const classes = {}; 
+            db.students.forEach(s => { 
+                if(!classes[s.class]) classes[s.class] = { total: 0, leave: 0 }; 
+                classes[s.class].total++; 
+                if(s.leaveStatus === 'On Leave') classes[s.class].leave++; 
+            });
             
             let leaveHtml = db.students.filter(s => s.leaveStatus === 'On Leave').map(s => { 
                 const activeLeave = (s.leaveHistory || []).find(l => !l.dateIn) || {}; 
@@ -676,7 +700,115 @@
             }).join('') || '<tr><td colspan="5" class="p-8 text-center text-slate-500 font-bold">No students are currently on leave.</td></tr>';
             document.getElementById('leaveListTableBody').innerHTML = leaveHtml;
             
-            return `<div class="space-y-6"><h2 class="text-2xl font-extrabold text-slate-800">Campus Overview</h2><div class="grid grid-cols-1 md:grid-cols-3 gap-5"><div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 border-t-4 border-t-indigo-500"><p class="text-slate-500 text-xs font-bold uppercase mb-1">Total Students</p><p class="text-4xl font-black text-slate-800">${total}</p></div><div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 border-t-4 border-t-emerald-500"><p class="text-slate-500 text-xs font-bold uppercase mb-1">In Campus</p><p class="text-4xl font-black text-emerald-600">${inCampus}</p></div><div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 border-t-4 border-t-amber-500 relative"><p class="text-slate-500 text-xs font-bold uppercase mb-1">Currently on Leave</p><p class="text-4xl font-black text-amber-600">${onLeave}</p><button onclick="document.getElementById('leaveListModal').classList.remove('hidden'); document.getElementById('leaveListModal').classList.add('flex');" class="absolute top-6 right-6 bg-amber-100 text-amber-800 hover:bg-amber-200 px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm">View List <i class="fas fa-list ml-1"></i></button></div></div><div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden"><div class="bg-slate-50 p-4 border-b border-slate-200"><h3 class="font-bold text-slate-800"><i class="fas fa-layer-group text-indigo-500 mr-2"></i>Class-wise Status</h3></div><div class="p-0 overflow-x-auto"><table class="w-full text-left text-sm"><thead class="text-xs text-slate-500 uppercase bg-slate-100"><tr><th class="p-4">Class Name</th><th class="p-4 text-center">Total</th><th class="p-4 text-center">On Leave (Home)</th><th class="p-4 text-center">In Campus</th></tr></thead><tbody class="divide-y divide-slate-100">${Object.keys(classes).sort().map(c => `<tr class="hover:bg-slate-50"><td class="p-4 font-bold text-slate-700">${c}</td><td class="p-4 text-center">${classes[c].total}</td><td class="p-4 text-center"><span class="bg-amber-100 text-amber-700 px-3 py-1 rounded-md font-bold text-xs">${classes[c].leave}</span></td><td class="p-4 text-center font-bold text-emerald-600">${classes[c].total - classes[c].leave}</td></tr>`).join('')}</tbody></table></div></div></div>`;
+            // Build Quick Navigation Shortcuts for Current Role
+            let shortcuts = [];
+            if (window.currentUser.role === 'admin') {
+                shortcuts = [
+                    { id: 'search', icon: 'fa-user-graduate', label: 'Student Profile', desc: 'Search & Leaves', color: 'bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100 hover:border-blue-300' },
+                    { id: 'dir', icon: 'fa-address-book', label: 'Directory', desc: 'Attendance IN/OUT', color: 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100 hover:border-emerald-300' },
+                    { id: 'fee', icon: 'fa-wallet', label: 'Finance & Fees', desc: 'Dues & Receipts', color: 'bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100 hover:border-amber-300' },
+                    { id: 'exams', icon: 'fa-file-alt', label: 'Examinations', desc: 'Marks & Results', color: 'bg-indigo-50 text-indigo-700 border-indigo-200 hover:bg-indigo-100 hover:border-indigo-300' },
+                    { id: 'teachers', icon: 'fa-chalkboard-teacher', label: 'Teachers', desc: 'Faculty Directory', color: 'bg-purple-50 text-purple-700 border-purple-200 hover:bg-purple-100 hover:border-purple-300' },
+                    { id: 'achieve', icon: 'fa-trophy', label: 'Achievements', desc: 'Wall of Fame', color: 'bg-yellow-50 text-yellow-800 border-yellow-200 hover:bg-yellow-100 hover:border-yellow-300' },
+                    { id: 'notices', icon: 'fa-bullhorn', label: 'Notice Board', desc: 'Alerts & Circulars', color: 'bg-rose-50 text-rose-700 border-rose-200 hover:bg-rose-100 hover:border-rose-300' },
+                    { id: 'settings', icon: 'fa-cog', label: 'Settings', desc: 'Branding & Bank', color: 'bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-200 hover:border-slate-300' }
+                ];
+            } else if (window.currentUser.role === 'admin1') {
+                shortcuts = [
+                    { id: 'search', icon: 'fa-user-graduate', label: 'Student Profile', desc: 'Search & Leaves', color: 'bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100 hover:border-blue-300' },
+                    { id: 'dir', icon: 'fa-address-book', label: 'Directory', desc: 'Attendance IN/OUT', color: 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100 hover:border-emerald-300' },
+                    { id: 'exams', icon: 'fa-file-alt', label: 'Examinations', desc: 'Marks & Results', color: 'bg-indigo-50 text-indigo-700 border-indigo-200 hover:bg-indigo-100 hover:border-indigo-300' },
+                    { id: 'teachers', icon: 'fa-chalkboard-teacher', label: 'Teachers', desc: 'Faculty Directory', color: 'bg-purple-50 text-purple-700 border-purple-200 hover:bg-purple-100 hover:border-purple-300' },
+                    { id: 'achieve', icon: 'fa-trophy', label: 'Achievements', desc: 'Wall of Fame', color: 'bg-yellow-50 text-yellow-800 border-yellow-200 hover:bg-yellow-100 hover:border-yellow-300' },
+                    { id: 'notices', icon: 'fa-bullhorn', label: 'Notice Board', desc: 'Alerts & Circulars', color: 'bg-rose-50 text-rose-700 border-rose-200 hover:bg-rose-100 hover:border-rose-300' }
+                ];
+            } else if (window.currentUser.role === 'mentor') {
+                shortcuts = [
+                    { id: 'search', icon: 'fa-search', label: 'Manage Profile', desc: 'Leave & Records', color: 'bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100 hover:border-blue-300' },
+                    { id: 'dir', icon: 'fa-address-book', label: 'Directory', desc: 'Attendance Tracking', color: 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100 hover:border-emerald-300' },
+                    { id: 'exams', icon: 'fa-file-alt', label: 'View Exams', desc: 'Marks & Ranks', color: 'bg-indigo-50 text-indigo-700 border-indigo-200 hover:bg-indigo-100 hover:border-indigo-300' },
+                    { id: 'achieve', icon: 'fa-trophy', label: 'Achievements', desc: 'Student Honors', color: 'bg-yellow-50 text-yellow-800 border-yellow-200 hover:bg-yellow-100 hover:border-yellow-300' }
+                ];
+            }
+
+            const shortcutsHtml = shortcuts.length > 0 ? `
+                <div class="bg-white rounded-2xl p-4 md:p-5 shadow-sm border border-slate-200">
+                    <div class="flex items-center justify-between mb-3 border-b pb-2.5">
+                        <h3 class="text-xs font-black uppercase tracking-wider text-slate-500 flex items-center gap-2">
+                            <i class="fas fa-th-large text-emerald-600"></i> Quick Navigation (ഷോർട്ട് കട്ട് മെനു)
+                        </h3>
+                        <span class="text-[11px] text-slate-400 font-bold hidden sm:inline">ഓപ്ഷനുകളിലേക്ക് നേരിട്ട് പോകാൻ ക്ലിക്ക് ചെയ്യുക</span>
+                    </div>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2.5">
+                        ${shortcuts.map(s => `
+                            <button onclick="window.switchTab('${s.id}')" class="flex flex-col items-center justify-center p-3 rounded-xl border transition-all duration-200 group hover:shadow-md hover:-translate-y-0.5 cursor-pointer text-center ${s.color}">
+                                <div class="w-10 h-10 rounded-full bg-white/90 flex items-center justify-center text-lg mb-2 shadow-sm group-hover:scale-110 transition-transform">
+                                    <i class="fas ${s.icon}"></i>
+                                </div>
+                                <span class="font-extrabold text-xs leading-tight">${s.label}</span>
+                                <span class="text-[10px] opacity-75 font-medium mt-0.5 hidden sm:block">${s.desc}</span>
+                            </button>
+                        `).join('')}
+                    </div>
+                </div>
+            ` : '';
+
+            return `
+                <div class="space-y-6">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                        <h2 class="text-2xl font-extrabold text-slate-800">Campus Overview</h2>
+                        <span class="text-xs text-slate-600 font-bold bg-white border border-slate-200 px-3 py-1.5 rounded-xl shadow-sm">
+                            <i class="fas fa-user-circle text-emerald-600 mr-1.5"></i> ${window.currentUser.name}
+                        </span>
+                    </div>
+
+                    ${shortcutsHtml}
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 border-t-4 border-t-indigo-500">
+                            <p class="text-slate-500 text-xs font-bold uppercase mb-1">Total Students</p>
+                            <p class="text-4xl font-black text-slate-800">${total}</p>
+                        </div>
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 border-t-4 border-t-emerald-500">
+                            <p class="text-slate-500 text-xs font-bold uppercase mb-1">In Campus</p>
+                            <p class="text-4xl font-black text-emerald-600">${inCampus}</p>
+                        </div>
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 border-t-4 border-t-amber-500 relative">
+                            <p class="text-slate-500 text-xs font-bold uppercase mb-1">Currently on Leave</p>
+                            <p class="text-4xl font-black text-amber-600">${onLeave}</p>
+                            <button onclick="document.getElementById('leaveListModal').classList.remove('hidden'); document.getElementById('leaveListModal').classList.add('flex');" class="absolute top-6 right-6 bg-amber-100 text-amber-800 hover:bg-amber-200 px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm">View List <i class="fas fa-list ml-1"></i></button>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                        <div class="bg-slate-50 p-4 border-b border-slate-200">
+                            <h3 class="font-bold text-slate-800"><i class="fas fa-layer-group text-indigo-500 mr-2"></i>Class-wise Status</h3>
+                        </div>
+                        <div class="p-0 overflow-x-auto">
+                            <table class="w-full text-left text-sm">
+                                <thead class="text-xs text-slate-500 uppercase bg-slate-100">
+                                    <tr>
+                                        <th class="p-4">Class Name</th>
+                                        <th class="p-4 text-center">Total</th>
+                                        <th class="p-4 text-center">On Leave (Home)</th>
+                                        <th class="p-4 text-center">In Campus</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100">
+                                    ${Object.keys(classes).sort().map(c => `
+                                        <tr class="hover:bg-slate-50">
+                                            <td class="p-4 font-bold text-slate-700">${c}</td>
+                                            <td class="p-4 text-center">${classes[c].total}</td>
+                                            <td class="p-4 text-center"><span class="bg-amber-100 text-amber-700 px-3 py-1 rounded-md font-bold text-xs">${classes[c].leave}</span></td>
+                                            <td class="p-4 text-center font-bold text-emerald-600">${classes[c].total - classes[c].leave}</td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            `;
         }
 
         // 4. STUDENT PROFILE & DIRECTORY
