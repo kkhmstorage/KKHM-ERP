@@ -1,0 +1,40 @@
+{
+"name": "KKHM ERP System",
+"short_name": "KKHM ERP",
+"description": "Smart College Management System for KKHM Islamic & Arts College. A complete ERP solution for students, parents, and teachers.",
+"start_url": "/",
+"display": "standalone",
+"background_color": "#022c22",
+"theme_color": "#022c22",
+"orientation": "portrait-primary",
+"icons": [
+{
+"src": "icon-192.png",
+"sizes": "192x192",
+"type": "image/png",
+"purpose": "any maskable"
+},
+{
+"src": "icon-512.png",
+"sizes": "512x512",
+"type": "image/png",
+"purpose": "any maskable"
+}
+],
+"screenshots": [
+{
+"src": "icon-512.png",
+"sizes": "512x512",
+"type": "image/png",
+"form_factor": "wide",
+"label": "KKHM ERP Dashboard"
+},
+{
+"src": "icon-512.png",
+"sizes": "512x512",
+"type": "image/png",
+"form_factor": "narrow",
+"label": "KKHM ERP Mobile View"
+}
+]
+}

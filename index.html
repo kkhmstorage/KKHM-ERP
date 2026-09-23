@@ -7,6 +7,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="https://placehold.co/192x192/064e3b/ffffff?text=KKHM">
+    <link rel="manifest" href="/manifest.json">
     <title>KKHM Islamic & Arts College ERP</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -69,7 +70,12 @@
                 <span class="font-extrabold text-lg tracking-wide hidden md:block">KKHM Islamic & Arts College ERP</span>
                 <span class="font-bold text-lg md:hidden">KKHM ERP</span>
             </div>
-            <div class="flex items-center gap-4">
+            <div class="flex items-center gap-3 md:gap-4">
+                <!-- Notification Bell with App Badge Indicator -->
+                <button onclick="window.handleBellClick()" class="relative p-2 rounded-xl bg-white/10 hover:bg-white/20 text-emerald-200 hover:text-white transition flex items-center justify-center cursor-pointer" title="Notifications & Alerts">
+                    <i class="fas fa-bell text-lg"></i>
+                    <span id="bellBadge" class="hidden absolute -top-1 -right-1 bg-rose-500 text-white text-[10px] font-black min-w-[18px] h-[18px] px-1 rounded-full flex items-center justify-center border-2 border-[#022c22] shadow animate-pulse">0</span>
+                </button>
                 <div class="text-right hidden sm:block"><p class="text-sm font-bold" id="headerUserName">User Name</p><p class="text-[10px] text-emerald-300 font-medium tracking-wider uppercase" id="headerUserRole">Role</p></div>
                 <button onclick="window.logout()" class="bg-[#022c22] hover:bg-[#064e3b] border border-[#064e3b] text-white px-4 py-2 rounded-lg text-sm font-bold transition flex items-center gap-2 shadow-inner"><i class="fas fa-sign-out-alt"></i> <span class="hidden sm:inline">Logout</span></button>
             </div>
@@ -224,8 +230,102 @@
                 <input type="hidden" id="feeAdmNo">
                 <div><label class="text-xs font-bold text-slate-500">Amount Paid (₹)</label><input type="number" required id="feeAmount" class="w-full border p-3 rounded-xl text-sm bg-white" min="1"></div>
                 <div><label class="text-xs font-bold text-slate-500">For Month & Year</label><input type="month" required id="feeMonthYear" class="w-full border p-3 rounded-xl text-sm bg-white"></div>
-                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl shadow-md transition mt-2">Save Payment</button>
+                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl shadow-md transition mt-2">Save & Generate Receipt</button>
             </form>
+        </div>
+    </div>
+
+    <!-- Fee Due Alert Modal for Parent -->
+    <div id="feeDueAlertModal" class="fixed inset-0 bg-black/70 z-50 hidden items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden flex flex-col border-2 border-rose-200 animate-in fade-in zoom-in duration-300">
+            <div class="bg-gradient-to-r from-rose-600 to-rose-700 p-5 text-white flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-xl"><i class="fas fa-exclamation-triangle"></i></div>
+                    <div>
+                        <h3 class="font-black text-lg">ഫീസ് കുടിശ്ശിക അറിയിപ്പ്</h3>
+                        <p class="text-xs text-rose-100 font-medium">Fee Payment Reminder</p>
+                    </div>
+                </div>
+                <button type="button" onclick="window.closeFeeDueAlert()" class="text-white/80 hover:text-white text-2xl font-bold">&times;</button>
+            </div>
+            <div class="p-6 space-y-4 bg-slate-50">
+                <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm text-center">
+                    <p class="text-xs font-bold text-slate-500 uppercase tracking-wider" id="dueAlertStdInfo">Student Info</p>
+                    <p class="text-xs text-slate-400 mt-0.5" id="dueAlertClsInfo"></p>
+                    <div class="mt-3 py-2 bg-rose-50 border border-rose-200 rounded-xl">
+                        <span class="text-xs font-bold text-rose-700 block uppercase">CURRENT DUE AMOUNT</span>
+                        <span class="text-3xl font-black text-rose-600" id="dueAlertAmount">₹0</span>
+                    </div>
+                    <p class="text-xs font-bold text-slate-600 mt-2" id="dueAlertDueDateText"></p>
+                    <p class="text-xs font-extrabold mt-1" id="dueAlertStatusBadge"></p>
+                </div>
+
+                <div class="bg-indigo-50 border border-indigo-100 p-4 rounded-2xl space-y-1.5 text-xs text-indigo-900">
+                    <p class="font-bold flex justify-between"><span>Bank:</span> <b id="dueAlertBank">-</b></p>
+                    <p class="flex justify-between"><span>A/C No:</span> <b class="font-mono text-slate-800" id="dueAlertAcc">-</b></p>
+                    <p class="flex justify-between"><span>IFSC:</span> <b class="font-mono text-slate-800" id="dueAlertIfsc">-</b></p>
+                    <p class="flex justify-between"><span>UPI ID:</span> <b class="font-mono text-emerald-700" id="dueAlertUpi">-</b></p>
+                </div>
+
+                <div class="space-y-2 pt-2">
+                    <a id="dueAlertUpiBtn" href="#" class="w-full bg-[#064e3b] hover:bg-emerald-900 text-white font-bold py-3.5 px-4 rounded-xl shadow-lg transition flex items-center justify-center gap-2 text-sm text-center">
+                        <i class="fas fa-bolt text-amber-400"></i> Pay Now via UPI (GPay / PhonePe)
+                    </a>
+                    <button type="button" onclick="window.closeFeeDueAlert()" class="w-full bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-2.5 rounded-xl text-xs transition">
+                        I will pay soon / Remind Later
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Fee Payment Receipt Voucher Modal -->
+    <div id="feeReceiptModal" class="fixed inset-0 bg-black/70 z-50 hidden items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden flex flex-col border border-slate-200">
+            <div class="bg-[#022c22] p-5 text-white flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-emerald-500/30 flex items-center justify-center text-emerald-400 text-xl"><i class="fas fa-receipt"></i></div>
+                    <div>
+                        <h3 class="font-black text-lg">Fee Payment Receipt</h3>
+                        <p class="text-xs text-emerald-300 font-medium">ഔദ്യോഗിക ഫീസ് രസീത്</p>
+                    </div>
+                </div>
+                <button type="button" onclick="document.getElementById('feeReceiptModal').classList.add('hidden'); document.getElementById('feeReceiptModal').classList.remove('flex');" class="text-white/80 hover:text-white text-2xl font-bold">&times;</button>
+            </div>
+            
+            <div id="receiptPrintArea" class="p-6 bg-slate-50 space-y-4">
+                <div class="text-center border-b pb-3">
+                    <h4 class="font-black text-base text-[#064e3b] uppercase">KKHM Islamic & Arts College</h4>
+                    <p class="text-[11px] text-slate-500 font-bold">Markaz Campus, Athavanad</p>
+                    <div class="inline-block mt-2 bg-emerald-100 text-emerald-800 text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest border border-emerald-300">Payment Voucher</div>
+                </div>
+
+                <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-2 text-xs">
+                    <div class="flex justify-between border-b pb-1.5"><span class="text-slate-500 font-medium">Receipt No:</span> <b class="font-mono text-slate-800" id="rcpNo">-</b></div>
+                    <div class="flex justify-between border-b pb-1.5"><span class="text-slate-500 font-medium">Date & Time:</span> <b class="text-slate-800" id="rcpDate">-</b></div>
+                    <div class="flex justify-between border-b pb-1.5"><span class="text-slate-500 font-medium">Student Name:</span> <b class="text-slate-900 font-bold text-sm" id="rcpName">-</b></div>
+                    <div class="flex justify-between border-b pb-1.5"><span class="text-slate-500 font-medium">Admission No:</span> <b class="font-mono text-slate-800" id="rcpAdm">-</b></div>
+                    <div class="flex justify-between border-b pb-1.5"><span class="text-slate-500 font-medium">Class:</span> <b class="text-slate-800" id="rcpClass">-</b></div>
+                    <div class="flex justify-between border-b pb-1.5"><span class="text-slate-500 font-medium">Fee Month:</span> <b class="text-indigo-700 font-bold" id="rcpMonth">-</b></div>
+                    <div class="flex justify-between items-center pt-2">
+                        <span class="text-sm font-bold text-slate-700">Amount Paid:</span>
+                        <span class="text-2xl font-black text-emerald-600" id="rcpAmount">₹0</span>
+                    </div>
+                    <div class="flex justify-between border-t pt-2 text-[11px] text-slate-500">
+                        <span>Remaining Balance Due:</span>
+                        <b class="text-rose-600 font-bold" id="rcpBalance">₹0</b>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-4 bg-white border-t border-slate-200 grid grid-cols-2 gap-3">
+                <button type="button" onclick="window.printCurrentReceipt()" class="bg-slate-800 hover:bg-slate-900 text-white font-bold py-3 px-4 rounded-xl text-xs transition flex items-center justify-center gap-2 shadow">
+                    <i class="fas fa-print"></i> Print / PDF
+                </button>
+                <button type="button" id="rcpWhatsAppBtn" onclick="window.shareCurrentReceiptWhatsApp()" class="bg-[#25D366] hover:bg-[#128C7E] text-white font-bold py-3 px-4 rounded-xl text-xs transition flex items-center justify-center gap-2 shadow">
+                    <i class="fab fa-whatsapp text-sm"></i> WhatsApp Share
+                </button>
+            </div>
         </div>
     </div>
 
@@ -314,6 +414,7 @@
                 db.exams.forEach(ex => { if (ex.isPublished === undefined) ex.isPublished = false; });
                 
                 window.initBranding();
+                window.initPWA();
                 document.getElementById('dbLoader').classList.add('opacity-0', 'pointer-events-none');
                 
                 setTimeout(() => { 
@@ -327,6 +428,106 @@
                 document.getElementById('dbLoader').innerHTML = `<i class="fas fa-exclamation-triangle text-5xl text-rose-500 mb-6"></i><h2 class="text-2xl font-black text-white text-center px-4">Cloud Connection Failed</h2><p class="text-sm text-rose-200 mt-4 text-center max-w-md px-4 leading-relaxed">Please check your internet connection.</p>`;
             }
         }
+
+        // PWA, BADGING & SYSTEM NOTIFICATIONS
+        window.initPWA = function() {
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('/sw.js').then(reg => {
+                    console.log('KKHM PWA Service Worker Registered:', reg.scope);
+                }).catch(err => {
+                    console.warn('KKHM Service Worker registration error:', err);
+                });
+            }
+        };
+
+        window.updateAppBadge = function(count) {
+            try {
+                if ('setAppBadge' in navigator) {
+                    if (count > 0) navigator.setAppBadge(count).catch(() => {});
+                    else navigator.clearAppBadge().catch(() => {});
+                }
+                if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+                    navigator.serviceWorker.controller.postMessage({
+                        action: count > 0 ? 'setBadge' : 'clearBadge',
+                        count: count
+                    });
+                }
+            } catch(e) {
+                console.warn("Badge API error:", e);
+            }
+        };
+
+        window.requestNotificationPermission = async function() {
+            if (!('Notification' in window)) {
+                window.showToast("Notifications not supported in this browser.", "error");
+                return false;
+            }
+            try {
+                const permission = await Notification.requestPermission();
+                if (permission === 'granted') {
+                    window.showToast("Notifications Enabled!");
+                    window.showDeviceNotification("KKHM ERP Notifications Enabled", {
+                        body: "You will now receive fee due alerts and official college announcements.",
+                        tag: 'kkhm-welcome'
+                    });
+                    return true;
+                } else {
+                    window.showToast("Notification permission not granted.", "error");
+                    return false;
+                }
+            } catch(e) {
+                console.warn("Notification permission error:", e);
+                return false;
+            }
+        };
+
+        window.showDeviceNotification = function(title, options = {}) {
+            if (!('Notification' in window) || Notification.permission !== 'granted') return;
+            const defaultOptions = {
+                icon: '/icon-192.png',
+                badge: '/icon-192.png',
+                vibrate: [200, 100, 200],
+                ...options
+            };
+            try {
+                if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+                    navigator.serviceWorker.ready.then(reg => {
+                        reg.showNotification(title, defaultOptions);
+                    }).catch(() => {
+                        new Notification(title, defaultOptions);
+                    });
+                } else {
+                    new Notification(title, defaultOptions);
+                }
+            } catch(e) {
+                console.warn("Show notification error:", e);
+            }
+        };
+
+        window.handleBellClick = function() {
+            if (!('Notification' in window)) {
+                return alert("Device notifications are not supported in this browser.");
+            }
+            if (Notification.permission !== 'granted') {
+                window.requestNotificationPermission();
+                return;
+            }
+            if (window.currentUser && window.currentUser.role === 'parent') {
+                const std = db.students.find(s => String(s.admNo).trim() === String(window.currentUser.data.admNo).trim());
+                if (std) {
+                    const fin = window.getStudentFinancials(std);
+                    if (fin.currentDue > 0) {
+                        window.openFeeDueAlert(std, fin);
+                    } else {
+                        window.showToast("All fees are cleared! No pending alerts.", "success");
+                    }
+                }
+            } else {
+                let defCount = 0;
+                db.students.forEach(s => { const f = window.getStudentFinancials(s); if(f.currentDue > 0) defCount++; });
+                alert(`🔔 Institutional Notification Summary:\n• Students with fee dues: ${defCount}\n• Published notices: ${db.notices.length}`);
+            }
+        };
 
         window.saveDB = function() { setDoc(dbRef, db).catch(e => window.showToast("Failed to sync with Cloud!", "error")); }
         window.showToast = function(msg, type = 'success') {
@@ -398,17 +599,57 @@
             const today = new Date(); today.setHours(0, 0, 0, 0); 
             let start = new Date(std.feeStartDate); if (isNaN(start.getTime())) { start = new Date(`${today.getFullYear()}-06-01`); } start.setHours(0, 0, 0, 0);
             const dueDay = parseInt(std.dueDay) || 10; let monthsPassed = 0;
+            let latestDueDate = new Date(start);
             for (let i = 0; i < 12; i++) { 
                 let feeMonth = new Date(start.getFullYear(), start.getMonth() + i, 1);
                 let dueDate = (dueDay < 15) ? new Date(feeMonth.getFullYear(), feeMonth.getMonth() + 1, dueDay) : new Date(feeMonth.getFullYear(), feeMonth.getMonth(), dueDay);
-                if (today >= dueDate) { monthsPassed++; } else { break; }
+                dueDate.setHours(0, 0, 0, 0);
+                if (today >= dueDate) { 
+                    monthsPassed++; 
+                    latestDueDate = dueDate;
+                } else { 
+                    if (monthsPassed === 0) latestDueDate = dueDate;
+                    break; 
+                }
             }
             const maxMonths = std.yearlyFee > 0 && std.monthlyFee > 0 ? Math.ceil(std.yearlyFee / std.monthlyFee) : 12;
             if (monthsPassed > maxMonths) monthsPassed = maxMonths;
             const expectedTotal = monthsPassed * (std.monthlyFee || 0);
             let currentDue = expectedTotal - (std.totalPaid || 0); if (currentDue < 0) currentDue = 0; 
             let remainingYearly = (std.yearlyFee || 0) - (std.totalPaid || 0); if (remainingYearly < 0) remainingYearly = 0;
-            return { expectedTotal, currentDue, remainingYearly, monthsPassed, formattedStartDate: start.toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' }) };
+
+            // Smart Due Status Calculation
+            let dueStatus = 'PAID';
+            let daysOverdue = 0;
+            let daysUntilDue = 0;
+            if (currentDue > 0) {
+                const diffTime = today.getTime() - latestDueDate.getTime();
+                const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
+                if (diffDays > 0) {
+                    dueStatus = 'OVERDUE';
+                    daysOverdue = diffDays;
+                } else if (diffDays === 0) {
+                    dueStatus = 'DUE_TODAY';
+                } else if (diffDays >= -5) {
+                    dueStatus = 'DUE_SOON';
+                    daysUntilDue = Math.abs(diffDays);
+                } else {
+                    dueStatus = 'NORMAL';
+                    daysUntilDue = Math.abs(diffDays);
+                }
+            }
+
+            return { 
+                expectedTotal, 
+                currentDue, 
+                remainingYearly, 
+                monthsPassed, 
+                formattedStartDate: start.toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' }),
+                formattedDueDate: latestDueDate.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
+                dueStatus,
+                daysOverdue,
+                daysUntilDue
+            };
         }
 
         window.getStudentRank = function(exId, admNo) {
@@ -574,15 +815,148 @@
                 const monthText = dateObj.toLocaleString('en-US', { month: 'long', year: 'numeric' }); 
                 std.totalPaid = (std.totalPaid || 0) + amt; 
                 if(!std.feeHistory) std.feeHistory = []; 
-                std.feeHistory.push({ date: new Date().toISOString().split('T')[0], amount: amt, month: monthText, addedBy: window.currentUser ? window.currentUser.name : 'Admin' }); 
+                const rcpNumber = 'KKHM-' + Math.floor(100000 + Math.random() * 900000);
+                const rcpDate = new Date().toLocaleString('en-GB', { dateStyle: 'medium', timeStyle: 'short' });
+                const addedBy = window.currentUser ? window.currentUser.name : 'Admin';
+                
+                std.feeHistory.push({ 
+                    receiptNo: rcpNumber,
+                    date: new Date().toISOString().split('T')[0], 
+                    dateTime: rcpDate,
+                    amount: amt, 
+                    month: monthText, 
+                    addedBy: addedBy 
+                }); 
                 
                 window.saveDB(); 
-                window.showToast(`₹${amt} recorded`); 
+                window.showToast(`₹${amt} recorded successfully!`); 
                 document.getElementById('feeModal').classList.add('hidden'); 
                 document.getElementById('feeModal').classList.remove('flex'); 
+                
+                // Open Receipt Modal
+                const updatedFin = window.getStudentFinancials(std);
+                window.currentReceiptData = {
+                    receiptNo: rcpNumber,
+                    date: rcpDate,
+                    name: std.name,
+                    admNo: std.admNo,
+                    class: std.class,
+                    month: monthText,
+                    amount: amt,
+                    balance: updatedFin.currentDue,
+                    phone: std.phone || ''
+                };
+                window.displayReceiptModal(window.currentReceiptData);
+
                 if(window.currentTab === 'search') window.searchStudent(admNo); 
+                else if(window.currentTab === 'fee') window.renderApp();
             } 
         }
+
+        window.displayReceiptModal = function(data) {
+            document.getElementById('rcpNo').innerText = data.receiptNo;
+            document.getElementById('rcpDate').innerText = data.date;
+            document.getElementById('rcpName').innerText = data.name;
+            document.getElementById('rcpAdm').innerText = data.admNo;
+            document.getElementById('rcpClass').innerText = data.class;
+            document.getElementById('rcpMonth').innerText = data.month;
+            document.getElementById('rcpAmount').innerText = '₹' + data.amount;
+            document.getElementById('rcpBalance').innerText = '₹' + data.balance;
+            
+            const rModal = document.getElementById('feeReceiptModal');
+            rModal.classList.remove('hidden');
+            rModal.classList.add('flex');
+        };
+
+        window.printCurrentReceipt = function() {
+            const data = window.currentReceiptData;
+            if(!data) return;
+            const html = `
+                <div class="header">
+                    <h2 class="title">KKHM ISLAMIC & ARTS COLLEGE</h2>
+                    <p class="subtitle">FEE PAYMENT RECEIPT</p>
+                </div>
+                <div style="border:1px solid #cbd5e1; padding:20px; border-radius:12px; margin-top:20px;">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:15px; border-bottom:1px solid #e2e8f0; padding-bottom:10px;">
+                        <span><b>Receipt No:</b> ${data.receiptNo}</span>
+                        <span><b>Date:</b> ${data.date}</span>
+                    </div>
+                    <table style="margin-bottom:15px;">
+                        <tr><td style="width:30%;"><b>Student Name:</b></td><td>${data.name}</td></tr>
+                        <tr><td><b>Admission No:</b></td><td>${data.admNo}</td></tr>
+                        <tr><td><b>Class:</b></td><td>${data.class}</td></tr>
+                        <tr><td><b>Fee Month:</b></td><td>${data.month}</td></tr>
+                    </table>
+                    <div style="background:#f8fafc; border:2px dashed #064e3b; padding:15px; border-radius:10px; margin:20px 0; text-align:center;">
+                        <span style="font-size:14px; color:#64748b; font-weight:bold;">AMOUNT RECEIVED</span><br>
+                        <span style="font-size:26px; color:#064e3b; font-weight:900;">₹${data.amount}</span>
+                    </div>
+                    <p style="font-size:12px; color:#64748b;">Remaining Balance Due: <b>₹${data.balance}</b></p>
+                    <p style="margin-top:40px; text-align:right;"><b>Authorized Signature / College Cashier</b></p>
+                </div>
+            `;
+            window.openPrintWindow(html, `Receipt_${data.receiptNo}`);
+        };
+
+        window.shareCurrentReceiptWhatsApp = function() {
+            const data = window.currentReceiptData;
+            if(!data) return;
+            let phone = (data.phone || '').replace(/\D/g, '');
+            if(!phone) {
+                phone = prompt("Enter parent's 10-digit WhatsApp number:", "");
+                if(!phone) return;
+                phone = phone.replace(/\D/g, '');
+            }
+            if(phone.length === 10) phone = '91' + phone;
+
+            const msg = `*KKHM ISLAMIC & ARTS COLLEGE*\n*ഔദ്യോഗിക ഫീസ് രസീത് / Fee Receipt*\n\n` +
+                `പ്രിയപ്പെട്ട രക്ഷിതാവേ,\n` +
+                `നിങ്ങളുടെ മകൻ/മകൾ *${data.name}* (Adm No: *${data.admNo}*, Class: *${data.class}*)-ന്റെ കോളേജ് ഫീസ് വിജയകരമായി സ്വീകരിച്ചിരിക്കുന്നു.\n\n` +
+                `🧾 *രസീത് നമ്പർ:* ${data.receiptNo}\n` +
+                `📅 *തീയതി:* ${data.date}\n` +
+                `🗓️ *മാസം:* ${data.month}\n` +
+                `💰 *അടച്ച തുക:* *₹${data.amount}*\n` +
+                `📉 *ബാക്കി കുടിശ്ശിക:* ₹${data.balance}\n\n` +
+                `നന്ദി!\n- KKHM Islamic & Arts College Office`;
+
+            window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
+        };
+
+        window.sendWhatsAppDueReminder = function(admNo) {
+            const std = db.students.find(s => String(s.admNo).trim() === String(admNo).trim());
+            if(!std) return;
+            const fin = window.getStudentFinancials(std);
+            if(fin.currentDue <= 0) return alert("This student has cleared all dues.");
+
+            let phone = (std.phone || '').replace(/\D/g, '');
+            if(!phone) {
+                phone = prompt("Phone number not saved for " + std.name + ". Enter 10-digit WhatsApp phone number:");
+                if(!phone) return;
+                phone = phone.replace(/\D/g, '');
+            }
+            if(phone.length === 10) phone = '91' + phone;
+
+            let statusNotice = '';
+            if (fin.dueStatus === 'OVERDUE') statusNotice = `⚠️ *അവസാന തീയതി കഴിഞ്ഞിരിക്കുന്നു (${fin.daysOverdue} ദിവസങ്ങൾ മുൻപ്)*\n`;
+            else if (fin.dueStatus === 'DUE_TODAY') statusNotice = `⚡ *ഇന്നാണ് ഫീസ് അടക്കേണ്ട അവസാന തീയതി!*\n`;
+            else statusNotice = `🗓️ *അവസാന തീയതി: ${fin.formattedDueDate}*\n`;
+
+            const msg = `*KKHM ISLAMIC & ARTS COLLEGE*\n*ഫീസ് കുടിശ്ശിക അറിയിപ്പ് / Fee Due Reminder*\n\n` +
+                `പ്രിയപ്പെട്ട രക്ഷിതാവേ,\n` +
+                `KKHM കോളേജിലെ നിങ്ങളുടെ മകൻ/മകൾ *${std.name}* (Adm: *${std.admNo}*, Class: *${std.class}*)-ന്റെ കോളേജ് ഫീസ് അടക്കാനുള്ള വിവരങ്ങൾ താഴെ നൽകുന്നു:\n\n` +
+                `📌 *അടക്കേണ്ട തുക (Due Amount): ₹${fin.currentDue}*\n` +
+                statusNotice +
+                `\n*ഫീസ് അടക്കാനുള്ള ബാങ്ക് വിവരങ്ങൾ:*\n` +
+                `🏦 ബാങ്ക്: ${db.settings.bankName}\n` +
+                `👤 അക്കൗണ്ട് പേര്: ${db.settings.accName}\n` +
+                `🔢 A/C നമ്പർ: ${db.settings.accNo}\n` +
+                `🔤 IFSC കോഡ്: ${db.settings.ifsc}\n` +
+                `📲 UPI ID: ${db.settings.upi}\n\n` +
+                `ഫീസ് അടച്ച ശേഷം വിവരങ്ങൾ ഈ നമ്പറിലേക്ക് അറിയിക്കുമല്ലോ. നന്ദി!\n` +
+                `- പ്രിൻസിപ്പാൾ / ഓഫീസ്, KKHM കോളേജ്`;
+
+            window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
+        };
 
         window.renderAdminFee = function() { 
             let exp=0, col=0, pen=0; const defClasses = {}; 
@@ -591,7 +965,7 @@
                 exp += (s.yearlyFee || 0); col += (s.totalPaid || 0); pen += fin.currentDue; 
                 if(fin.currentDue > 0) { 
                     if(!defClasses[s.class]) defClasses[s.class] = []; 
-                    defClasses[s.class].push({ ...s, _currentDue: fin.currentDue }); 
+                    defClasses[s.class].push({ ...s, _currentDue: fin.currentDue, _fin: fin }); 
                 } 
             }); 
             
@@ -604,8 +978,127 @@
                     <div class="flex gap-2 w-full md:w-auto"><input type="text" id="gsheetLink" placeholder="Paste Published CSV Link here..." class="flex-1 md:w-64 px-4 py-2 rounded-lg border text-sm outline-none"><button onclick="window.syncGoogleSheetFee()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-bold shadow-md transition whitespace-nowrap">Sync Now</button></div>
                 </div>
 
-                <div class="bg-white rounded-2xl shadow-sm border mt-6"><div class="bg-slate-50 p-4 border-b flex justify-between items-center"><h3 class="font-bold text-slate-800">Defaulters List</h3><div class="flex gap-2"><select id="feeFilter" onchange="window.filterDef()" class="border p-2 rounded-lg text-sm font-bold"><option value="all">All Classes</option>${Object.keys(defClasses).sort().map(c=>`<option value="${c}">${c}</option>`).join('')}</select><button onclick="window.printDefList()" class="bg-[#022c22] text-white px-4 py-2 rounded-lg text-sm font-bold shadow">Print</button></div></div><div id="defTable" class="p-0 overflow-x-auto"><table class="w-full text-left text-sm"><thead class="text-xs text-slate-500 bg-slate-100"><tr><th class="p-4">Adm No</th><th class="p-4">Name</th><th class="p-4">Class</th><th class="p-4">Current Due Amount</th></tr></thead><tbody>${Object.keys(defClasses).length > 0 ? Object.keys(defClasses).map(c => defClasses[c].map(s => `<tr><td class="p-4 font-mono">${s.admNo}</td><td class="p-4 font-bold">${s.name}</td><td class="p-4">${s.class}</td><td class="p-4 font-black text-rose-600">₹${s._currentDue}</td></tr>`).join('')).join('') : '<tr><td colspan="4" class="p-6 text-center text-slate-400">No immediate dues.</td></tr>'}</tbody></table></div></div></div>`; 
+                <div class="bg-white rounded-2xl shadow-sm border mt-6">
+                    <div class="bg-slate-50 p-4 border-b flex flex-wrap gap-3 justify-between items-center">
+                        <div class="flex items-center gap-2">
+                            <h3 class="font-bold text-slate-800"><i class="fas fa-user-clock text-rose-500 mr-2"></i>Defaulters List</h3>
+                            <span class="text-xs font-extrabold bg-rose-100 text-rose-700 px-2 py-0.5 rounded-full">${Object.values(defClasses).flat().length} Dues</span>
+                        </div>
+                        <div class="flex gap-2">
+                            <select id="feeFilter" onchange="window.filterDef()" class="border p-2 rounded-lg text-sm font-bold bg-white">
+                                <option value="all">All Classes</option>
+                                ${Object.keys(defClasses).sort().map(c=>`<option value="${c}">${c}</option>`).join('')}
+                            </select>
+                            <button onclick="window.printDefList()" class="bg-[#022c22] text-white px-4 py-2 rounded-lg text-sm font-bold shadow hover:bg-emerald-950 transition"><i class="fas fa-print mr-1"></i> Print</button>
+                        </div>
+                    </div>
+                    <div id="defTable" class="p-0 overflow-x-auto">
+                        <table class="w-full text-left text-sm whitespace-nowrap">
+                            <thead class="text-xs text-slate-500 bg-slate-100 uppercase">
+                                <tr>
+                                    <th class="p-4">Adm No</th>
+                                    <th class="p-4">Student Name</th>
+                                    <th class="p-4">Class</th>
+                                    <th class="p-4">Due Amount</th>
+                                    <th class="p-4">Due Status</th>
+                                    <th class="p-4 text-center">Actions & WhatsApp</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100">
+                                ${Object.keys(defClasses).length > 0 ? Object.keys(defClasses).map(c => defClasses[c].map(s => {
+                                    const fin = s._fin;
+                                    let badgeHtml = '';
+                                    if(fin.dueStatus === 'OVERDUE') badgeHtml = `<span class="bg-rose-100 text-rose-700 font-bold px-2.5 py-1 rounded-md text-xs"><i class="fas fa-clock mr-1"></i> Overdue (${fin.daysOverdue}d)</span>`;
+                                    else if(fin.dueStatus === 'DUE_TODAY') badgeHtml = `<span class="bg-amber-100 text-amber-800 font-bold px-2.5 py-1 rounded-md text-xs"><i class="fas fa-exclamation-circle mr-1"></i> Due Today</span>`;
+                                    else badgeHtml = `<span class="bg-slate-100 text-slate-700 font-bold px-2.5 py-1 rounded-md text-xs">${fin.formattedDueDate}</span>`;
+
+                                    return `<tr class="hover:bg-slate-50">
+                                        <td class="p-4 font-mono font-bold text-slate-600">${s.admNo}</td>
+                                        <td class="p-4 font-bold text-slate-800">${s.name}</td>
+                                        <td class="p-4">${s.class}</td>
+                                        <td class="p-4 font-black text-rose-600 text-base">₹${s._currentDue}</td>
+                                        <td class="p-4">${badgeHtml}</td>
+                                        <td class="p-4 text-center">
+                                            <button onclick="window.sendWhatsAppDueReminder('${s.admNo}')" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 px-3 py-1.5 rounded-lg text-xs font-bold transition inline-flex items-center gap-1.5 shadow-sm" title="Send WhatsApp Fee Reminder">
+                                                <i class="fab fa-whatsapp text-emerald-600 text-sm"></i> Remind
+                                            </button>
+                                            <button onclick="window.openFeeUpdate('${s.admNo}')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm transition ml-2">
+                                                Pay
+                                            </button>
+                                        </td>
+                                    </tr>`;
+                                }).join('')).join('') : '<tr><td colspan="6" class="p-8 text-center text-slate-400 font-bold">No students with fee dues found.</td></tr>'}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>`; 
         }
+
+        window.filterDef = function() { 
+            const cls = document.getElementById('feeFilter').value; 
+            let rows = ''; 
+            db.students.forEach(s => { 
+                const fin = window.getStudentFinancials(s); 
+                if(fin.currentDue > 0 && (cls==='all' || s.class===cls)) { 
+                    let badgeHtml = '';
+                    if(fin.dueStatus === 'OVERDUE') badgeHtml = `<span class="bg-rose-100 text-rose-700 font-bold px-2.5 py-1 rounded-md text-xs"><i class="fas fa-clock mr-1"></i> Overdue (${fin.daysOverdue}d)</span>`;
+                    else if(fin.dueStatus === 'DUE_TODAY') badgeHtml = `<span class="bg-amber-100 text-amber-800 font-bold px-2.5 py-1 rounded-md text-xs"><i class="fas fa-exclamation-circle mr-1"></i> Due Today</span>`;
+                    else badgeHtml = `<span class="bg-slate-100 text-slate-700 font-bold px-2.5 py-1 rounded-md text-xs">${fin.formattedDueDate}</span>`;
+
+                    rows += `<tr class="hover:bg-slate-50">
+                        <td class="p-4 font-mono font-bold text-slate-600">${s.admNo}</td>
+                        <td class="p-4 font-bold text-slate-800">${s.name}</td>
+                        <td class="p-4">${s.class}</td>
+                        <td class="p-4 font-black text-rose-600 text-base">₹${fin.currentDue}</td>
+                        <td class="p-4">${badgeHtml}</td>
+                        <td class="p-4 text-center">
+                            <button onclick="window.sendWhatsAppDueReminder('${s.admNo}')" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 px-3 py-1.5 rounded-lg text-xs font-bold transition inline-flex items-center gap-1.5 shadow-sm">
+                                <i class="fab fa-whatsapp text-emerald-600 text-sm"></i> Remind
+                            </button>
+                            <button onclick="window.openFeeUpdate('${s.admNo}')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm transition ml-2">
+                                Pay
+                            </button>
+                        </td>
+                    </tr>`; 
+                } 
+            }); 
+            document.getElementById('defTable').innerHTML = `<table class="w-full text-left text-sm whitespace-nowrap"><thead class="text-xs text-slate-500 bg-slate-100 uppercase"><tr><th class="p-4">Adm No</th><th class="p-4">Student Name</th><th class="p-4">Class</th><th class="p-4">Due Amount</th><th class="p-4">Due Status</th><th class="p-4 text-center">Actions & WhatsApp</th></tr></thead><tbody class="divide-y divide-slate-100">${rows || '<tr><td colspan="6" class="p-8 text-center text-slate-400 font-bold">No students with fee dues found.</td></tr>'}</tbody></table>`; 
+        };
+
+        window.printDefList = function() { 
+            const cls = document.getElementById('feeFilter').value; 
+            let list = []; 
+            db.students.forEach(s => { 
+                const fin = window.getStudentFinancials(s); 
+                if(fin.currentDue > 0 && (cls==='all' || s.class===cls)) { 
+                    list.push({...s, _currDue: fin.currentDue, _fin: fin}); 
+                } 
+            }); 
+            const html = `
+                <div class="header">
+                    <h2 class="title">KKHM ISLAMIC & ARTS COLLEGE</h2>
+                    <p class="subtitle">Defaulters List - ${cls==='all'?'All Classes':cls} (${list.length} Students)</p>
+                </div>
+                <table>
+                    <tr>
+                        <th>Adm No</th>
+                        <th>Student Name</th>
+                        <th>Class</th>
+                        <th>Due Date</th>
+                        <th>Current Due</th>
+                    </tr>
+                    ${list.map(s=>`<tr>
+                        <td class="center">${s.admNo}</td>
+                        <td>${s.name}</td>
+                        <td class="center">${s.class}</td>
+                        <td class="center">${s._fin.formattedDueDate}</td>
+                        <td class="center" style="color:red;font-weight:bold;">₹${s._currDue}</td>
+                    </tr>`).join('')}
+                </table>
+            `; 
+            window.openPrintWindow(html, "Defaulters_List"); 
+        };
         
         window.syncGoogleSheetFee = async function() {
             const url = document.getElementById('gsheetLink').value.trim();
@@ -735,7 +1228,6 @@
                 if (orig && orig !== name) renameMap[orig] = name; 
             }); 
 
-            // Safeguard: ONLY rename keys if they changed. Do NOT delete old marks.
             if (Object.keys(renameMap).length > 0) { 
                 for (let admNo in ex.marks) { 
                     for (let oldSubj in renameMap) { 
@@ -769,8 +1261,63 @@
 
         // 8. NOTICES & ACHIEVEMENTS
         window.renderGlobalAchievements = function() { let allAch = []; db.students.forEach(s => { if(s.achievements) s.achievements.forEach(a => allAch.push({ name: s.name, class: s.class, ...a })); }); allAch.sort((a,b) => new Date(b.date) - new Date(a.date)); return `<div class="max-w-5xl mx-auto space-y-6"><h2 class="text-2xl font-extrabold text-slate-800">Global Student Achievements</h2><div class="grid grid-cols-1 md:grid-cols-2 gap-4">${allAch.map(a => `<div class="bg-white p-5 rounded-xl border border-emerald-200 shadow-sm flex items-start gap-4"><div class="bg-emerald-100 p-3 rounded-full text-emerald-600"><i class="fas fa-trophy text-xl"></i></div><div><h4 class="font-bold text-slate-800 text-lg">${a.name}</h4><p class="text-xs font-bold text-slate-500">${a.class} • ${a.date}</p><p class="text-sm mt-2 font-bold text-slate-800">${a.note}</p>${a.remark ? `<p class="text-xs mt-1 text-slate-500">Remark: ${a.remark}</p>` : ''}<p class="text-[10px] text-emerald-700 mt-2 font-bold bg-emerald-50 inline-block px-2 py-0.5 rounded">Added by: ${a.addedBy || 'Admin'}</p></div></div>`).join('') || '<p class="text-slate-500 w-full text-center p-8">No records.</p>'}</div></div>`; }
-        window.renderAdminNotices = function() { return `<div class="max-w-4xl mx-auto space-y-6"><h2 class="text-2xl font-extrabold text-slate-800">Notice Board</h2>${window.currentUser.role !== 'parent' ? `<form onsubmit="window.postNotice(event)" class="bg-white p-6 rounded-xl border shadow-sm space-y-4"><input id="nTitle" required placeholder="Notice Title..." class="w-full border p-3 rounded-lg font-bold"><textarea id="nContent" required rows="3" placeholder="Information..." class="w-full border p-3 rounded-lg"></textarea><button type="submit" class="bg-[#022c22] text-white px-6 py-3 rounded-xl font-bold shadow">Publish Notice</button></form>` : ''}<div class="space-y-4">${db.notices.slice().reverse().map(n => `<div class="bg-white p-5 rounded-xl border-l-4 border-l-emerald-500 relative shadow-sm">${window.currentUser.role !== 'parent' ? `<button onclick="window.deleteNotice(${n.id})" class="absolute top-4 right-4 text-rose-400 hover:text-rose-600"><i class="fas fa-trash"></i></button>` : ''}<span class="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded">${n.date}</span><h4 class="font-bold text-lg mt-2 text-slate-800">${n.title}</h4><p class="text-slate-600 text-sm mt-2 whitespace-pre-wrap">${n.content}</p></div>`).join('') || '<p class="text-center">No notices.</p>'}</div></div>`; }
-        window.postNotice = function(e){ e.preventDefault(); db.notices.push({id:Date.now(), date: new Date().toISOString().split('T')[0], title: document.getElementById('nTitle').value, content: document.getElementById('nContent').value}); window.saveDB(); window.renderApp(); window.showToast('Notice Published'); }
+        window.renderAdminNotices = function() { 
+            return `<div class="max-w-4xl mx-auto space-y-6">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-2xl font-extrabold text-slate-800">Notice Board</h2>
+                    <span class="text-xs font-bold text-slate-500 bg-white border px-3 py-1.5 rounded-lg shadow-sm"><i class="fas fa-bell text-emerald-600 mr-1.5"></i> ${db.notices.length} Notices</span>
+                </div>
+                ${window.currentUser.role !== 'parent' ? `
+                <form onsubmit="window.postNotice(event)" class="bg-white p-6 rounded-2xl border shadow-sm space-y-4">
+                    <input id="nTitle" required placeholder="Notice Title..." class="w-full border p-3 rounded-xl font-bold bg-slate-50 outline-none">
+                    <textarea id="nContent" required rows="3" placeholder="Write announcement details here..." class="w-full border p-3 rounded-xl bg-slate-50 outline-none"></textarea>
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 pt-1">
+                        <label class="flex items-center gap-2 text-xs font-bold text-slate-700 cursor-pointer">
+                            <input type="checkbox" id="nNotify" checked class="w-4 h-4 text-emerald-600 rounded">
+                            <span>🔔 Send Mobile Notification & Signal App Icon Badge to Parents</span>
+                        </label>
+                        <button type="submit" class="bg-[#022c22] hover:bg-emerald-950 text-white px-6 py-3 rounded-xl font-bold shadow transition flex items-center gap-2">
+                            <i class="fas fa-paper-plane text-xs"></i> Publish Notice
+                        </button>
+                    </div>
+                </form>` : ''}
+                <div class="space-y-4">${db.notices.slice().reverse().map(n => `
+                    <div class="bg-white p-5 rounded-2xl border-l-4 border-l-emerald-500 relative shadow-sm hover:shadow transition">
+                        ${window.currentUser.role !== 'parent' ? `<button onclick="window.deleteNotice(${n.id})" class="absolute top-4 right-4 text-rose-400 hover:text-rose-600 transition" title="Delete Notice"><i class="fas fa-trash"></i></button>` : ''}
+                        <span class="text-xs font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-md"><i class="fas fa-calendar-alt mr-1"></i> ${n.date}</span>
+                        <h4 class="font-extrabold text-lg mt-2.5 text-slate-800">${n.title}</h4>
+                        <p class="text-slate-600 text-sm mt-2 whitespace-pre-wrap leading-relaxed">${n.content}</p>
+                    </div>`).join('') || '<p class="text-center p-8 bg-white rounded-xl border text-slate-400 font-bold">No announcements published yet.</p>'}
+                </div>
+            </div>`; 
+        }
+
+        window.postNotice = function(e){ 
+            e.preventDefault(); 
+            const title = document.getElementById('nTitle').value.trim();
+            const content = document.getElementById('nContent').value.trim();
+            const notify = document.getElementById('nNotify')?.checked;
+
+            db.notices.push({
+                id: Date.now(), 
+                date: new Date().toISOString().split('T')[0], 
+                title: title, 
+                content: content,
+                isNotified: notify
+            }); 
+            window.saveDB(); 
+
+            if (notify) {
+                window.showDeviceNotification("📢 KKHM Notice: " + title, {
+                    body: content.substring(0, 100) + '...',
+                    tag: 'kkhm-notice'
+                });
+                window.updateAppBadge(1);
+            }
+
+            window.renderApp(); 
+            window.showToast('Notice Published Successfully'); 
+        }
         window.deleteNotice = function(id){ if(confirm('Delete notice?')) { db.notices = db.notices.filter(n=>n.id!==id); window.saveDB(); window.renderApp(); } }
 
         // 9. SETTINGS & CSV UPLOAD
@@ -860,7 +1407,31 @@
             const latestNotice = db.notices.length > 0 ? db.notices[db.notices.length - 1] : null;
             const hasNewNotice = latestNotice && std.lastReadNoticeId !== latestNotice.id;
             
-            setTimeout(() => { if(hasFeeDues && window.parentTab === 'fees') window.showToast(`Notice: You have pending fee dues (₹${fin.currentDue})`, 'error'); }, 1500);
+            // Synchronize App Badge & Notification Bell Counter
+            let unreadCount = (hasFeeDues ? 1 : 0) + (hasNewNotice ? 1 : 0);
+            window.updateAppBadge(unreadCount);
+            const bell = document.getElementById('bellBadge');
+            if (bell) {
+                if (unreadCount > 0) { bell.innerText = unreadCount; bell.classList.remove('hidden'); }
+                else { bell.classList.add('hidden'); }
+            }
+
+            // Automatic Fee Due Alert Notification on mobile & In-App Modal (Once per session)
+            if (hasFeeDues) {
+                const sessionKey = 'kkhm_due_alert_shown_' + std.admNo;
+                if (!sessionStorage.getItem(sessionKey)) {
+                    sessionStorage.setItem(sessionKey, 'true');
+                    setTimeout(() => {
+                        window.openFeeDueAlert(std, fin);
+                        if (Notification.permission === 'granted') {
+                            window.showDeviceNotification("KKHM ERP: ഫീസ് കുടിശ്ശിക അറിയിപ്പ്", {
+                                body: `${std.name} (Adm: ${std.admNo})-ന്റെ ₹${fin.currentDue} ഫീസ് അടക്കാനുള്ള സമയമായി.`,
+                                tag: 'fee-due-alert'
+                            });
+                        }
+                    }, 800);
+                }
+            }
 
             const tabs = [ 
                 {id: 'fees', icon: 'fa-wallet', title: 'Fees', alert: hasFeeDues}, 
@@ -877,14 +1448,65 @@
             else if(window.parentTab === 'leaves') content = window.renderParentLeaves(std); 
             else if(window.parentTab === 'discipline') content = window.renderParentDiscipline(std); 
             else if(window.parentTab === 'teachers') content = window.renderParentTeachers(); 
-            else if(window.parentTab === 'notices') { content = window.renderAdminNotices(); if(latestNotice) { std.lastReadNoticeId = latestNotice.id; window.saveDB(); } }
+            else if(window.parentTab === 'notices') { 
+                content = window.renderAdminNotices(); 
+                if(latestNotice) { 
+                    std.lastReadNoticeId = latestNotice.id; 
+                    window.saveDB(); 
+                    window.updateAppBadge(hasFeeDues ? 1 : 0);
+                    if (bell) {
+                        if (hasFeeDues) { bell.innerText = '1'; bell.classList.remove('hidden'); }
+                        else { bell.classList.add('hidden'); }
+                    }
+                } 
+            }
 
             return `
                 <div class="max-w-5xl mx-auto"><div class="bg-white rounded-2xl shadow-sm border mb-6 overflow-hidden"><div class="bg-[#022c22] p-6 text-white flex flex-col md:flex-row items-center gap-4 relative"><div class="relative w-24 h-24 flex-shrink-0 group"><div class="w-full h-full bg-white text-[#064e3b] rounded-full flex items-center justify-center text-4xl font-black shadow-lg overflow-hidden border-4 border-emerald-500/30">${std.photo ? `<img src="${std.photo}" class="w-full h-full object-cover">` : std.name.charAt(0)}</div><label class="absolute bottom-0 right-0 bg-amber-500 text-white rounded-full p-2 cursor-pointer shadow-lg hover:bg-amber-600 transition z-10" title="Change Profile Photo"><i class="fas fa-camera text-sm"></i><input type="file" accept="image/*" class="hidden" onchange="window.uploadStudentPhoto(this)"></label></div><div class="text-center md:text-left flex-1"><h2 class="text-2xl font-black">${std.name}</h2><p class="text-emerald-300 font-bold text-sm mt-1">Class: ${std.class} | Adm No: ${std.admNo}</p></div><button onclick="window.changeParentPassword()" class="bg-white/10 hover:bg-white/20 border border-white/20 px-4 py-2 rounded-lg text-sm font-bold transition flex items-center gap-2 shadow-sm"><i class="fas fa-key"></i> Change Password</button></div>
-                <div class="flex overflow-x-auto border-b scroll-smooth">${tabs.map(t => `<button onclick="window.setParentTab('${t.id}')" class="parent-tab flex-1 min-w-[95px] py-4 text-center font-bold text-sm relative ${window.parentTab === t.id ? 'active' : 'text-slate-500 hover:bg-slate-50'}"><i class="fas ${t.icon} block text-2xl mb-2 ${t.alert ? 'animate-bounce text-rose-500' : ''}"></i> ${t.title} ${t.alert ? `<span class="absolute top-2 right-1/4 w-3 h-3 bg-rose-500 rounded-full shadow border-2 border-white"></span>` : ''}</button>`).join('')}</div></div>
+                <div class="flex overflow-x-auto border-b scroll-smooth">${tabs.map(t => `<button onclick="window.setParentTab('${t.id}')" class="parent-tab flex-1 min-w-[95px] py-4 text-center font-bold text-sm relative ${window.parentTab === t.id ? 'active' : 'text-slate-500 hover:bg-slate-50'}"><i class="fas ${t.icon} block text-2xl mb-2${t.alert ? 'animate-bounce text-rose-500' : ''}"></i> ${t.title}${t.alert ? `<span class="absolute top-2 right-1/4 w-3 h-3 bg-rose-500 rounded-full shadow border-2 border-white"></span>` : ''}</button>`).join('')}</div></div>
                 <div class="pb-10">${content}</div></div>
             `;
         }
+
+        window.openFeeDueAlert = function(std, fin) {
+            document.getElementById('dueAlertStdInfo').innerText = `${std.name} (Adm: ${std.admNo})`;
+            document.getElementById('dueAlertClsInfo').innerText = `Class: ${std.class}`;
+            document.getElementById('dueAlertAmount').innerText = '₹' + fin.currentDue;
+            document.getElementById('dueAlertDueDateText').innerText = 'Due Date: ' + fin.formattedDueDate;
+            
+            let statusBadge = '';
+            if (fin.dueStatus === 'OVERDUE') {
+                statusBadge = `<span class="text-rose-600"><i class="fas fa-clock mr-1"></i> Overdue by ${fin.daysOverdue} days! Please clear immediately.</span>`;
+            } else if (fin.dueStatus === 'DUE_TODAY') {
+                statusBadge = `<span class="text-amber-600"><i class="fas fa-exclamation-circle mr-1"></i> Today is the due date!</span>`;
+            } else {
+                statusBadge = `<span class="text-indigo-600"><i class="fas fa-calendar-check mr-1"></i> Due in ${fin.daysUntilDue} days</span>`;
+            }
+            document.getElementById('dueAlertStatusBadge').innerHTML = statusBadge;
+
+            document.getElementById('dueAlertBank').innerText = db.settings.bankName || '-';
+            document.getElementById('dueAlertAcc').innerText = db.settings.accNo || '-';
+            document.getElementById('dueAlertIfsc').innerText = db.settings.ifsc || '-';
+            document.getElementById('dueAlertUpi').innerText = db.settings.upi || '-';
+
+            const upiBtn = document.getElementById('dueAlertUpiBtn');
+            if (db.settings.upi && fin.currentDue > 0) {
+                upiBtn.href = `upi://pay?pa=${db.settings.upi}&pn=${encodeURIComponent(db.settings.accName)}&am=${fin.currentDue}&cu=INR`;
+                upiBtn.style.display = 'flex';
+            } else {
+                upiBtn.style.display = 'none';
+            }
+
+            const alertModal = document.getElementById('feeDueAlertModal');
+            alertModal.classList.remove('hidden');
+            alertModal.classList.add('flex');
+        };
+
+        window.closeFeeDueAlert = function() {
+            const alertModal = document.getElementById('feeDueAlertModal');
+            alertModal.classList.add('hidden');
+            alertModal.classList.remove('flex');
+        };
 
         window.setParentTab = function(t) { window.parentTab = t; window.renderApp(); };
         
