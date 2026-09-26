@@ -2,6 +2,8 @@
 
 A complete, modern Web ERP and Parent Portal for KKHM Islamic & Arts College, Markaz Campus, Athavanad.
 
+### 🌐 Live App: [https://celadon-profiterole-9f7633.netlify.app](https://celadon-profiterole-9f7633.netlify.app)
+
 ---
 
 ## 🚀 Features

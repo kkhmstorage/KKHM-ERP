@@ -29,9 +29,13 @@
 
     <!-- Loaders & Overlays -->
     <div id="dbLoader" class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#022c22] text-white transition-opacity duration-500">
-        <i class="fas fa-circle-notch fa-spin text-6xl text-emerald-400 mb-6"></i>
-        <h2 class="text-3xl font-black tracking-wider text-center px-4">KKHM ISLAMIC & ARTS COLLEGE</h2>
-        <p class="text-sm text-emerald-200 mt-4 font-bold animate-pulse px-4 text-center">Connecting to Secure Cloud Database...</p>
+        <div class="w-[90vw] max-w-[480px] aspect-video rounded-2xl overflow-hidden shadow-2xl mb-6 border-2 border-emerald-500/30">
+            <video autoplay muted playsinline loop class="w-full h-full object-cover"
+                src="https://drive.google.com/uc?export=download&id=1Dwq4WwBVD5qhzodZBRIKyiyTutt41yHs">
+            </video>
+        </div>
+        <i class="fas fa-circle-notch fa-spin text-4xl text-emerald-400 mb-3"></i>
+        <p class="text-sm text-emerald-200 mt-2 font-bold animate-pulse px-4 text-center">Connecting to Secure Cloud Database...</p>
     </div>
 
     <div id="uploadOverlay" class="fixed inset-0 bg-slate-900/80 z-[110] hidden items-center justify-center flex-col backdrop-blur-sm transition-opacity">
