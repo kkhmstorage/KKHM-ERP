@@ -1,4 +1,4 @@
-const CACHE_NAME = 'kkhm-erp-cache-v3';
+const CACHE_NAME = 'kkhm-erp-cache-v4';
 const urlsToCache = [
   '/',
   '/index.html',
@@ -71,15 +71,23 @@ self.addEventListener('push', event => {
   );
 });
 
-// Notification Click Event: Focus existing window or open new
+// Notification Click Event: Direct to link or focus app
 self.addEventListener('notificationclick', event => {
   event.notification.close();
   const targetUrl = event.notification.data || '/';
 
   event.waitUntil(
     clients.matchAll({ type: 'window', includeUncontrolled: true }).then(clientList => {
+      if (targetUrl && (targetUrl.startsWith('http://') || targetUrl.startsWith('https://')) && !targetUrl.includes(self.location.origin)) {
+        if (clients.openWindow) {
+          return clients.openWindow(targetUrl);
+        }
+      }
       for (const client of clientList) {
         if (client.url.includes(self.location.origin) && 'focus' in client) {
+          if (targetUrl && targetUrl !== '/' && client.navigate) {
+            client.navigate(targetUrl);
+          }
           return client.focus();
         }
       }
