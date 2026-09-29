@@ -1,4 +1,4 @@
-const CACHE_NAME = 'kkhm-erp-cache-v4';
+const CACHE_NAME = 'kkhm-erp-cache-v6';
 const urlsToCache = [
   '/',
   '/index.html',
@@ -33,12 +33,37 @@ self.addEventListener('activate', event => {
 });
 
 self.addEventListener('fetch', event => {
+  const req = event.request;
+  // Network-First for HTML/navigation requests so the app always gets the latest updates
+  if (req.mode === 'navigate' || req.destination === 'document' || req.url.endsWith('/') || req.url.includes('index.html')) {
+    event.respondWith(
+      fetch(req)
+        .then(networkResponse => {
+          if (networkResponse && networkResponse.status === 200) {
+            const clone = networkResponse.clone();
+            caches.open(CACHE_NAME).then(cache => cache.put(req, clone));
+          }
+          return networkResponse;
+        })
+        .catch(() => caches.match(req))
+    );
+    return;
+  }
+
+  // Stale-while-revalidate / cache-first for other static assets
   event.respondWith(
-    caches.match(event.request)
-      .then(response => {
-        // Return cached version or fetch from network
-        return response || fetch(event.request);
-      })
+    caches.match(req).then(cachedResponse => {
+      if (cachedResponse) {
+        // Fetch in background to update cache
+        fetch(req).then(networkResponse => {
+          if (networkResponse && networkResponse.status === 200) {
+            caches.open(CACHE_NAME).then(cache => cache.put(req, networkResponse));
+          }
+        }).catch(() => {});
+        return cachedResponse;
+      }
+      return fetch(req);
+    })
   );
 });
 
