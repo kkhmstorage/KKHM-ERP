@@ -170,27 +170,63 @@
     
     <!-- Bulk Upload Modal -->
     <div id="bulkUploadModal" class="fixed inset-0 bg-black/60 z-50 hidden items-center justify-center p-4 backdrop-blur-sm">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden flex flex-col">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col">
             <div class="bg-[#022c22] p-4 flex justify-between items-center text-white flex-shrink-0">
-                <h3 class="font-bold">Bulk Upload CSV</h3>
-                <button onclick="document.getElementById('bulkUploadModal').classList.remove('flex'); document.getElementById('bulkUploadModal').classList.add('hidden');" class="text-xl">&times;</button>
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-lg bg-emerald-500/20 flex items-center justify-center text-emerald-400">
+                        <i class="fas fa-file-excel"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-base">Bulk Update & Upload CSV</h3>
+                        <p class="text-[11px] text-emerald-300 font-medium">വിവരങ്ങൾ ഒന്നിച്ച് അപ്‌ഡേറ്റ് ചെയ്യുക / പുതിയവ ചേർക്കുക</p>
+                    </div>
+                </div>
+                <button type="button" onclick="document.getElementById('bulkUploadModal').classList.remove('flex'); document.getElementById('bulkUploadModal').classList.add('hidden');" class="text-xl hover:text-rose-300 transition">&times;</button>
             </div>
-            <div class="p-6 bg-slate-50 text-sm overflow-y-auto">
-                <div class="mb-4">
-                    <label class="block text-xs font-bold text-slate-500 mb-2">Select Upload Type</label>
-                    <select id="csvUploadType" class="w-full border p-3 rounded-lg bg-white font-bold text-indigo-700 outline-none">
-                        <option value="students">1. Add New Students</option>
+            <div class="p-6 bg-slate-50 text-sm overflow-y-auto max-h-[80vh] space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 mb-1.5">Select Category / വിഭാഗം തിരഞ്ഞെടുക്കുക</label>
+                    <select id="csvUploadType" onchange="window.updateCSVModalUI()" class="w-full border p-3 rounded-xl bg-white font-bold text-indigo-700 outline-none shadow-sm cursor-pointer">
+                        <option value="students">1. Students (വിദ്യാർത്ഥികളുടെ വിവരങ്ങൾ & ഫീസ്)</option>
                         <option value="records">2. Disciplinary & Achievements</option>
                         <option value="leaves">3. Leaves (IN / OUT)</option>
                     </select>
                 </div>
-                <button onclick="window.downloadCSVTemplate()" class="mb-6 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 px-4 py-3 rounded-lg text-sm font-bold w-full transition shadow-sm">
-                    <i class="fas fa-download mr-2"></i> Download Selected Template
-                </button>
-                <div class="border-t pt-4">
-                    <label class="block text-xs font-bold text-slate-500 mb-2">Upload Filled CSV</label>
-                    <input type="file" id="csvFileInput" accept=".csv" class="w-full border p-2.5 rounded-lg bg-white mb-4 outline-none">
-                    <button onclick="window.handleCSVUpload()" class="w-full bg-[#064e3b] hover:bg-emerald-900 text-white font-bold py-3 rounded-xl transition shadow-md">Upload Data</button>
+
+                <!-- Template Download Section -->
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-2.5" id="csvTemplateBox">
+                    <label class="block text-xs font-extrabold text-slate-700 uppercase tracking-wide">Step 1: Download Template / ഫയൽ ഡൗൺലോഡ് ചെയ്യുക</label>
+                    
+                    <div id="studentTemplateButtons" class="space-y-2">
+                        <button type="button" onclick="window.downloadCurrentStudentsCSV()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-xl text-xs md:text-sm transition flex items-center justify-center gap-2 shadow cursor-pointer">
+                            <i class="fas fa-file-download text-base"></i> നിലവിലുള്ള വിവരങ്ങളടങ്ങിയ CSV ഡൗൺലോഡ് ചെയ്യുക
+                        </button>
+                        <p class="text-[11px] text-slate-500 leading-tight">
+                            💡 <b>ശുപാർശ ചെയ്യുന്നത്:</b> നിലവിലുള്ള എല്ലാ കുട്ടികളുടെയും വിവരങ്ങൾ ലഭിക്കും. ഫോൺ നമ്പർ തുടങ്ങിയ ബ്ലാങ്ക് ഭാഗങ്ങൾ പൂരിപ്പിച്ചോ വിവരങ്ങൾ മാറ്റിയോ വീണ്ടും അപ്‌ലോഡ് ചെയ്യാം.
+                        </p>
+                        <button type="button" onclick="window.downloadCSVTemplate()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 px-3 rounded-lg text-xs transition flex items-center justify-center gap-2 border border-slate-300 cursor-pointer">
+                            <i class="fas fa-file-csv text-slate-500"></i> പുതിയ കുട്ടികൾക്ക് മാത്രമുള്ള ബ്ലാങ്ക് സാമ്പിൾ ടെംപ്ലേറ്റ്
+                        </button>
+                    </div>
+
+                    <div id="generalTemplateButtons" class="hidden">
+                        <button type="button" onclick="window.downloadCSVTemplate()" class="w-full bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 px-4 py-3 rounded-xl text-xs md:text-sm font-bold transition flex items-center justify-center gap-2 shadow-sm cursor-pointer">
+                            <i class="fas fa-download mr-1"></i> Download Selected CSV Template
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Upload Section -->
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-3">
+                    <label class="block text-xs font-extrabold text-slate-700 uppercase tracking-wide">Step 2: Upload Filled CSV / പൂരിപ്പിച്ച ഫയൽ അപ്‌ലോഡ് ചെയ്യുക</label>
+                    <div id="studentUploadNote" class="bg-emerald-50 border border-emerald-200 rounded-lg p-3 text-[11px] text-emerald-900 leading-relaxed">
+                        <i class="fas fa-check-circle text-emerald-600 mr-1"></i>
+                        <b>ഓട്ടോമാറ്റിക് അപ്‌ഡേറ്റ്:</b> നിലവിലുള്ള അഡ്മിഷൻ നമ്പറാണെങ്കിൽ അവരുടെ വിവരങ്ങൾ (ഫോൺ നമ്പർ, ഫീസ് മുതലായവ) <b>അപ്‌ഡേറ്റ്</b> ആകും. പുതിയ അഡ്മിഷൻ നമ്പറാണെങ്കിൽ പുതിയ കുട്ടിയായി <b>ആഡ്</b> ചെയ്യപ്പെടും.
+                    </div>
+                    <input type="file" id="csvFileInput" accept=".csv" class="w-full border p-2.5 rounded-xl bg-slate-50 outline-none text-xs">
+                    <button type="button" onclick="window.handleCSVUpload()" class="w-full bg-[#022c22] hover:bg-emerald-900 text-white font-bold py-3.5 px-4 rounded-xl transition shadow-md flex items-center justify-center gap-2 cursor-pointer text-sm">
+                        <i class="fas fa-cloud-upload-alt text-base"></i> Upload & Update Database
+                    </button>
                 </div>
             </div>
         </div>
@@ -912,7 +948,7 @@
             return `
                 <div class="space-y-6 flex flex-col h-full"><div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4"><h2 class="text-2xl font-extrabold text-slate-800">Student Directory</h2><div class="flex flex-wrap gap-2 w-full md:w-auto">
                 ${window.currentUser.role === 'admin' || window.currentUser.role === 'admin1' ? `<button onclick="window.exportAttendanceCSV()" class="bg-emerald-50 text-emerald-700 border border-emerald-200 px-4 py-2 rounded-xl text-sm font-bold shadow-sm transition hover:bg-emerald-100"><i class="fas fa-download"></i> Attendance Report</button><button onclick="window.markAllMonthlyLeave()" class="bg-amber-100 text-amber-800 border px-4 py-2 rounded-xl text-sm font-bold shadow-sm transition"><i class="fas fa-home"></i> Monthly Leave</button>` : ''}
-                ${window.currentUser.role === 'admin' ? `<button onclick="document.getElementById('bulkUploadModal').classList.remove('hidden'); document.getElementById('bulkUploadModal').classList.add('flex');" class="bg-indigo-50 text-indigo-700 border px-4 py-2 rounded-xl text-sm font-bold transition">Bulk Upload</button><button onclick="document.getElementById('addStdModal').classList.remove('hidden'); document.getElementById('addStdModal').classList.add('flex');" class="bg-indigo-600 text-white px-4 py-2 rounded-xl text-sm font-bold shadow transition">Add Single Student</button>` : ''}
+                ${window.currentUser.role === 'admin' ? `<button onclick="document.getElementById('bulkUploadModal').classList.remove('hidden'); document.getElementById('bulkUploadModal').classList.add('flex'); if(window.updateCSVModalUI) window.updateCSVModalUI();" class="bg-indigo-50 text-indigo-700 border border-indigo-200 px-4 py-2 rounded-xl text-sm font-bold shadow-sm transition hover:bg-indigo-100 flex items-center gap-1.5"><i class="fas fa-file-excel"></i> Bulk Update & Upload</button><button onclick="document.getElementById('addStdModal').classList.remove('hidden'); document.getElementById('addStdModal').classList.add('flex');" class="bg-indigo-600 text-white px-4 py-2 rounded-xl text-sm font-bold shadow transition">Add Single Student</button>` : ''}
                 </div></div><div class="bg-white rounded-2xl shadow-sm border border-slate-200 flex-1 overflow-hidden flex flex-col"><div class="overflow-x-auto flex-1 p-0"><table class="w-full text-left text-sm whitespace-nowrap"><thead class="text-xs text-slate-500 uppercase bg-slate-100 sticky top-0"><tr><th class="p-4">Adm No</th><th class="p-4">Name</th><th class="p-4">Class</th><th class="p-4">Location</th><th class="p-4 text-center">Actions</th></tr></thead><tbody class="divide-y divide-slate-100">
                 ${db.students.map(s => `<tr class="hover:bg-slate-50"><td class="p-4 font-mono text-slate-500">${s.admNo}</td><td class="p-4 font-bold text-slate-800">${s.name}</td><td class="p-4">${s.class}</td><td class="p-4"><span class="px-2 py-1 rounded-md text-xs font-bold ${s.leaveStatus === 'In Campus' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}">${s.leaveStatus}</span></td><td class="p-4 text-center">
                 ${s.leaveStatus === 'On Leave' ? `<button onclick="window.markReturn('${s.admNo}')" class="bg-emerald-100 text-emerald-700 border border-emerald-200 px-3 py-1.5 rounded-lg text-xs font-bold mr-1 transition hover:bg-emerald-200">Report IN</button>` : `<button onclick="window.markLeave('${s.admNo}')" class="bg-amber-100 text-amber-700 border border-amber-200 px-3 py-1.5 rounded-lg text-xs font-bold mr-1 transition hover:bg-amber-200">Mark OUT</button>`}
@@ -1272,12 +1308,28 @@
                 phone = phone.replace(/\D/g, '');
             }
             if(phone.length === 10) phone = '91' + phone;
+            if(phone.length < 10) {
+                window.showToast("Invalid phone number. Please enter a valid 10-digit number.", "error");
+                return;
+            }
 
             const btn = document.getElementById('rcpWhatsAppBtn');
             const originalBtnHtml = btn ? btn.innerHTML : '';
             if (btn) {
                 btn.disabled = true;
                 btn.innerHTML = `<i class="fas fa-circle-notch fa-spin text-sm"></i> Generating Receipt Photo...`;
+            }
+
+            // IMPORTANT: Open WhatsApp window IMMEDIATELY in user gesture context
+            // to prevent popup blocker. We'll navigate it to the correct URL after async work.
+            let waWindow = null;
+            try {
+                waWindow = window.open('about:blank', '_blank');
+                if (waWindow) {
+                    waWindow.document.write('<html><body style="display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif;background:#f0fdf4;color:#064e3b;"><div style="text-align:center"><div style="font-size:48px;margin-bottom:16px">📤</div><h2>Preparing WhatsApp Message...</h2><p style="color:#6b7280">Receipt photo is being generated. Please wait.</p></div></body></html>');
+                }
+            } catch(winErr) {
+                console.warn("Could not pre-open window:", winErr);
             }
 
             try {
@@ -1299,6 +1351,8 @@
 
                 // 1. Mobile & Web Share API support (shares file + text caption directly)
                 if (navigator.canShare && navigator.canShare({ files: [receiptFile] })) {
+                    // Close the pre-opened window since we'll use native share
+                    if (waWindow && !waWindow.closed) { try { waWindow.close(); } catch(e){} }
                     try {
                         await navigator.share({
                             title: `Fee Receipt - ${data.name} (${data.receiptNo})`,
@@ -1349,8 +1403,19 @@
                     }
                 }
 
-                window.open(`https://wa.me/${phone}?text=${encodeURIComponent(finalMsg)}`, '_blank');
-                window.showToast("രസീത് ഫോട്ടോ ജനറേറ്റ് ചെയ്തു! WhatsApp തുറക്കുന്നു...", "success");
+                // Navigate the pre-opened window to WhatsApp (avoids popup block)
+                const waUrl = `https://wa.me/${phone}?text=${encodeURIComponent(finalMsg)}`;
+                if (waWindow && !waWindow.closed) {
+                    waWindow.location.href = waUrl;
+                } else {
+                    // Window was closed or blocked — try opening again, or use location.href
+                    try {
+                        window.open(waUrl, '_blank');
+                    } catch(e) {
+                        window.location.href = waUrl;
+                    }
+                }
+                window.showToast("രസീത് ഫോട്ടോ ജനറേറ്റ് ചെയ്തു! WhatsApp തുറക്കുന്നു...\nPhoto clipboard-ൽ copy ചെയ്തിട്ടുണ്ട്. WhatsApp-ൽ Ctrl+V / Paste ചെയ്യുക.", "success");
 
             } catch (err) {
                 console.error("Receipt sharing error:", err);
@@ -1363,7 +1428,12 @@
                     `💰 *അടച്ച തുക:* *₹${data.amount}*\n` +
                     `📉 *ബാക്കി കുടിശ്ശിക:* ₹${data.balance}\n\n` +
                     `നന്ദി!\n- KKHM Islamic & Arts College Office`;
-                window.open(`https://wa.me/${phone}?text=${encodeURIComponent(fallbackMsg)}`, '_blank');
+                const waUrl = `https://wa.me/${phone}?text=${encodeURIComponent(fallbackMsg)}`;
+                if (waWindow && !waWindow.closed) {
+                    waWindow.location.href = waUrl;
+                } else {
+                    try { window.open(waUrl, '_blank'); } catch(e) { window.location.href = waUrl; }
+                }
             } finally {
                 if (btn) {
                     btn.disabled = false;
@@ -1850,50 +1920,294 @@
         window.encodeFile = function(input, targetId) { const file = input.files[0]; if(file) { const reader = new FileReader(); reader.onload = async function(e) { const driveUrl = await window.uploadToDrive(e.target.result, file.name); if(driveUrl) { document.getElementById(targetId).value = driveUrl; window.showToast('File uploaded.'); } }; reader.readAsDataURL(file); } }
         window.saveSettings = function(e){ e.preventDefault(); const isVideo = document.querySelector('input[name="bgType"]:checked').value === 'video'; db.settings = { logo: document.getElementById('sLogo').value, bg: document.getElementById('sBg').value, isVideoBg: isVideo, bankName: document.getElementById('sBank').value, accName: document.getElementById('sAccN').value, accNo: document.getElementById('sAcc').value, ifsc: document.getElementById('sIfsc').value, upi: document.getElementById('sUpi').value, qrCodeUrl: document.getElementById('sQr').value }; window.saveDB(); window.initBranding(); window.showToast('Settings Saved'); }
 
-        window.downloadCSVTemplate = function() { const type = document.getElementById('csvUploadType').value; let headers, sample, filename; if (type === 'students') { headers = "adm No,password,name,class,yearly Fee,monthly Fee,total Paid,fee Start Date,due Day,phone\n"; sample = `1004,pass,Muhammed Ali,Plus Two CS,48000,4000,0,01 June 2026,25,9876543210\n`; filename = 'kkh_students_template.csv'; } else if (type === 'records') { headers = "adm No,record type (discipline/achievement),date,time (optional),note\n"; sample = `1004,discipline,04 Sep 2026,10:30 AM,Late for class\n`; filename = 'kkh_records_template.csv'; } else if (type === 'leaves') { headers = "adm No,action (OUT/IN),date,time (optional),reason (optional for IN)\n"; sample = `1004,OUT,04 Sep 2026,04:00 PM,Going home for weekend\n`; filename = 'kkh_leaves_template.csv'; } const blob = new Blob([headers + sample], { type: 'text/csv' }); const url = window.URL.createObjectURL(blob); const a = document.createElement('a'); a.setAttribute('href', url); a.setAttribute('download', filename); a.click(); }
-        
+        window.updateCSVModalUI = function() {
+            const type = document.getElementById('csvUploadType')?.value;
+            const stdBtns = document.getElementById('studentTemplateButtons');
+            const genBtns = document.getElementById('generalTemplateButtons');
+            const stdNote = document.getElementById('studentUploadNote');
+            if (type === 'students') {
+                if(stdBtns) stdBtns.classList.remove('hidden');
+                if(genBtns) genBtns.classList.add('hidden');
+                if(stdNote) stdNote.classList.remove('hidden');
+            } else {
+                if(stdBtns) stdBtns.classList.add('hidden');
+                if(genBtns) genBtns.classList.remove('hidden');
+                if(stdNote) stdNote.classList.add('hidden');
+            }
+        };
+
+        window.downloadCurrentStudentsCSV = function() {
+            if (!db.students || db.students.length === 0) {
+                alert("No students found in the database to export.");
+                return;
+            }
+            const headers = "adm No,name,class,phone,yearly Fee,monthly Fee,total Paid,fee Start Date,due Day,password\n";
+            const escapeCSV = (val) => {
+                if (val === undefined || val === null) return '';
+                let str = String(val).trim();
+                if (str.includes(',') || str.includes('"') || str.includes('\n') || str.includes('\r')) {
+                    return `"${str.replace(/"/g, '""')}"`;
+                }
+                return str;
+            };
+            const rows = db.students.map(s => {
+                return [
+                    escapeCSV(s.admNo),
+                    escapeCSV(s.name),
+                    escapeCSV(s.class),
+                    escapeCSV(s.phone || ''),
+                    escapeCSV(s.yearlyFee !== undefined ? s.yearlyFee : 0),
+                    escapeCSV(s.monthlyFee !== undefined ? s.monthlyFee : 0),
+                    escapeCSV(s.totalPaid !== undefined ? s.totalPaid : 0),
+                    escapeCSV(s.feeStartDate || '01 June 2026'),
+                    escapeCSV(s.dueDay !== undefined ? s.dueDay : 10),
+                    escapeCSV(s.password || 'pass')
+                ].join(',');
+            }).join('\n');
+
+            const blob = new Blob(["\uFEFF" + headers + rows], { type: 'text/csv;charset=utf-8;' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.setAttribute('href', url);
+            a.setAttribute('download', `KKHM_Students_Data_${new Date().toISOString().split('T')[0]}.csv`);
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            setTimeout(() => window.URL.revokeObjectURL(url), 2000);
+            window.showToast("Students data exported with existing values & blanks!", "success");
+        };
+
+        window.downloadCSVTemplate = function() {
+            const type = document.getElementById('csvUploadType').value;
+            let headers, sample, filename;
+            if (type === 'students') {
+                headers = "adm No,name,class,phone,yearly Fee,monthly Fee,total Paid,fee Start Date,due Day,password\n";
+                sample = `1004,Muhammed Ali,Plus Two CS,9876543210,48000,4000,0,01 June 2026,10,pass\n`;
+                filename = 'kkh_students_blank_template.csv';
+            } else if (type === 'records') {
+                headers = "adm No,record type (discipline/achievement),date,time (optional),note\n";
+                sample = `1004,discipline,04 Sep 2026,10:30 AM,Late for class\n`;
+                filename = 'kkh_records_template.csv';
+            } else if (type === 'leaves') {
+                headers = "adm No,action (OUT/IN),date,time (optional),reason (optional for IN)\n";
+                sample = `1004,OUT,04 Sep 2026,04:00 PM,Going home for weekend\n`;
+                filename = 'kkh_leaves_template.csv';
+            }
+            const blob = new Blob(["\uFEFF" + headers + sample], { type: 'text/csv;charset=utf-8;' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.setAttribute('href', url);
+            a.setAttribute('download', filename);
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            setTimeout(() => window.URL.revokeObjectURL(url), 2000);
+        };
+
+        window.parseCSVLine = function(line) {
+            const result = [];
+            let current = '';
+            let inQuotes = false;
+            for (let i = 0; i < line.length; i++) {
+                const char = line[i];
+                if (char === '"') {
+                    if (inQuotes && line[i + 1] === '"') {
+                        current += '"';
+                        i++;
+                    } else {
+                        inQuotes = !inQuotes;
+                    }
+                } else if (char === ',' && !inQuotes) {
+                    result.push(current.trim());
+                    current = '';
+                } else {
+                    current += char;
+                }
+            }
+            result.push(current.trim());
+            return result;
+        };
+
         window.handleCSVUpload = function() {
-            const file = document.getElementById('csvFileInput').files[0]; if (!file) return alert("Please select a CSV file first.");
+            const fileInput = document.getElementById('csvFileInput');
+            const file = fileInput.files[0];
+            if (!file) return alert("Please select a CSV file first.");
             const type = document.getElementById('csvUploadType').value;
             const reader = new FileReader();
             reader.onload = function(e) {
-                const text = e.target.result; const rows = text.split('\n'); let count = 0; let duplicates = 0;
-                for (let i = 1; i < rows.length; i++) {
-                    const rowStr = rows[i].trim(); if(!rowStr) continue;
-                    const cols = rowStr.split(',');
-                    if (cols.length >= 2 && cols[0].trim() !== '') {
-                        const adm = cols[0].trim();
-                        if (type === 'students') {
-                            if(!db.students.find(s => String(s.admNo).trim() === String(adm).trim())) {
-                                db.students.push({
-                                    admNo: adm, password: cols[1]?.trim() || 'pass', name: cols[2]?.trim(), class: cols[3]?.trim(),
-                                    yearlyFee: parseInt(cols[4]) || 0, monthlyFee: parseInt(cols[5]) || 0, totalPaid: parseInt(cols[6]) || 0,
-                                    feeStartDate: cols[7]?.trim() || '01 June 2026', dueDay: parseInt(cols[8]) || 10,
-                                    phone: cols[9]?.trim() || '', leaveStatus: 'In Campus', leaveHistory: [], disciplineRecords: [], achievements: [], examMarks: {}
-                                });
-                                count++;
-                            } else { duplicates++; }
-                        } else if (type === 'records') {
+                let text = e.target.result;
+                if (text.charCodeAt(0) === 0xFEFF) text = text.slice(1);
+                const lines = text.split(/\r?\n/).filter(line => line.trim().length > 0);
+                if (lines.length === 0) return alert("Selected file is empty.");
+
+                if (type === 'students') {
+                    let colAdm = 0, colName = 1, colClass = 2, colPhone = 3, colYearly = 4, colMonthly = 5, colPaid = 6, colStart = 7, colDue = 8, colPass = 9;
+                    let startIndex = 0;
+
+                    const firstLineCols = window.parseCSVLine(lines[0]);
+                    const headerStr = firstLineCols.map(c => c.toLowerCase().replace(/[^a-z0-9]/g, ''));
+                    
+                    const isHeader = headerStr.some(h => ['adm', 'admno', 'admissionno', 'name', 'studentname', 'class', 'phone', 'yearlyfee', 'password'].includes(h));
+                    
+                    if (isHeader) {
+                        startIndex = 1;
+                        headerStr.forEach((h, idx) => {
+                            if (['adm', 'admno', 'admissionno', 'admissionnumber', 'id'].includes(h)) colAdm = idx;
+                            else if (['name', 'studentname'].includes(h)) colName = idx;
+                            else if (['class', 'course', 'grade'].includes(h)) colClass = idx;
+                            else if (['phone', 'phonenumber', 'mobile', 'whatsapp', 'contact'].includes(h)) colPhone = idx;
+                            else if (['yearlyfee', 'yearly', 'annualfee', 'annual'].includes(h)) colYearly = idx;
+                            else if (['monthlyfee', 'monthly'].includes(h)) colMonthly = idx;
+                            else if (['totalpaid', 'paid', 'paidamount'].includes(h)) colPaid = idx;
+                            else if (['feestartdate', 'startdate', 'feestart'].includes(h)) colStart = idx;
+                            else if (['dueday', 'due', 'duedate'].includes(h)) colDue = idx;
+                            else if (['password', 'pass'].includes(h)) colPass = idx;
+                        });
+                    }
+
+                    let updatedCount = 0;
+                    let addedCount = 0;
+
+                    for (let i = startIndex; i < lines.length; i++) {
+                        const cols = window.parseCSVLine(lines[i]);
+                        if (!cols || cols.length === 0) continue;
+                        
+                        const adm = (cols[colAdm] || '').trim();
+                        if (!adm) continue;
+
+                        const name = (cols[colName] !== undefined ? cols[colName] : '').trim();
+                        const cls = (cols[colClass] !== undefined ? cols[colClass] : '').trim();
+                        const phone = (cols[colPhone] !== undefined ? cols[colPhone] : '').trim();
+                        const yearlyStr = cols[colYearly] !== undefined ? String(cols[colYearly]).replace(/[^0-9.-]/g, '') : '';
+                        const monthlyStr = cols[colMonthly] !== undefined ? String(cols[colMonthly]).replace(/[^0-9.-]/g, '') : '';
+                        const paidStr = cols[colPaid] !== undefined ? String(cols[colPaid]).replace(/[^0-9.-]/g, '') : '';
+                        const feeStartDate = (cols[colStart] !== undefined ? cols[colStart] : '').trim();
+                        const dueStr = cols[colDue] !== undefined ? String(cols[colDue]).replace(/[^0-9]/g, '') : '';
+                        const password = (cols[colPass] !== undefined ? cols[colPass] : '').trim();
+
+                        const existing = db.students.find(s => String(s.admNo).trim() === String(adm).trim());
+                        if (existing) {
+                            if (name) existing.name = name;
+                            if (cls) existing.class = cls;
+                            if (phone !== '') existing.phone = phone;
+                            if (yearlyStr !== '' && !isNaN(yearlyStr)) existing.yearlyFee = parseInt(yearlyStr);
+                            if (monthlyStr !== '' && !isNaN(monthlyStr)) existing.monthlyFee = parseInt(monthlyStr);
+                            if (paidStr !== '' && !isNaN(paidStr)) existing.totalPaid = parseInt(paidStr);
+                            if (feeStartDate) existing.feeStartDate = feeStartDate;
+                            if (dueStr !== '' && !isNaN(dueStr)) existing.dueDay = parseInt(dueStr);
+                            if (password) existing.password = password;
+                            updatedCount++;
+                        } else {
+                            db.students.push({
+                                admNo: adm,
+                                name: name || ('Student ' + adm),
+                                class: cls || '',
+                                phone: phone || '',
+                                yearlyFee: (yearlyStr !== '' && !isNaN(yearlyStr)) ? parseInt(yearlyStr) : 0,
+                                monthlyFee: (monthlyStr !== '' && !isNaN(monthlyStr)) ? parseInt(monthlyStr) : 0,
+                                totalPaid: (paidStr !== '' && !isNaN(paidStr)) ? parseInt(paidStr) : 0,
+                                feeStartDate: feeStartDate || '01 June 2026',
+                                dueDay: (dueStr !== '' && !isNaN(dueStr)) ? parseInt(dueStr) : 10,
+                                password: password || 'pass',
+                                leaveStatus: 'In Campus',
+                                leaveHistory: [],
+                                disciplineRecords: [],
+                                achievements: [],
+                                examMarks: {}
+                            });
+                            addedCount++;
+                        }
+                    }
+
+                    if (updatedCount > 0 || addedCount > 0) {
+                        window.saveDB();
+                        window.showToast(`ഡാറ്റ വിജയകരമായി അപ്‌ഡേറ്റ് ചെയ്തു! (${updatedCount} പേരെ അപ്‌ഡേറ്റ് ചെയ്തു, ${addedCount} പുതിയ കുട്ടികളെ ചേർത്തു)`, "success");
+                        alert(`വിജയകരമായി പൂർത്തിയായി!\n\n• അപ്‌ഡേറ്റ് ചെയ്തത് (Updated): ${updatedCount}\n• പുതുതായി ചേർത്തത് (Added): ${addedCount}`);
+                        document.getElementById('bulkUploadModal').classList.add('hidden');
+                        document.getElementById('bulkUploadModal').classList.remove('flex');
+                        fileInput.value = '';
+                        window.renderApp();
+                    } else {
+                        alert("No valid student records found in CSV to process.");
+                    }
+                } else if (type === 'records') {
+                    let count = 0;
+                    for (let i = 1; i < lines.length; i++) {
+                        const cols = window.parseCSVLine(lines[i]);
+                        if (cols.length >= 2 && cols[0].trim() !== '') {
+                            const adm = cols[0].trim();
                             const std = db.students.find(s => String(s.admNo).trim() === String(adm).trim());
                             if(std) {
-                                const recType = cols[1]?.trim().toLowerCase(); const date = cols[2]?.trim(); const time = cols[3]?.trim(); const note = cols.slice(4).join(',').trim(); const fullDate = time ? `${date} ${time}` : date;
-                                if (recType === 'discipline') { if(!std.disciplineRecords) std.disciplineRecords = []; std.disciplineRecords.push({ date: fullDate, note: note }); count++; }
-                                else if (recType === 'achievement') { if(!std.achievements) std.achievements = []; std.achievements.push({ date: fullDate, note: note }); count++; }
-                            }
-                        } else if (type === 'leaves') {
-                            const std = db.students.find(s => String(s.admNo).trim() === String(adm).trim());
-                            if(std) {
-                                const action = cols[1]?.trim().toUpperCase(); const date = cols[2]?.trim(); const time = cols[3]?.trim(); const reason = cols.slice(4).join(',').trim(); const fullDate = time ? `${date} ${time}` : date; 
-                                if(!std.leaveHistory) std.leaveHistory = [];
-                                if (action === 'OUT') { std.leaveStatus = 'On Leave'; std.leaveHistory.push({ dateOut: fullDate, reason: reason, dateIn: null }); count++; }
-                                else if (action === 'IN') { std.leaveStatus = 'In Campus'; const lastLeave = std.leaveHistory[std.leaveHistory.length - 1]; if(lastLeave && !lastLeave.dateIn) { lastLeave.dateIn = fullDate; count++; } }
+                                const recType = cols[1]?.trim().toLowerCase();
+                                const date = cols[2]?.trim();
+                                const time = cols[3]?.trim();
+                                const note = cols.slice(4).join(',').trim();
+                                const fullDate = time ? `${date} ${time}` : date;
+                                if (recType === 'discipline') {
+                                    if(!std.disciplineRecords) std.disciplineRecords = [];
+                                    std.disciplineRecords.push({ date: fullDate, note: note, addedBy: 'Bulk CSV' });
+                                    count++;
+                                } else if (recType === 'achievement') {
+                                    if(!std.achievements) std.achievements = [];
+                                    std.achievements.push({ date: fullDate, note: note, addedBy: 'Bulk CSV' });
+                                    count++;
+                                }
                             }
                         }
                     }
+                    if (count > 0) {
+                        window.saveDB();
+                        alert(`Successfully added ${count} records!`);
+                        document.getElementById('bulkUploadModal').classList.add('hidden');
+                        document.getElementById('bulkUploadModal').classList.remove('flex');
+                        fileInput.value = '';
+                        window.renderApp();
+                    } else {
+                        alert("No valid records found.");
+                    }
+                } else if (type === 'leaves') {
+                    let count = 0;
+                    for (let i = 1; i < lines.length; i++) {
+                        const cols = window.parseCSVLine(lines[i]);
+                        if (cols.length >= 2 && cols[0].trim() !== '') {
+                            const adm = cols[0].trim();
+                            const std = db.students.find(s => String(s.admNo).trim() === String(adm).trim());
+                            if(std) {
+                                const action = cols[1]?.trim().toUpperCase();
+                                const date = cols[2]?.trim();
+                                const time = cols[3]?.trim();
+                                const reason = cols.slice(4).join(',').trim();
+                                const fullDate = time ? `${date} ${time}` : date;
+                                if(!std.leaveHistory) std.leaveHistory = [];
+                                if (action === 'OUT') {
+                                    std.leaveStatus = 'On Leave';
+                                    std.leaveHistory.push({ dateOut: fullDate, reason: reason, dateIn: null });
+                                    count++;
+                                } else if (action === 'IN') {
+                                    std.leaveStatus = 'In Campus';
+                                    const lastLeave = std.leaveHistory[std.leaveHistory.length - 1];
+                                    if(lastLeave && !lastLeave.dateIn) {
+                                        lastLeave.dateIn = fullDate;
+                                        count++;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    if (count > 0) {
+                        window.saveDB();
+                        alert(`Successfully updated ${count} leave records!`);
+                        document.getElementById('bulkUploadModal').classList.add('hidden');
+                        document.getElementById('bulkUploadModal').classList.remove('flex');
+                        fileInput.value = '';
+                        window.renderApp();
+                    } else {
+                        alert("No valid records found.");
+                    }
                 }
-                if (count > 0) { window.saveDB(); if(type === 'students') alert(`Successfully added ${count} new students! ${duplicates > 0 ? '(' + duplicates + ' duplicates skipped)' : ''}`); else alert(`Successfully added ${count} records!`); document.getElementById('bulkUploadModal').classList.add('hidden'); document.getElementById('bulkUploadModal').classList.remove('flex'); window.renderApp(); } else { alert("No valid records found."); }
-            }; reader.readAsText(file);
-        }
+            };
+            reader.readAsText(file);
+        };
 
         // 10. PARENT PORTAL
         window.renderParentPortal = function() {
@@ -2109,11 +2423,13 @@
                 </head>
                 <body>
                     ${htmlContent}
-                    <script>window.onload = function() { window.print(); }<\/script>
                 </body>
                 </html>
             `);
             printWin.document.close();
+            setTimeout(() => {
+                try { printWin.focus(); printWin.print(); } catch(e) {}
+            }, 300);
         };
 
         window.printNoDue = function(admNo) {
