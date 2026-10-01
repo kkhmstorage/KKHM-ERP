@@ -12,6 +12,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8fafc; }
         .glass-panel { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.5); }
@@ -203,27 +204,27 @@
                     <label class="block text-xs font-extrabold text-slate-700 uppercase tracking-wide">📥 Step 1: Download / ഡൗൺലോഡ് ചെയ്യുക</label>
                     
                     <div id="studentTemplateButtons" class="space-y-2.5">
-                        <!-- Primary: Download with existing data -->
-                        <button type="button" onclick="window.downloadCurrentStudentsCSV()" class="w-full bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white font-bold py-3.5 px-4 rounded-xl text-sm transition-all flex items-center justify-center gap-2.5 shadow-md cursor-pointer active:scale-95">
-                            <i class="fas fa-file-download text-base"></i>
-                            <span>നിലവിലുള്ള വിദ്യാർത്ഥി ഡാറ്റ ഡൗൺലോഡ് (CSV)</span>
+                        <!-- Primary Excel Download -->
+                        <button type="button" onclick="window.downloadCurrentStudentsExcel()" class="w-full bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white font-bold py-3.5 px-4 rounded-xl text-sm transition-all flex items-center justify-center gap-2.5 shadow-md cursor-pointer active:scale-95">
+                            <i class="fas fa-file-excel text-base"></i>
+                            <span>നിലവിലുള്ള വിദ്യാർത്ഥി ഡാറ്റ ഡൗൺലോഡ് (.xlsx)</span>
                         </button>
                         <div class="bg-emerald-50 border border-emerald-200 rounded-lg p-3 text-[11px] text-emerald-900 leading-relaxed">
                             <p class="font-bold text-emerald-800 mb-1">📌 ഇതെങ്ങനെ ഉപയോഗിക്കണം:</p>
                             <ol class="list-decimal ml-4 space-y-1">
-                                <li>മുകളിലെ ബട്ടൺ അമർത്തി <b>CSV ഫയൽ</b> ഡൗൺലോഡ് ചെയ്യുക</li>
-                                <li>Excel / Google Sheets-ൽ ഫയൽ തുറന്ന് <b>ഫോൺ നമ്പർ, ഫീസ്</b> തുടങ്ങിയ വിവരങ്ങൾ ചേർക്കുക അല്ലെങ്കിൽ തിരുത്തുക</li>
-                                <li>ഫയൽ <b>CSV ഫോർമാറ്റിൽ</b> സേവ് ചെയ്ത് Step 2-ൽ അപ്‌ലോഡ് ചെയ്യുക</li>
+                                <li>മുകളിലെ ബട്ടൺ അമർത്തി <b>Excel ഫയൽ (.xlsx)</b> ഡൗൺലോഡ് ചെയ്യുക</li>
+                                <li>Excel / Google Sheets-ൽ <b>ഫോൺ നമ്പർ, ഫീസ്</b> തുടങ്ങിയ വിവരങ്ങൾ ചേർക്കുക അല്ലെങ്കിൽ തിരുത്തുക</li>
+                                <li>ഫയൽ <b>Excel (.xlsx) അല്ലെങ്കിൽ CSV</b> ആയി Save ചെയ്ത് Step 2-ൽ അപ്‌ലോഡ് ചെയ്യുക</li>
                             </ol>
                         </div>
-                        <button type="button" onclick="window.downloadCSVTemplate()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 px-3 rounded-lg text-xs transition flex items-center justify-center gap-2 border border-slate-300 cursor-pointer">
-                            <i class="fas fa-file-csv text-slate-500"></i> പുതിയ കുട്ടികൾക്ക് മാത്രം — ബ്ലാങ്ക് ടെംപ്ലേറ്റ് ഡൗൺലോഡ്
+                        <button type="button" onclick="window.downloadExcelTemplate()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 px-3 rounded-lg text-xs transition flex items-center justify-center gap-2 border border-slate-300 cursor-pointer">
+                            <i class="fas fa-file-excel text-green-600"></i> പുതിയ കുട്ടികൾക്ക് മാത്രം — ബ്ലാങ്ക് Excel ടെംപ്ലേറ്റ്
                         </button>
                     </div>
 
                     <div id="generalTemplateButtons" class="hidden">
-                        <button type="button" onclick="window.downloadCSVTemplate()" class="w-full bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 px-4 py-3 rounded-xl text-xs md:text-sm font-bold transition flex items-center justify-center gap-2 shadow-sm cursor-pointer">
-                            <i class="fas fa-download mr-1"></i> Download Selected CSV Template
+                        <button type="button" onclick="window.downloadExcelTemplate()" class="w-full bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 px-4 py-3 rounded-xl text-xs md:text-sm font-bold transition flex items-center justify-center gap-2 shadow-sm cursor-pointer">
+                            <i class="fas fa-file-excel text-green-600 mr-1"></i> Download Selected Excel Template
                         </button>
                     </div>
                 </div>
@@ -234,11 +235,12 @@
                     <div id="studentUploadNote" class="bg-blue-50 border border-blue-200 rounded-lg p-3 text-[11px] text-blue-900 leading-relaxed">
                         <i class="fas fa-info-circle text-blue-600 mr-1"></i>
                         <b>ഓട്ടോ അപ്‌ഡേറ്റ്:</b> നിലവിലുള്ള അഡ്മിഷൻ നമ്പർ ആണെങ്കിൽ → <b>അപ്‌ഡേറ്റ്</b> ആകും. പുതിയ നമ്പർ ആണെങ്കിൽ → <b>പുതിയ കുട്ടിയായി ചേർക്കും.</b>
+                        <span class="block mt-1 text-blue-700"><i class="fas fa-check-circle mr-1"></i><b>.xlsx (Excel)</b> അല്ലെങ്കിൽ <b>.csv</b> ഫയൽ upload ചെയ്യാം.</span>
                     </div>
                     <div class="border-2 border-dashed border-slate-300 rounded-xl p-3 text-center cursor-pointer hover:border-emerald-400 hover:bg-emerald-50/50 transition-all" onclick="document.getElementById('csvFileInput').click()">
                         <i class="fas fa-cloud-upload-alt text-2xl text-slate-400 mb-1"></i>
-                        <p class="text-xs font-bold text-slate-500">CSV ഫയൽ ഇവിടെ ക്ലിക്ക് ചെയ്ത് തിരഞ്ഞെടുക്കുക</p>
-                        <input type="file" id="csvFileInput" accept=".csv" class="hidden" onchange="this.parentElement.querySelector('p').textContent = this.files[0]?.name || 'CSV ഫയൽ ഇവിടെ ക്ലിക്ക് ചെയ്ത് തിരഞ്ഞെടുക്കുക'">
+                        <p class="text-xs font-bold text-slate-500" id="filePickerLabel">Excel (.xlsx) അല്ലെങ്കിൽ CSV ഫയൽ ഇവിടെ ക്ലിക്ക് ചെയ്ത് തിരഞ്ഞെടുക്കുക</p>
+                        <input type="file" id="csvFileInput" accept=".xlsx,.xls,.csv" class="hidden" onchange="document.getElementById('filePickerLabel').textContent = this.files[0]?.name || 'Excel (.xlsx) അല്ലെങ്കിൽ CSV ഫയൽ ഇവിടെ ക്ലിക്ക് ചെയ്ത് തിരഞ്ഞെടുക്കുക'">
                     </div>
                     <button type="button" onclick="window.handleCSVUpload()" class="w-full bg-gradient-to-r from-[#022c22] to-emerald-900 hover:from-emerald-900 hover:to-[#022c22] text-white font-bold py-3.5 px-4 rounded-xl transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer text-sm active:scale-95">
                         <i class="fas fa-cloud-upload-alt text-base"></i> Upload & Update Database
@@ -1994,73 +1996,89 @@
             }
         };
 
-        window.downloadCurrentStudentsCSV = function() {
-            if (!db.students || db.students.length === 0) {
-                alert("No students found in the database to export.");
-                return;
-            }
-            const headers = "adm No,name,class,phone,yearly Fee,monthly Fee,total Paid,fee Start Date,due Day,password\n";
-            const escapeCSV = (val) => {
-                if (val === undefined || val === null) return '';
-                let str = String(val).trim();
-                if (str.includes(',') || str.includes('"') || str.includes('\n') || str.includes('\r')) {
-                    return `"${str.replace(/"/g, '""')}"`;
-                }
-                return str;
-            };
-            const rows = db.students.map(s => {
-                return [
-                    escapeCSV(s.admNo),
-                    escapeCSV(s.name),
-                    escapeCSV(s.class),
-                    escapeCSV(s.phone || ''),
-                    escapeCSV(s.yearlyFee !== undefined ? s.yearlyFee : 0),
-                    escapeCSV(s.monthlyFee !== undefined ? s.monthlyFee : 0),
-                    escapeCSV(s.totalPaid !== undefined ? s.totalPaid : 0),
-                    escapeCSV(s.feeStartDate || '01 June 2026'),
-                    escapeCSV(s.dueDay !== undefined ? s.dueDay : 10),
-                    escapeCSV(s.password || 'pass')
-                ].join(',');
-            }).join('\n');
-
-            const blob = new Blob(["\uFEFF" + headers + rows], { type: 'text/csv;charset=utf-8;' });
-            const url = window.URL.createObjectURL(blob);
+        // ── Excel helper: download ArrayBuffer as file ──────────────────────
+        window._xlsxDownload = function(wb, filename) {
+            const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+            const blob = new Blob([wbout], { type: 'application/octet-stream' });
+            const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
-            a.setAttribute('href', url);
-            a.setAttribute('download', `KKHM_Students_Data_${new Date().toISOString().split('T')[0]}.csv`);
-            document.body.appendChild(a);
-            a.click();
+            a.href = url; a.download = filename;
+            document.body.appendChild(a); a.click();
             document.body.removeChild(a);
-            setTimeout(() => window.URL.revokeObjectURL(url), 2000);
-            window.showToast("Students data exported with existing values & blanks!", "success");
+            setTimeout(() => URL.revokeObjectURL(url), 2000);
         };
 
-        window.downloadCSVTemplate = function() {
+        // ── Download existing students as Excel ──────────────────────────────
+        window.downloadCurrentStudentsExcel = function() {
+            if (!db.students || db.students.length === 0) {
+                alert('No students found in the database to export.');
+                return;
+            }
+            if (typeof XLSX === 'undefined') {
+                alert('Excel library not loaded yet. Please wait a moment and try again.');
+                return;
+            }
+            const headers = ['Adm No', 'Name', 'Class', 'Phone', 'Yearly Fee', 'Monthly Fee', 'Total Paid', 'Fee Start Date', 'Due Day', 'Password'];
+            const rows = db.students.map(s => [
+                s.admNo || '',
+                s.name || '',
+                s.class || '',
+                s.phone || '',
+                s.yearlyFee !== undefined ? s.yearlyFee : 0,
+                s.monthlyFee !== undefined ? s.monthlyFee : 0,
+                s.totalPaid !== undefined ? s.totalPaid : 0,
+                s.feeStartDate || '01 June 2026',
+                s.dueDay !== undefined ? s.dueDay : 10,
+                s.password || 'pass'
+            ]);
+            const ws = XLSX.utils.aoa_to_sheet([headers, ...rows]);
+            // Style header row bold & green background
+            const range = XLSX.utils.decode_range(ws['!ref']);
+            for (let C = range.s.c; C <= range.e.c; C++) {
+                const cell = ws[XLSX.utils.encode_cell({ r: 0, c: C })];
+                if (cell) { cell.s = { font: { bold: true }, fill: { fgColor: { rgb: '064E3B' } }, fontColor: { rgb: 'FFFFFF' } }; }
+            }
+            // Set column widths
+            ws['!cols'] = [{ wch: 10 }, { wch: 28 }, { wch: 20 }, { wch: 15 }, { wch: 14 }, { wch: 16 }, { wch: 13 }, { wch: 18 }, { wch: 10 }, { wch: 12 }];
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'Students');
+            window._xlsxDownload(wb, `KKHM_Students_Data_${new Date().toISOString().split('T')[0]}.xlsx`);
+            window.showToast('Excel ഫയൽ ഡൗൺലോഡ് ആയി! (.xlsx)', 'success');
+        };
+
+        // Keep CSV export too (used internally if needed)
+        window.downloadCurrentStudentsCSV = window.downloadCurrentStudentsExcel;
+
+        // ── Download blank Excel template ────────────────────────────────────
+        window.downloadExcelTemplate = function() {
+            if (typeof XLSX === 'undefined') {
+                alert('Excel library not loaded yet. Please wait a moment and try again.');
+                return;
+            }
             const type = document.getElementById('csvUploadType').value;
             let headers, sample, filename;
             if (type === 'students') {
-                headers = "adm No,name,class,phone,yearly Fee,monthly Fee,total Paid,fee Start Date,due Day,password\n";
-                sample = `1004,Muhammed Ali,Plus Two CS,9876543210,48000,4000,0,01 June 2026,10,pass\n`;
-                filename = 'kkh_students_blank_template.csv';
+                headers = ['Adm No', 'Name', 'Class', 'Phone', 'Yearly Fee', 'Monthly Fee', 'Total Paid', 'Fee Start Date', 'Due Day', 'Password'];
+                sample  = [['1004', 'Muhammed Ali', 'Plus Two CS', '9876543210', 48000, 4000, 0, '01 June 2026', 10, 'pass']];
+                filename = 'kkh_students_blank_template.xlsx';
             } else if (type === 'records') {
-                headers = "adm No,record type (discipline/achievement),date,time (optional),note\n";
-                sample = `1004,discipline,04 Sep 2026,10:30 AM,Late for class\n`;
-                filename = 'kkh_records_template.csv';
+                headers = ['Adm No', 'Record Type (discipline/achievement)', 'Date', 'Time (optional)', 'Note'];
+                sample  = [['1004', 'discipline', '04 Sep 2026', '10:30 AM', 'Late for class']];
+                filename = 'kkh_records_template.xlsx';
             } else if (type === 'leaves') {
-                headers = "adm No,action (OUT/IN),date,time (optional),reason (optional for IN)\n";
-                sample = `1004,OUT,04 Sep 2026,04:00 PM,Going home for weekend\n`;
-                filename = 'kkh_leaves_template.csv';
+                headers = ['Adm No', 'Action (OUT/IN)', 'Date', 'Time (optional)', 'Reason (optional for IN)'];
+                sample  = [['1004', 'OUT', '04 Sep 2026', '04:00 PM', 'Going home for weekend']];
+                filename = 'kkh_leaves_template.xlsx';
             }
-            const blob = new Blob(["\uFEFF" + headers + sample], { type: 'text/csv;charset=utf-8;' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.setAttribute('href', url);
-            a.setAttribute('download', filename);
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            setTimeout(() => window.URL.revokeObjectURL(url), 2000);
+            const ws = XLSX.utils.aoa_to_sheet([headers, ...sample]);
+            ws['!cols'] = headers.map(() => ({ wch: 22 }));
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'Template');
+            window._xlsxDownload(wb, filename);
         };
+
+        // Keep old name as alias
+        window.downloadCSVTemplate = window.downloadExcelTemplate;
 
         window.parseCSVLine = function(line) {
             const result = [];
@@ -2086,29 +2104,65 @@
             return result;
         };
 
+        // ── Parse any uploaded sheet into array-of-arrays ───────────────────
+        window._parseUploadedFile = function(file, callback) {
+            const isExcel = /\.(xlsx|xls)$/i.test(file.name);
+            const reader = new FileReader();
+            if (isExcel) {
+                reader.onload = function(e) {
+                    const data = new Uint8Array(e.target.result);
+                    const wb = XLSX.read(data, { type: 'array', cellText: true, cellDates: false });
+                    const ws = wb.Sheets[wb.SheetNames[0]];
+                    const rows = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '', raw: false });
+                    callback(null, rows);
+                };
+                reader.onerror = () => callback('File read error');
+                reader.readAsArrayBuffer(file);
+            } else {
+                reader.onload = function(e) {
+                    let text = e.target.result;
+                    if (text.charCodeAt(0) === 0xFEFF) text = text.slice(1);
+                    const lines = text.split(/\r?\n/).filter(l => l.trim().length > 0);
+                    const rows = lines.map(l => window.parseCSVLine(l));
+                    callback(null, rows);
+                };
+                reader.onerror = () => callback('File read error');
+                reader.readAsText(file, 'UTF-8');
+            }
+        };
+
         window.handleCSVUpload = function() {
             const fileInput = document.getElementById('csvFileInput');
             const file = fileInput.files[0];
-            if (!file) return alert("Please select a CSV file first.");
+            if (!file) return alert('Excel (.xlsx) അല്ലെങ്കിൽ CSV ഫയൽ ആദ്യം തിരഞ്ഞെടുക്കുക.');
+            if (typeof XLSX === 'undefined') {
+                alert('Excel library not loaded yet. Please wait a moment and try again.');
+                return;
+            }
             const type = document.getElementById('csvUploadType').value;
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                let text = e.target.result;
-                if (text.charCodeAt(0) === 0xFEFF) text = text.slice(1);
-                const lines = text.split(/\r?\n/).filter(line => line.trim().length > 0);
-                if (lines.length === 0) return alert("Selected file is empty.");
+            window._parseUploadedFile(file, function(err, allRows) {
+                if (err) return alert('File read error: ' + err);
+                if (!allRows || allRows.length === 0) return alert('Selected file is empty.');
+                const lines = allRows; // array of arrays
+                const getLinesAsText = () => lines; // alias for compatibility
+                // Re-route to inner logic using rows
+                window._processUploadRows(type, lines, fileInput);
+            });
+        };
 
-                if (type === 'students') {
+        window._processUploadRows = function(type, allRows, fileInput) {
+            if (allRows.length === 0) return alert('Selected file is empty.');
+            // Convert rows to simulate old text-based flow using column arrays
+            const parseRow = (row) => row.map(c => (c === undefined || c === null) ? '' : String(c).trim());
+            const firstRow = parseRow(allRows[0]);
+            const headerStr = firstRow.map(c => c.toLowerCase().replace(/[^a-z0-9]/g, ''));
+            const isHeader = headerStr.some(h => ['adm','admno','admissionno','name','studentname','class','phone','yearlyfee','password','action','recordtype'].includes(h));
+            const startIndex = isHeader ? 1 : 0;
+
+            if (type === 'students') {
                     let colAdm = 0, colName = 1, colClass = 2, colPhone = 3, colYearly = 4, colMonthly = 5, colPaid = 6, colStart = 7, colDue = 8, colPass = 9;
-                    let startIndex = 0;
 
-                    const firstLineCols = window.parseCSVLine(lines[0]);
-                    const headerStr = firstLineCols.map(c => c.toLowerCase().replace(/[^a-z0-9]/g, ''));
-                    
-                    const isHeader = headerStr.some(h => ['adm', 'admno', 'admissionno', 'name', 'studentname', 'class', 'phone', 'yearlyfee', 'password'].includes(h));
-                    
                     if (isHeader) {
-                        startIndex = 1;
                         headerStr.forEach((h, idx) => {
                             if (['adm', 'admno', 'admissionno', 'admissionnumber', 'id'].includes(h)) colAdm = idx;
                             else if (['name', 'studentname'].includes(h)) colName = idx;
@@ -2126,10 +2180,10 @@
                     let updatedCount = 0;
                     let addedCount = 0;
 
-                    for (let i = startIndex; i < lines.length; i++) {
-                        const cols = window.parseCSVLine(lines[i]);
+                    for (let i = startIndex; i < allRows.length; i++) {
+                        const cols = parseRow(allRows[i]);
                         if (!cols || cols.length === 0) continue;
-                        
+
                         const adm = (cols[colAdm] || '').trim();
                         if (!adm) continue;
 
@@ -2179,35 +2233,35 @@
 
                     if (updatedCount > 0 || addedCount > 0) {
                         window.saveDB();
-                        window.showToast(`ഡാറ്റ വിജയകരമായി അപ്‌ഡേറ്റ് ചെയ്തു! (${updatedCount} പേരെ അപ്‌ഡേറ്റ് ചെയ്തു, ${addedCount} പുതിയ കുട്ടികളെ ചേർത്തു)`, "success");
-                        alert(`വിജയകരമായി പൂർത്തിയായി!\n\n• അപ്‌ഡേറ്റ് ചെയ്തത് (Updated): ${updatedCount}\n• പുതുതായി ചേർത്തത് (Added): ${addedCount}`);
+                        window.showToast(`ഡാറ്റ വിജയകരമായി അപ്‌ഡേറ്റ് ചെയ്തു! (${updatedCount} Updated, ${addedCount} Added)`, 'success');
+                        alert(`വിജയകരമായി പൂർത്തിയായി!\n\n• അപ്‌ഡേറ്റ് ചെയ്തത്: ${updatedCount}\n• പുതുതായി ചേർത്തത്: ${addedCount}`);
                         document.getElementById('bulkUploadModal').classList.add('hidden');
                         document.getElementById('bulkUploadModal').classList.remove('flex');
-                        fileInput.value = '';
+                        if (fileInput) fileInput.value = '';
                         window.renderApp();
                     } else {
-                        alert("No valid student records found in CSV to process.");
+                        alert('No valid student records found in file to process.');
                     }
                 } else if (type === 'records') {
                     let count = 0;
-                    for (let i = 1; i < lines.length; i++) {
-                        const cols = window.parseCSVLine(lines[i]);
-                        if (cols.length >= 2 && cols[0].trim() !== '') {
+                    for (let i = startIndex; i < allRows.length; i++) {
+                        const cols = parseRow(allRows[i]);
+                        if (cols.length >= 2 && cols[0] !== '') {
                             const adm = cols[0].trim();
                             const std = db.students.find(s => String(s.admNo).trim() === String(adm).trim());
-                            if(std) {
-                                const recType = cols[1]?.trim().toLowerCase();
-                                const date = cols[2]?.trim();
-                                const time = cols[3]?.trim();
-                                const note = cols.slice(4).join(',').trim();
+                            if (std) {
+                                const recType = (cols[1] || '').trim().toLowerCase();
+                                const date = (cols[2] || '').trim();
+                                const time = (cols[3] || '').trim();
+                                const note = cols.slice(4).join(' ').trim();
                                 const fullDate = time ? `${date} ${time}` : date;
                                 if (recType === 'discipline') {
-                                    if(!std.disciplineRecords) std.disciplineRecords = [];
-                                    std.disciplineRecords.push({ date: fullDate, note: note, addedBy: 'Bulk CSV' });
+                                    if (!std.disciplineRecords) std.disciplineRecords = [];
+                                    std.disciplineRecords.push({ date: fullDate, note: note, addedBy: 'Bulk Upload' });
                                     count++;
                                 } else if (recType === 'achievement') {
-                                    if(!std.achievements) std.achievements = [];
-                                    std.achievements.push({ date: fullDate, note: note, addedBy: 'Bulk CSV' });
+                                    if (!std.achievements) std.achievements = [];
+                                    std.achievements.push({ date: fullDate, note: note, addedBy: 'Bulk Upload' });
                                     count++;
                                 }
                             }
@@ -2218,25 +2272,25 @@
                         alert(`Successfully added ${count} records!`);
                         document.getElementById('bulkUploadModal').classList.add('hidden');
                         document.getElementById('bulkUploadModal').classList.remove('flex');
-                        fileInput.value = '';
+                        if (fileInput) fileInput.value = '';
                         window.renderApp();
                     } else {
-                        alert("No valid records found.");
+                        alert('No valid records found.');
                     }
                 } else if (type === 'leaves') {
                     let count = 0;
-                    for (let i = 1; i < lines.length; i++) {
-                        const cols = window.parseCSVLine(lines[i]);
-                        if (cols.length >= 2 && cols[0].trim() !== '') {
+                    for (let i = startIndex; i < allRows.length; i++) {
+                        const cols = parseRow(allRows[i]);
+                        if (cols.length >= 2 && cols[0] !== '') {
                             const adm = cols[0].trim();
                             const std = db.students.find(s => String(s.admNo).trim() === String(adm).trim());
-                            if(std) {
-                                const action = cols[1]?.trim().toUpperCase();
-                                const date = cols[2]?.trim();
-                                const time = cols[3]?.trim();
-                                const reason = cols.slice(4).join(',').trim();
+                            if (std) {
+                                const action = (cols[1] || '').trim().toUpperCase();
+                                const date = (cols[2] || '').trim();
+                                const time = (cols[3] || '').trim();
+                                const reason = cols.slice(4).join(' ').trim();
                                 const fullDate = time ? `${date} ${time}` : date;
-                                if(!std.leaveHistory) std.leaveHistory = [];
+                                if (!std.leaveHistory) std.leaveHistory = [];
                                 if (action === 'OUT') {
                                     std.leaveStatus = 'On Leave';
                                     std.leaveHistory.push({ dateOut: fullDate, reason: reason, dateIn: null });
@@ -2244,10 +2298,7 @@
                                 } else if (action === 'IN') {
                                     std.leaveStatus = 'In Campus';
                                     const lastLeave = std.leaveHistory[std.leaveHistory.length - 1];
-                                    if(lastLeave && !lastLeave.dateIn) {
-                                        lastLeave.dateIn = fullDate;
-                                        count++;
-                                    }
+                                    if (lastLeave && !lastLeave.dateIn) { lastLeave.dateIn = fullDate; count++; }
                                 }
                             }
                         }
@@ -2257,14 +2308,13 @@
                         alert(`Successfully updated ${count} leave records!`);
                         document.getElementById('bulkUploadModal').classList.add('hidden');
                         document.getElementById('bulkUploadModal').classList.remove('flex');
-                        fileInput.value = '';
+                        if (fileInput) fileInput.value = '';
                         window.renderApp();
                     } else {
-                        alert("No valid records found.");
+                        alert('No valid leave records found.');
                     }
                 }
-            };
-            reader.readAsText(file);
+        };
         };
 
         // 10. PARENT PORTAL
