@@ -30,10 +30,15 @@
 
     <!-- Loaders & Overlays -->
     <div id="dbLoader" class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#022c22] text-white transition-opacity duration-500">
-        <div class="w-[90vw] max-w-[480px] aspect-video rounded-2xl overflow-hidden shadow-2xl mb-6 border-2 border-emerald-500/30">
-            <video autoplay muted playsinline loop class="w-full h-full object-cover"
-                src="https://drive.google.com/uc?export=download&id=1Dwq4WwBVD5qhzodZBRIKyiyTutt41yHs">
-            </video>
+        <div class="w-[90vw] max-w-[520px] aspect-video rounded-2xl overflow-hidden shadow-2xl mb-6 border-2 border-emerald-500/30">
+            <iframe
+                src="https://www.youtube.com/embed/lSaww566c4Y?autoplay=1&mute=1&loop=1&playlist=lSaww566c4Y&controls=0&rel=0&showinfo=0&disablekb=1&iv_load_policy=3&modestbranding=1"
+                class="w-full h-full"
+                allow="autoplay; encrypted-media"
+                allowfullscreen
+                frameborder="0"
+                title="KKHM Intro Video">
+            </iframe>
         </div>
         <i class="fas fa-circle-notch fa-spin text-4xl text-emerald-400 mb-3"></i>
         <p class="text-sm text-emerald-200 mt-2 font-bold animate-pulse px-4 text-center">Connecting to Secure Cloud Database...</p>
@@ -194,18 +199,25 @@
                 </div>
 
                 <!-- Template Download Section -->
-                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-2.5" id="csvTemplateBox">
-                    <label class="block text-xs font-extrabold text-slate-700 uppercase tracking-wide">Step 1: Download Template / ഫയൽ ഡൗൺലോഡ് ചെയ്യുക</label>
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-3" id="csvTemplateBox">
+                    <label class="block text-xs font-extrabold text-slate-700 uppercase tracking-wide">📥 Step 1: Download / ഡൗൺലോഡ് ചെയ്യുക</label>
                     
-                    <div id="studentTemplateButtons" class="space-y-2">
-                        <button type="button" onclick="window.downloadCurrentStudentsCSV()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-xl text-xs md:text-sm transition flex items-center justify-center gap-2 shadow cursor-pointer">
-                            <i class="fas fa-file-download text-base"></i> നിലവിലുള്ള വിവരങ്ങളടങ്ങിയ CSV ഡൗൺലോഡ് ചെയ്യുക
+                    <div id="studentTemplateButtons" class="space-y-2.5">
+                        <!-- Primary: Download with existing data -->
+                        <button type="button" onclick="window.downloadCurrentStudentsCSV()" class="w-full bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white font-bold py-3.5 px-4 rounded-xl text-sm transition-all flex items-center justify-center gap-2.5 shadow-md cursor-pointer active:scale-95">
+                            <i class="fas fa-file-download text-base"></i>
+                            <span>നിലവിലുള്ള വിദ്യാർത്ഥി ഡാറ്റ ഡൗൺലോഡ് (CSV)</span>
                         </button>
-                        <p class="text-[11px] text-slate-500 leading-tight">
-                            💡 <b>ശുപാർശ ചെയ്യുന്നത്:</b> നിലവിലുള്ള എല്ലാ കുട്ടികളുടെയും വിവരങ്ങൾ ലഭിക്കും. ഫോൺ നമ്പർ തുടങ്ങിയ ബ്ലാങ്ക് ഭാഗങ്ങൾ പൂരിപ്പിച്ചോ വിവരങ്ങൾ മാറ്റിയോ വീണ്ടും അപ്‌ലോഡ് ചെയ്യാം.
-                        </p>
+                        <div class="bg-emerald-50 border border-emerald-200 rounded-lg p-3 text-[11px] text-emerald-900 leading-relaxed">
+                            <p class="font-bold text-emerald-800 mb-1">📌 ഇതെങ്ങനെ ഉപയോഗിക്കണം:</p>
+                            <ol class="list-decimal ml-4 space-y-1">
+                                <li>മുകളിലെ ബട്ടൺ അമർത്തി <b>CSV ഫയൽ</b> ഡൗൺലോഡ് ചെയ്യുക</li>
+                                <li>Excel / Google Sheets-ൽ ഫയൽ തുറന്ന് <b>ഫോൺ നമ്പർ, ഫീസ്</b> തുടങ്ങിയ വിവരങ്ങൾ ചേർക്കുക അല്ലെങ്കിൽ തിരുത്തുക</li>
+                                <li>ഫയൽ <b>CSV ഫോർമാറ്റിൽ</b> സേവ് ചെയ്ത് Step 2-ൽ അപ്‌ലോഡ് ചെയ്യുക</li>
+                            </ol>
+                        </div>
                         <button type="button" onclick="window.downloadCSVTemplate()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 px-3 rounded-lg text-xs transition flex items-center justify-center gap-2 border border-slate-300 cursor-pointer">
-                            <i class="fas fa-file-csv text-slate-500"></i> പുതിയ കുട്ടികൾക്ക് മാത്രമുള്ള ബ്ലാങ്ക് സാമ്പിൾ ടെംപ്ലേറ്റ്
+                            <i class="fas fa-file-csv text-slate-500"></i> പുതിയ കുട്ടികൾക്ക് മാത്രം — ബ്ലാങ്ക് ടെംപ്ലേറ്റ് ഡൗൺലോഡ്
                         </button>
                     </div>
 
@@ -218,13 +230,17 @@
 
                 <!-- Upload Section -->
                 <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-3">
-                    <label class="block text-xs font-extrabold text-slate-700 uppercase tracking-wide">Step 2: Upload Filled CSV / പൂരിപ്പിച്ച ഫയൽ അപ്‌ലോഡ് ചെയ്യുക</label>
-                    <div id="studentUploadNote" class="bg-emerald-50 border border-emerald-200 rounded-lg p-3 text-[11px] text-emerald-900 leading-relaxed">
-                        <i class="fas fa-check-circle text-emerald-600 mr-1"></i>
-                        <b>ഓട്ടോമാറ്റിക് അപ്‌ഡേറ്റ്:</b> നിലവിലുള്ള അഡ്മിഷൻ നമ്പറാണെങ്കിൽ അവരുടെ വിവരങ്ങൾ (ഫോൺ നമ്പർ, ഫീസ് മുതലായവ) <b>അപ്‌ഡേറ്റ്</b> ആകും. പുതിയ അഡ്മിഷൻ നമ്പറാണെങ്കിൽ പുതിയ കുട്ടിയായി <b>ആഡ്</b> ചെയ്യപ്പെടും.
+                    <label class="block text-xs font-extrabold text-slate-700 uppercase tracking-wide">📤 Step 2: Upload / അപ്‌ലോഡ് ചെയ്യുക</label>
+                    <div id="studentUploadNote" class="bg-blue-50 border border-blue-200 rounded-lg p-3 text-[11px] text-blue-900 leading-relaxed">
+                        <i class="fas fa-info-circle text-blue-600 mr-1"></i>
+                        <b>ഓട്ടോ അപ്‌ഡേറ്റ്:</b> നിലവിലുള്ള അഡ്മിഷൻ നമ്പർ ആണെങ്കിൽ → <b>അപ്‌ഡേറ്റ്</b> ആകും. പുതിയ നമ്പർ ആണെങ്കിൽ → <b>പുതിയ കുട്ടിയായി ചേർക്കും.</b>
                     </div>
-                    <input type="file" id="csvFileInput" accept=".csv" class="w-full border p-2.5 rounded-xl bg-slate-50 outline-none text-xs">
-                    <button type="button" onclick="window.handleCSVUpload()" class="w-full bg-[#022c22] hover:bg-emerald-900 text-white font-bold py-3.5 px-4 rounded-xl transition shadow-md flex items-center justify-center gap-2 cursor-pointer text-sm">
+                    <div class="border-2 border-dashed border-slate-300 rounded-xl p-3 text-center cursor-pointer hover:border-emerald-400 hover:bg-emerald-50/50 transition-all" onclick="document.getElementById('csvFileInput').click()">
+                        <i class="fas fa-cloud-upload-alt text-2xl text-slate-400 mb-1"></i>
+                        <p class="text-xs font-bold text-slate-500">CSV ഫയൽ ഇവിടെ ക്ലിക്ക് ചെയ്ത് തിരഞ്ഞെടുക്കുക</p>
+                        <input type="file" id="csvFileInput" accept=".csv" class="hidden" onchange="this.parentElement.querySelector('p').textContent = this.files[0]?.name || 'CSV ഫയൽ ഇവിടെ ക്ലിക്ക് ചെയ്ത് തിരഞ്ഞെടുക്കുക'">
+                    </div>
+                    <button type="button" onclick="window.handleCSVUpload()" class="w-full bg-gradient-to-r from-[#022c22] to-emerald-900 hover:from-emerald-900 hover:to-[#022c22] text-white font-bold py-3.5 px-4 rounded-xl transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer text-sm active:scale-95">
                         <i class="fas fa-cloud-upload-alt text-base"></i> Upload & Update Database
                     </button>
                 </div>
@@ -957,26 +973,46 @@
         }
 
         window.renderDirectory = function() {
+            const isAdmin = window.currentUser.role === 'admin';
+            const isAdminOrAdmin1 = isAdmin || window.currentUser.role === 'admin1';
             return `
-                <div class="space-y-6 flex flex-col h-full"><div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4"><h2 class="text-2xl font-extrabold text-slate-800">Student Directory</h2><div class="flex flex-wrap gap-2 w-full md:w-auto">
-                ${window.currentUser.role === 'admin' || window.currentUser.role === 'admin1' ? `<button onclick="window.exportAttendanceCSV()" class="bg-emerald-50 text-emerald-700 border border-emerald-200 px-3 py-2 rounded-xl text-xs md:text-sm font-bold shadow-sm transition hover:bg-emerald-100"><i class="fas fa-download"></i> Attendance Report</button><button onclick="window.markAllMonthlyLeave()" class="bg-amber-100 text-amber-800 border px-3 py-2 rounded-xl text-xs md:text-sm font-bold shadow-sm transition"><i class="fas fa-home"></i> Monthly Leave</button>` : ''}
-                ${window.currentUser.role === 'admin' ? `
-                    <button onclick="window.downloadCurrentStudentsCSV()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3.5 py-2 rounded-xl text-xs md:text-sm font-bold shadow-sm transition flex items-center gap-1.5 cursor-pointer" title="Download all existing students with current details & blanks to edit in Excel">
-                        <i class="fas fa-file-download text-sm"></i> Download Students Data (CSV)
-                    </button>
-                    <button onclick="document.getElementById('bulkUploadModal').classList.remove('hidden'); document.getElementById('bulkUploadModal').classList.add('flex'); if(window.updateCSVModalUI) window.updateCSVModalUI();" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3.5 py-2 rounded-xl text-xs md:text-sm font-bold shadow-sm transition flex items-center gap-1.5 cursor-pointer">
-                        <i class="fas fa-file-upload text-sm"></i> Upload & Update Data
-                    </button>
-                    <button onclick="document.getElementById('addStdModal').classList.remove('hidden'); document.getElementById('addStdModal').classList.add('flex');" class="bg-slate-800 hover:bg-slate-900 text-white px-3.5 py-2 rounded-xl text-xs md:text-sm font-bold shadow transition cursor-pointer">
-                        + Add Student
-                    </button>
-                ` : ''}
-                </div></div><div class="bg-white rounded-2xl shadow-sm border border-slate-200 flex-1 overflow-hidden flex flex-col"><div class="overflow-x-auto flex-1 p-0"><table class="w-full text-left text-sm whitespace-nowrap"><thead class="text-xs text-slate-500 uppercase bg-slate-100 sticky top-0"><tr><th class="p-4">Adm No</th><th class="p-4">Name</th><th class="p-4">Class</th><th class="p-4">Location</th><th class="p-4 text-center">Actions</th></tr></thead><tbody class="divide-y divide-slate-100">
-                ${db.students.map(s => `<tr class="hover:bg-slate-50"><td class="p-4 font-mono text-slate-500">${s.admNo}</td><td class="p-4 font-bold text-slate-800">${s.name}</td><td class="p-4">${s.class}</td><td class="p-4"><span class="px-2 py-1 rounded-md text-xs font-bold ${s.leaveStatus === 'In Campus' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}">${s.leaveStatus}</span></td><td class="p-4 text-center">
-                ${s.leaveStatus === 'On Leave' ? `<button onclick="window.markReturn('${s.admNo}')" class="bg-emerald-100 text-emerald-700 border border-emerald-200 px-3 py-1.5 rounded-lg text-xs font-bold mr-1 transition hover:bg-emerald-200">Report IN</button>` : `<button onclick="window.markLeave('${s.admNo}')" class="bg-amber-100 text-amber-700 border border-amber-200 px-3 py-1.5 rounded-lg text-xs font-bold mr-1 transition hover:bg-amber-200">Mark OUT</button>`}
-                <button onclick="window.openStudentDirectly('${s.admNo}', '${s.class}')" class="text-indigo-600 border px-3 py-1.5 rounded-lg text-xs font-bold">Manage</button> 
-                ${window.currentUser.role === 'admin' ? `<button onclick="window.deleteStudent('${s.admNo}')" class="text-rose-500 border px-3 py-1.5 rounded-lg text-xs font-bold ml-1">Delete</button>` : ''}</td></tr>`).join('')}
-                </tbody></table></div></div></div>`;
+                <div class="space-y-4 flex flex-col h-full">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                        <h2 class="text-2xl font-extrabold text-slate-800">Student Directory</h2>
+                        <div class="flex flex-wrap gap-2 w-full md:w-auto">
+                            ${isAdminOrAdmin1 ? `<button onclick="window.exportAttendanceCSV()" class="bg-emerald-50 text-emerald-700 border border-emerald-200 px-3 py-2 rounded-xl text-xs md:text-sm font-bold shadow-sm transition hover:bg-emerald-100"><i class="fas fa-download"></i> Attendance Report</button><button onclick="window.markAllMonthlyLeave()" class="bg-amber-100 text-amber-800 border px-3 py-2 rounded-xl text-xs md:text-sm font-bold shadow-sm transition"><i class="fas fa-home"></i> Monthly Leave</button>` : ''}
+                            ${isAdmin ? `
+                                <button onclick="window.downloadCurrentStudentsCSV()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3.5 py-2 rounded-xl text-xs md:text-sm font-bold shadow-sm transition flex items-center gap-1.5 cursor-pointer"><i class="fas fa-file-download text-sm"></i> Download CSV</button>
+                                <button onclick="document.getElementById('bulkUploadModal').classList.remove('hidden'); document.getElementById('bulkUploadModal').classList.add('flex'); if(window.updateCSVModalUI) window.updateCSVModalUI();" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3.5 py-2 rounded-xl text-xs md:text-sm font-bold shadow-sm transition flex items-center gap-1.5 cursor-pointer"><i class="fas fa-file-upload text-sm"></i> Upload CSV</button>
+                                <button onclick="document.getElementById('addStdModal').classList.remove('hidden'); document.getElementById('addStdModal').classList.add('flex');" class="bg-slate-800 hover:bg-slate-900 text-white px-3.5 py-2 rounded-xl text-xs md:text-sm font-bold shadow transition cursor-pointer">+ Add Student</button>
+                            ` : ''}
+                        </div>
+                    </div>
+                    ${isAdmin ? `
+                    <div class="bg-gradient-to-r from-emerald-900 to-[#022c22] rounded-2xl p-4 md:p-5 shadow-lg text-white">
+                        <div class="flex flex-col md:flex-row items-start md:items-center gap-4">
+                            <div class="flex-shrink-0 w-12 h-12 bg-emerald-500/20 rounded-xl flex items-center justify-center text-emerald-400 text-2xl"><i class="fas fa-database"></i></div>
+                            <div class="flex-1 min-w-0">
+                                <h3 class="font-extrabold text-base text-emerald-100 mb-1">📋 വിദ്യാർത്ഥി ഡാറ്റ ബൾക്ക് അപ്‌ഡേറ്റ്</h3>
+                                <p class="text-xs text-emerald-300 leading-relaxed"><b class="text-white">1.</b> CSV ഡൗൺലോഡ് ചെയ്യുക &nbsp;→&nbsp; <b class="text-white">2.</b> Excel-ൽ തിരുത്തുക &nbsp;→&nbsp; <b class="text-white">3.</b> CSV ആയി Save ചെയ്ത് Upload ചെയ്യുക</p>
+                            </div>
+                            <div class="flex flex-row gap-2 w-full md:w-auto flex-shrink-0">
+                                <button onclick="window.downloadCurrentStudentsCSV()" class="flex items-center justify-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-white font-extrabold px-4 py-2.5 rounded-xl text-sm transition-all shadow-md cursor-pointer active:scale-95 whitespace-nowrap"><i class="fas fa-file-download"></i> ഡൗൺലോഡ്</button>
+                                <button onclick="document.getElementById('bulkUploadModal').classList.remove('hidden'); document.getElementById('bulkUploadModal').classList.add('flex'); if(window.updateCSVModalUI) window.updateCSVModalUI();" class="flex items-center justify-center gap-2 bg-white/15 hover:bg-white/25 text-white font-extrabold px-4 py-2.5 rounded-xl text-sm transition-all border border-white/30 cursor-pointer active:scale-95 whitespace-nowrap"><i class="fas fa-cloud-upload-alt"></i> അപ്‌ലോഡ്</button>
+                            </div>
+                        </div>
+                    </div>` : ''}
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 flex-1 overflow-hidden flex flex-col">
+                        <div class="overflow-x-auto flex-1 p-0">
+                            <table class="w-full text-left text-sm whitespace-nowrap">
+                                <thead class="text-xs text-slate-500 uppercase bg-slate-100 sticky top-0"><tr><th class="p-4">Adm No</th><th class="p-4">Name</th><th class="p-4">Class</th><th class="p-4">Location</th><th class="p-4 text-center">Actions</th></tr></thead>
+                                <tbody class="divide-y divide-slate-100">
+                                ${db.students.map(s => `<tr class="hover:bg-slate-50"><td class="p-4 font-mono text-slate-500">${s.admNo}</td><td class="p-4 font-bold text-slate-800">${s.name}</td><td class="p-4">${s.class}</td><td class="p-4"><span class="px-2 py-1 rounded-md text-xs font-bold ${s.leaveStatus === 'In Campus' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}">${s.leaveStatus}</span></td><td class="p-4 text-center">${s.leaveStatus === 'On Leave' ? '<button onclick="window.markReturn(\'' + s.admNo + '\')" class="bg-emerald-100 text-emerald-700 border border-emerald-200 px-3 py-1.5 rounded-lg text-xs font-bold mr-1 transition hover:bg-emerald-200">Report IN</button>' : '<button onclick="window.markLeave(\'' + s.admNo + '\')" class="bg-amber-100 text-amber-700 border border-amber-200 px-3 py-1.5 rounded-lg text-xs font-bold mr-1 transition hover:bg-amber-200">Mark OUT</button>'}<button onclick="window.openStudentDirectly('${s.admNo}', '${s.class}')" class="text-indigo-600 border px-3 py-1.5 rounded-lg text-xs font-bold">Manage</button>${isAdmin ? '<button onclick="window.deleteStudent(\'' + s.admNo + '\')" class="text-rose-500 border px-3 py-1.5 rounded-lg text-xs font-bold ml-1">Delete</button>' : ''}</td></tr>`).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>`;
         }
 
         window.openStudentDirectly = function(admNo, cls) { window.currentTab = 'search'; document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active')); window.renderApp(); setTimeout(() => { document.getElementById('searchClass').value = cls; window.updateSearchNames(); document.getElementById('searchName').value = admNo; window.searchStudent(admNo); }, 50); }
