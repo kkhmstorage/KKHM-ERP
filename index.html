@@ -140,8 +140,8 @@
                     <div class="col-span-2 border-t pt-3 mt-1"><h4 class="text-sm font-bold text-indigo-700 mb-2">Financial Details (ഫീസ് വിവരങ്ങൾ)</h4></div>
                     <div class="col-span-2 md:col-span-1"><label class="text-xs font-bold text-slate-500">Yearly Total Fee (₹)</label><input required id="newYearlyFee" type="number" class="w-full border p-2.5 rounded-lg text-sm bg-white"></div>
                     <div class="col-span-2 md:col-span-1"><label class="text-xs font-bold text-slate-500">Monthly Installment (₹)</label><input required id="newMonthlyFee" type="number" class="w-full border p-2.5 rounded-lg text-sm bg-white"></div>
-                    <div class="col-span-2 md:col-span-1"><label class="text-xs font-bold text-indigo-700">Fee Start Month (തുടങ്ങുന്ന മാസം)</label><select id="newFeeStartMonth" class="w-full border p-2.5 rounded-lg text-sm bg-white font-bold text-indigo-900"></select></div>
-                    <div class="col-span-2 md:col-span-1"><label class="text-xs font-bold text-emerald-700">Last Paid Month (അവസാനം അടച്ച മാസം)</label><select id="newLastPaidMonth" class="w-full border p-2.5 rounded-lg text-sm bg-white font-bold text-emerald-900"></select></div>
+                    <div class="col-span-2 md:col-span-1"><label class="text-xs font-bold text-indigo-700">Fee Start Month (തുടങ്ങുന്ന മാസം)</label><input type="month" id="newFeeStartMonth" value="2026-06" class="w-full border p-2.5 rounded-lg text-sm bg-white font-bold text-indigo-900 cursor-pointer"></div>
+                    <div class="col-span-2 md:col-span-1"><label class="text-xs font-bold text-emerald-700">Last Paid Month (അവസാനം അടച്ച മാസം)</label><input type="month" id="newLastPaidMonth" class="w-full border p-2.5 rounded-lg text-sm bg-white font-bold text-emerald-900 cursor-pointer"></div>
                     <div class="col-span-2 md:col-span-1"><label class="text-xs font-bold text-slate-500">Fee Start Date (Optional)</label><input id="newFeeStart" type="date" class="w-full border p-2.5 rounded-lg text-sm bg-white"></div>
                     <div class="col-span-2 md:col-span-1"><label class="text-xs font-bold text-slate-500">Due Day (e.g. 25 or 5)</label><input required id="newDueDay" type="number" max="31" min="1" value="25" class="w-full border p-2.5 rounded-lg text-sm bg-white"></div>
                     <div class="col-span-2 border-t pt-3 mt-1"><label class="text-xs font-bold text-slate-500">Phone Number</label><input type="tel" id="newPhone" class="w-full border p-2.5 rounded-lg text-sm bg-white" placeholder="Optional"></div>
@@ -166,8 +166,8 @@
                     <div class="col-span-2 border-t pt-3 mt-1"><h4 class="text-sm font-bold text-blue-700 mb-2">Financial Details (ഫീസ് വിവരങ്ങൾ)</h4></div>
                     <div class="col-span-2 md:col-span-1"><label class="text-xs font-bold text-slate-500">Yearly Total Fee (₹)</label><input required id="editYearlyFee" type="number" class="w-full border p-2.5 rounded-lg text-sm bg-white"></div>
                     <div class="col-span-2 md:col-span-1"><label class="text-xs font-bold text-slate-500">Monthly Installment (₹)</label><input required id="editMonthlyFee" type="number" class="w-full border p-2.5 rounded-lg text-sm bg-white"></div>
-                    <div class="col-span-2 md:col-span-1"><label class="text-xs font-bold text-indigo-700">Fee Start Month (തുടങ്ങുന്ന മാസം)</label><select id="editFeeStartMonth" class="w-full border p-2.5 rounded-lg text-sm bg-white font-bold text-indigo-900"></select></div>
-                    <div class="col-span-2 md:col-span-1"><label class="text-xs font-bold text-emerald-700">Last Paid Month (അവസാനം അടച്ച മാസം)</label><select id="editLastPaidMonth" onchange="window.onEditModalLastPaidChange()" class="w-full border p-2.5 rounded-lg text-sm bg-white font-bold text-emerald-900"></select></div>
+                    <div class="col-span-2 md:col-span-1"><label class="text-xs font-bold text-indigo-700">Fee Start Month (തുടങ്ങുന്ന മാസം)</label><input type="month" id="editFeeStartMonth" onchange="window.onEditModalLastPaidChange()" class="w-full border p-2.5 rounded-lg text-sm bg-white font-bold text-indigo-900 cursor-pointer"></div>
+                    <div class="col-span-2 md:col-span-1"><label class="text-xs font-bold text-emerald-700">Last Paid Month (അവസാനം അടച്ച മാസം)</label><input type="month" id="editLastPaidMonth" onchange="window.onEditModalLastPaidChange()" class="w-full border p-2.5 rounded-lg text-sm bg-white font-bold text-emerald-900 cursor-pointer"></div>
                     <div class="col-span-2 md:col-span-1"><label class="text-xs font-bold text-slate-500">Total Paid (₹)</label><input required id="editTotalPaid" type="number" class="w-full border p-2.5 rounded-lg text-sm bg-white"></div>
                     <div class="col-span-2 md:col-span-1"><label class="text-xs font-bold text-slate-500">Fee Start Date</label><input id="editFeeStart" type="date" class="w-full border p-2.5 rounded-lg text-sm bg-white"></div>
                     <div class="col-span-2 md:col-span-1"><label class="text-xs font-bold text-slate-500">Due Day (1-31)</label><input required id="editDueDay" type="number" max="31" min="1" class="w-full border p-2.5 rounded-lg text-sm bg-white"></div>
@@ -194,7 +194,7 @@
                 </p>
                 <div>
                     <label class="block text-xs font-bold text-slate-700 mb-1.5">ഫീസ് തുടങ്ങുന്ന മാസം (Start Month)</label>
-                    <select id="batchStartMonthSelect" class="w-full border p-3 rounded-xl bg-white font-bold text-indigo-900 outline-none shadow-sm"></select>
+                    <input type="month" id="batchStartMonthSelect" value="2026-06" class="w-full border p-3 rounded-xl bg-white font-bold text-indigo-900 outline-none shadow-sm cursor-pointer">
                 </div>
                 <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-[11px] text-amber-900 flex items-start gap-2">
                     <i class="fas fa-info-circle text-amber-600 mt-0.5"></i>
@@ -533,7 +533,7 @@
         // PWA, BADGING & SYSTEM NOTIFICATIONS
         window.initPWA = function() {
             if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('/sw.js?v=8').then(reg => {
+                navigator.serviceWorker.register('/sw.js?v=9').then(reg => {
                     console.log('KKHM PWA Service Worker Registered:', reg.scope);
                     try { reg.update(); } catch(e) {}
                     reg.onupdatefound = () => {
@@ -1195,8 +1195,8 @@
             if (modal) {
                 const startSelect = document.getElementById('newFeeStartMonth');
                 const lastSelect = document.getElementById('newLastPaidMonth');
-                if (startSelect) startSelect.innerHTML = window.getMonthSelectOptions('2026-06', false);
-                if (lastSelect) lastSelect.innerHTML = window.getMonthSelectOptions('', true);
+                if (startSelect) startSelect.value = '2026-06';
+                if (lastSelect) lastSelect.value = '';
                 modal.classList.remove('hidden');
                 modal.classList.add('flex');
             }
@@ -1218,8 +1218,8 @@
             const lastM = window.getStudentLastPaidMonth(std);
             const startSelect = document.getElementById('editFeeStartMonth');
             const lastSelect = document.getElementById('editLastPaidMonth');
-            if (startSelect) startSelect.innerHTML = window.getMonthSelectOptions(startM, false);
-            if (lastSelect) lastSelect.innerHTML = window.getMonthSelectOptions(lastM, true);
+            if (startSelect) startSelect.value = startM;
+            if (lastSelect) lastSelect.value = lastM || '';
 
             document.getElementById('editStdModal').classList.remove('hidden'); 
             document.getElementById('editStdModal').classList.add('flex'); 
@@ -1911,6 +1911,12 @@
             window.showToast(`✅ ${std.name} ഫീസ് വിവരങ്ങൾ സേവ് ചെയ്തു!`, 'success');
         };
 
+        window.clearStudentLastPaidMonth = function(admNo) {
+            const lastInput = document.getElementById(`fee_last_${admNo}`);
+            if (lastInput) lastInput.value = '';
+            window.updateStudentFeeField(admNo, 'lastPaidMonth', '');
+        };
+
         window.saveClassFeeChanges = function() {
             window.saveDB();
             window.showToast('ക്ലാസ് ഫീസ് രജിസ്റ്ററിലെ എല്ലാ മാറ്റങ്ങളും വിജയകരമായി സേവ് ചെയ്തു!', 'success');
@@ -1946,7 +1952,7 @@
             const nameEl = document.getElementById('batchClassTargetName');
             if (nameEl) nameEl.innerText = cls;
             const selectEl = document.getElementById('batchStartMonthSelect');
-            if (selectEl) selectEl.innerHTML = window.getMonthSelectOptions('2026-06', false);
+            if (selectEl) selectEl.value = '2026-06';
             const modal = document.getElementById('batchStartMonthModal');
             if (modal) {
                 modal.classList.remove('hidden');
@@ -2306,14 +2312,15 @@
                                                     </div>
                                                 </td>
                                                 <td class="p-3.5">
-                                                    <select id="fee_start_${s.admNo}" onchange="window.updateStudentFeeField('${s.admNo}', 'feeStartMonth', this.value)" class="border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs font-bold text-indigo-900 bg-white shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none cursor-pointer">
-                                                        ${window.getMonthSelectOptions(startM, false)}
-                                                    </select>
+                                                    <input type="month" id="fee_start_${s.admNo}" value="${startM}" onchange="window.updateStudentFeeField('${s.admNo}', 'feeStartMonth', this.value)" class="w-36 border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs font-bold text-indigo-900 bg-white shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none cursor-pointer" title="കലണ്ടറിൽ നിന്ന് മാസം തിരഞ്ഞെടുക്കുക">
                                                 </td>
                                                 <td class="p-3.5">
-                                                    <select id="fee_last_${s.admNo}" onchange="window.updateStudentFeeField('${s.admNo}', 'lastPaidMonth', this.value)" class="border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs font-bold text-emerald-900 bg-white shadow-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none cursor-pointer">
-                                                        ${window.getMonthSelectOptions(lastM, true, '-- അടച്ചിട്ടില്ല (Not Paid) --')}
-                                                    </select>
+                                                    <div class="flex items-center gap-1.5">
+                                                        <input type="month" id="fee_last_${s.admNo}" value="${lastM || ''}" onchange="window.updateStudentFeeField('${s.admNo}', 'lastPaidMonth', this.value)" class="w-36 border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs font-bold text-emerald-900 bg-white shadow-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none cursor-pointer" title="കലണ്ടറിൽ നിന്ന് മാസം തിരഞ്ഞെടുക്കുക">
+                                                        <button type="button" onclick="window.clearStudentLastPaidMonth('${s.admNo}')" class="text-slate-400 hover:text-rose-600 px-1 py-1 rounded text-xs transition" title="അടച്ചിട്ടില്ല എന്ന് മാറ്റുക (Clear)">
+                                                            <i class="fas fa-times-circle text-sm"></i>
+                                                        </button>
+                                                    </div>
                                                 </td>
                                                 <td class="p-3.5">
                                                     <div id="fee_paid_${s.admNo}">
