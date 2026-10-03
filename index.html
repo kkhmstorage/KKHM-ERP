@@ -137,11 +137,11 @@
                     <div class="col-span-2 md:col-span-1"><label class="text-xs font-bold text-slate-500">Adm No</label><input required id="newAdm" class="w-full border p-2.5 rounded-lg text-sm bg-white"></div>
                     <div class="col-span-2 md:col-span-1"><label class="text-xs font-bold text-slate-500">Class</label><input required id="newClass" class="w-full border p-2.5 rounded-lg text-sm bg-white"></div>
                     <div class="col-span-2"><label class="text-xs font-bold text-slate-500">Full Name</label><input required id="newName" class="w-full border p-2.5 rounded-lg text-sm bg-white"></div>
-                    <div class="col-span-2 border-t pt-3 mt-1"><h4 class="text-sm font-bold text-indigo-700 mb-2">Financial Details (ഫീസ് വിവരങ്ങൾ)</h4></div>
+                    <div class="col-span-2 border-t pt-3 mt-1"><h4 class="text-sm font-bold text-indigo-700 mb-2">Financial Details</h4></div>
                     <div class="col-span-2 md:col-span-1"><label class="text-xs font-bold text-slate-500">Yearly Total Fee (₹)</label><input required id="newYearlyFee" type="number" class="w-full border p-2.5 rounded-lg text-sm bg-white"></div>
                     <div class="col-span-2 md:col-span-1"><label class="text-xs font-bold text-slate-500">Monthly Installment (₹)</label><input required id="newMonthlyFee" type="number" class="w-full border p-2.5 rounded-lg text-sm bg-white"></div>
-                    <div class="col-span-2 md:col-span-1"><label class="text-xs font-bold text-indigo-700">Fee Start Month (തുടങ്ങുന്ന മാസം)</label><input type="month" id="newFeeStartMonth" value="2026-06" class="w-full border p-2.5 rounded-lg text-sm bg-white font-bold text-indigo-900 cursor-pointer"></div>
-                    <div class="col-span-2 md:col-span-1"><label class="text-xs font-bold text-emerald-700">Last Paid Month (അവസാനം അടച്ച മാസം)</label><input type="month" id="newLastPaidMonth" class="w-full border p-2.5 rounded-lg text-sm bg-white font-bold text-emerald-900 cursor-pointer"></div>
+                    <div class="col-span-2 md:col-span-1"><label class="text-xs font-bold text-indigo-700">Fee Start Month</label><input type="month" id="newFeeStartMonth" value="2026-06" class="w-full border p-2.5 rounded-lg text-sm bg-white font-bold text-indigo-900 cursor-pointer"></div>
+                    <div class="col-span-2 md:col-span-1"><label class="text-xs font-bold text-emerald-700">Last Paid Month</label><input type="month" id="newLastPaidMonth" class="w-full border p-2.5 rounded-lg text-sm bg-white font-bold text-emerald-900 cursor-pointer"></div>
                     <div class="col-span-2 md:col-span-1"><label class="text-xs font-bold text-slate-500">Fee Start Date (Optional)</label><input id="newFeeStart" type="date" class="w-full border p-2.5 rounded-lg text-sm bg-white"></div>
                     <div class="col-span-2 md:col-span-1"><label class="text-xs font-bold text-slate-500">Due Day (e.g. 25 or 5)</label><input required id="newDueDay" type="number" max="31" min="1" value="25" class="w-full border p-2.5 rounded-lg text-sm bg-white"></div>
                     <div class="col-span-2 border-t pt-3 mt-1"><label class="text-xs font-bold text-slate-500">Phone Number</label><input type="tel" id="newPhone" class="w-full border p-2.5 rounded-lg text-sm bg-white" placeholder="Optional"></div>
@@ -163,11 +163,11 @@
                 <div class="grid grid-cols-2 gap-4">
                     <div class="col-span-2"><label class="text-xs font-bold text-slate-500">Full Name</label><input required id="editName" class="w-full border p-2.5 rounded-lg text-sm bg-white"></div>
                     <div class="col-span-2"><label class="text-xs font-bold text-slate-500">Class</label><input required id="editClass" class="w-full border p-2.5 rounded-lg text-sm bg-white"></div>
-                    <div class="col-span-2 border-t pt-3 mt-1"><h4 class="text-sm font-bold text-blue-700 mb-2">Financial Details (ഫീസ് വിവരങ്ങൾ)</h4></div>
+                    <div class="col-span-2 border-t pt-3 mt-1"><h4 class="text-sm font-bold text-blue-700 mb-2">Financial Details</h4></div>
                     <div class="col-span-2 md:col-span-1"><label class="text-xs font-bold text-slate-500">Yearly Total Fee (₹)</label><input required id="editYearlyFee" type="number" class="w-full border p-2.5 rounded-lg text-sm bg-white"></div>
                     <div class="col-span-2 md:col-span-1"><label class="text-xs font-bold text-slate-500">Monthly Installment (₹)</label><input required id="editMonthlyFee" type="number" class="w-full border p-2.5 rounded-lg text-sm bg-white"></div>
-                    <div class="col-span-2 md:col-span-1"><label class="text-xs font-bold text-indigo-700">Fee Start Month (തുടങ്ങുന്ന മാസം)</label><input type="month" id="editFeeStartMonth" onchange="window.onEditModalLastPaidChange()" class="w-full border p-2.5 rounded-lg text-sm bg-white font-bold text-indigo-900 cursor-pointer"></div>
-                    <div class="col-span-2 md:col-span-1"><label class="text-xs font-bold text-emerald-700">Last Paid Month (അവസാനം അടച്ച മാസം)</label><input type="month" id="editLastPaidMonth" onchange="window.onEditModalLastPaidChange()" class="w-full border p-2.5 rounded-lg text-sm bg-white font-bold text-emerald-900 cursor-pointer"></div>
+                    <div class="col-span-2 md:col-span-1"><label class="text-xs font-bold text-indigo-700">Fee Start Month</label><input type="month" id="editFeeStartMonth" onchange="window.onEditModalLastPaidChange()" class="w-full border p-2.5 rounded-lg text-sm bg-white font-bold text-indigo-900 cursor-pointer"></div>
+                    <div class="col-span-2 md:col-span-1"><label class="text-xs font-bold text-emerald-700">Last Paid Month</label><input type="month" id="editLastPaidMonth" onchange="window.onEditModalLastPaidChange()" class="w-full border p-2.5 rounded-lg text-sm bg-white font-bold text-emerald-900 cursor-pointer"></div>
                     <div class="col-span-2 md:col-span-1"><label class="text-xs font-bold text-slate-500">Total Paid (₹)</label><input required id="editTotalPaid" type="number" class="w-full border p-2.5 rounded-lg text-sm bg-white"></div>
                     <div class="col-span-2 md:col-span-1"><label class="text-xs font-bold text-slate-500">Fee Start Date</label><input id="editFeeStart" type="date" class="w-full border p-2.5 rounded-lg text-sm bg-white"></div>
                     <div class="col-span-2 md:col-span-1"><label class="text-xs font-bold text-slate-500">Due Day (1-31)</label><input required id="editDueDay" type="number" max="31" min="1" class="w-full border p-2.5 rounded-lg text-sm bg-white"></div>
@@ -184,24 +184,24 @@
             <div class="bg-gradient-to-r from-indigo-700 to-indigo-900 p-4 flex justify-between items-center text-white">
                 <div class="flex items-center gap-2">
                     <i class="fas fa-calendar-alt text-amber-300"></i>
-                    <h3 class="font-bold text-base">ബാച്ചായി ഫീസ് ആരംഭ മാസം നിശ്ചയിക്കുക</h3>
+                    <h3 class="font-bold text-base">Set Batch Fee Start Month</h3>
                 </div>
                 <button type="button" onclick="document.getElementById('batchStartMonthModal').classList.add('hidden'); document.getElementById('batchStartMonthModal').classList.remove('flex');" class="text-xl hover:text-rose-300">&times;</button>
             </div>
             <div class="p-6 bg-slate-50 space-y-4">
                 <p class="text-xs text-slate-600 leading-relaxed">
-                    <span class="font-bold text-indigo-900" id="batchClassTargetName">Target Class</span>-ലെ <b>എല്ലാ വിദ്യാർത്ഥികൾക്കും</b> ഒന്നിച്ച് ഫീസ് തുടങ്ങുന്ന മാസം മാറ്റാൻ താഴെ നിന്നും മാസം തിരഞ്ഞെടുക്കുക.
+                    Select a month below to set the Fee Start Month for <b>all students</b> in <span class="font-bold text-indigo-900" id="batchClassTargetName">Target Class</span>.
                 </p>
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1.5">ഫീസ് തുടങ്ങുന്ന മാസം (Start Month)</label>
+                    <label class="block text-xs font-bold text-slate-700 mb-1.5">Fee Start Month</label>
                     <input type="month" id="batchStartMonthSelect" value="2026-06" class="w-full border p-3 rounded-xl bg-white font-bold text-indigo-900 outline-none shadow-sm cursor-pointer">
                 </div>
                 <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-[11px] text-amber-900 flex items-start gap-2">
                     <i class="fas fa-info-circle text-amber-600 mt-0.5"></i>
-                    <span>ഇത് ഈ ക്ലാസിലെ എല്ലാ വിദ്യാർത്ഥികളുടെയും ഫീസ് ആരംഭ മാസം അപ്‌ഡേറ്റ് ചെയ്യുകയും കുടിശ്ശിക സ്വയം പുനർനിർണ്ണയിക്കുകയും ചെയ്യും.</span>
+                    <span>This will update the fee start month for all students in this class and automatically recalculate dues.</span>
                 </div>
                 <button type="button" onclick="window.confirmBatchStartMonth()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 rounded-xl shadow-md transition flex items-center justify-center gap-2 cursor-pointer">
-                    <i class="fas fa-check-circle"></i> എല്ലാവർക്കും ബാധകമാക്കുക (Apply to All)
+                    <i class="fas fa-check-circle"></i> Apply to All
                 </button>
             </div>
         </div>
@@ -217,16 +217,16 @@
                     </div>
                     <div>
                         <h3 class="font-bold text-base">Bulk Update & Upload CSV</h3>
-                        <p class="text-[11px] text-emerald-300 font-medium">വിവരങ്ങൾ ഒന്നിച്ച് അപ്‌ഡേറ്റ് ചെയ്യുക / പുതിയവ ചേർക്കുക</p>
+                        <p class="text-[11px] text-emerald-300 font-medium">Bulk Update / Add New Records</p>
                     </div>
                 </div>
                 <button type="button" onclick="document.getElementById('bulkUploadModal').classList.remove('flex'); document.getElementById('bulkUploadModal').classList.add('hidden');" class="text-xl hover:text-rose-300 transition">&times;</button>
             </div>
             <div class="p-6 bg-slate-50 text-sm overflow-y-auto max-h-[80vh] space-y-4">
                 <div>
-                    <label class="block text-xs font-bold text-slate-500 mb-1.5">Select Category / വിഭാഗം തിരഞ്ഞെടുക്കുക</label>
+                    <label class="block text-xs font-bold text-slate-500 mb-1.5">Select Category</label>
                     <select id="csvUploadType" onchange="window.updateCSVModalUI()" class="w-full border p-3 rounded-xl bg-white font-bold text-indigo-700 outline-none shadow-sm cursor-pointer">
-                        <option value="students">1. Students (വിദ്യാർത്ഥികളുടെ വിവരങ്ങൾ & ഫീസ്)</option>
+                        <option value="students">1. Students (Student Details & Fees)</option>
                         <option value="records">2. Disciplinary & Achievements</option>
                         <option value="leaves">3. Leaves (IN / OUT)</option>
                     </select>
@@ -234,24 +234,24 @@
 
                 <!-- Template Download Section -->
                 <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-3" id="csvTemplateBox">
-                    <label class="block text-xs font-extrabold text-slate-700 uppercase tracking-wide">📥 Step 1: Download / ഡൗൺലോഡ് ചെയ്യുക</label>
+                    <label class="block text-xs font-extrabold text-slate-700 uppercase tracking-wide">📥 Step 1: Download</label>
                     
                     <div id="studentTemplateButtons" class="space-y-2.5">
                         <!-- Primary Excel Download -->
                         <button type="button" onclick="window.downloadCurrentStudentsExcel()" class="w-full bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white font-bold py-3.5 px-4 rounded-xl text-sm transition-all flex items-center justify-center gap-2.5 shadow-md cursor-pointer active:scale-95">
                             <i class="fas fa-file-excel text-base"></i>
-                            <span>നിലവിലുള്ള വിദ്യാർത്ഥി ഡാറ്റ ഡൗൺലോഡ് (.xlsx)</span>
+                            <span>Download Current Student Data (.xlsx)</span>
                         </button>
                         <div class="bg-emerald-50 border border-emerald-200 rounded-lg p-3 text-[11px] text-emerald-900 leading-relaxed">
-                            <p class="font-bold text-emerald-800 mb-1">📌 ഇതെങ്ങനെ ഉപയോഗിക്കണം:</p>
+                            <p class="font-bold text-emerald-800 mb-1">📌 Instructions:</p>
                             <ol class="list-decimal ml-4 space-y-1">
-                                <li>മുകളിലെ ബട്ടൺ അമർത്തി <b>Excel ഫയൽ (.xlsx)</b> ഡൗൺലോഡ് ചെയ്യുക</li>
-                                <li>Excel / Google Sheets-ൽ <b>ഫോൺ നമ്പർ, ഫീസ്</b> തുടങ്ങിയ വിവരങ്ങൾ ചേർക്കുക അല്ലെങ്കിൽ തിരുത്തുക</li>
-                                <li>ഫയൽ <b>Excel (.xlsx) അല്ലെങ്കിൽ CSV</b> ആയി Save ചെയ്ത് Step 2-ൽ അപ്‌ലോഡ് ചെയ്യുക</li>
+                                <li>Click the button above to download the <b>Excel file (.xlsx)</b></li>
+                                <li>Edit or add details such as <b>Phone, Fees</b> in Excel / Google Sheets</li>
+                                <li>Save the file as <b>Excel (.xlsx) or CSV</b> and upload in Step 2</li>
                             </ol>
                         </div>
                         <button type="button" onclick="window.downloadExcelTemplate()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 px-3 rounded-lg text-xs transition flex items-center justify-center gap-2 border border-slate-300 cursor-pointer">
-                            <i class="fas fa-file-excel text-green-600"></i> പുതിയ കുട്ടികൾക്ക് മാത്രം — ബ്ലാങ്ക് Excel ടെംപ്ലേറ്റ്
+                            <i class="fas fa-file-excel text-green-600"></i> Blank Excel Template (For New Students Only)
                         </button>
                     </div>
 
@@ -264,16 +264,16 @@
 
                 <!-- Upload Section -->
                 <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-3">
-                    <label class="block text-xs font-extrabold text-slate-700 uppercase tracking-wide">📤 Step 2: Upload / അപ്‌ലോഡ് ചെയ്യുക</label>
+                    <label class="block text-xs font-extrabold text-slate-700 uppercase tracking-wide">📤 Step 2: Upload</label>
                     <div id="studentUploadNote" class="bg-blue-50 border border-blue-200 rounded-lg p-3 text-[11px] text-blue-900 leading-relaxed">
                         <i class="fas fa-info-circle text-blue-600 mr-1"></i>
-                        <b>ഓട്ടോ അപ്‌ഡേറ്റ്:</b> നിലവിലുള്ള അഡ്മിഷൻ നമ്പർ ആണെങ്കിൽ → <b>അപ്‌ഡേറ്റ്</b> ആകും. പുതിയ നമ്പർ ആണെങ്കിൽ → <b>പുതിയ കുട്ടിയായി ചേർക്കും.</b>
-                        <span class="block mt-1 text-blue-700"><i class="fas fa-check-circle mr-1"></i><b>.xlsx (Excel)</b> അല്ലെങ്കിൽ <b>.csv</b> ഫയൽ upload ചെയ്യാം.</span>
+                        <b>Auto Update:</b> Existing Admission No → <b>Updates record</b>. New Admission No → <b>Adds as new student.</b>
+                        <span class="block mt-1 text-blue-700"><i class="fas fa-check-circle mr-1"></i>Supports <b>.xlsx (Excel)</b> or <b>.csv</b> file upload.</span>
                     </div>
                     <div class="border-2 border-dashed border-slate-300 rounded-xl p-3 text-center cursor-pointer hover:border-emerald-400 hover:bg-emerald-50/50 transition-all" onclick="document.getElementById('csvFileInput').click()">
                         <i class="fas fa-cloud-upload-alt text-2xl text-slate-400 mb-1"></i>
-                        <p class="text-xs font-bold text-slate-500" id="filePickerLabel">Excel (.xlsx) അല്ലെങ്കിൽ CSV ഫയൽ ഇവിടെ ക്ലിക്ക് ചെയ്ത് തിരഞ്ഞെടുക്കുക</p>
-                        <input type="file" id="csvFileInput" accept=".xlsx,.xls,.csv" class="hidden" onchange="document.getElementById('filePickerLabel').textContent = this.files[0]?.name || 'Excel (.xlsx) അല്ലെങ്കിൽ CSV ഫയൽ ഇവിടെ ക്ലിക്ക് ചെയ്ത് തിരഞ്ഞെടുക്കുക'">
+                        <p class="text-xs font-bold text-slate-500" id="filePickerLabel">Click here to select Excel (.xlsx) or CSV file</p>
+                        <input type="file" id="csvFileInput" accept=".xlsx,.xls,.csv" class="hidden" onchange="document.getElementById('filePickerLabel').textContent = this.files[0]?.name || 'Click here to select Excel (.xlsx) or CSV file'">
                     </div>
                     <button type="button" onclick="window.handleCSVUpload()" class="w-full bg-gradient-to-r from-[#022c22] to-emerald-900 hover:from-emerald-900 hover:to-[#022c22] text-white font-bold py-3.5 px-4 rounded-xl transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer text-sm active:scale-95">
                         <i class="fas fa-cloud-upload-alt text-base"></i> Upload & Update Database
@@ -334,7 +334,7 @@
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-xl"><i class="fas fa-exclamation-triangle"></i></div>
                     <div>
-                        <h3 class="font-black text-lg">ഫീസ് കുടിശ്ശിക അറിയിപ്പ്</h3>
+                        <h3 class="font-black text-lg">Fee Due Reminder</h3>
                         <p class="text-xs text-rose-100 font-medium">Fee Payment Reminder</p>
                     </div>
                 </div>
@@ -379,7 +379,7 @@
                     <div class="w-10 h-10 rounded-full bg-emerald-500/30 flex items-center justify-center text-emerald-400 text-xl"><i class="fas fa-receipt"></i></div>
                     <div>
                         <h3 class="font-black text-lg">Fee Payment Receipt</h3>
-                        <p class="text-xs text-emerald-300 font-medium">ഔദ്യോഗിക ഫീസ് രസീത്</p>
+                        <p class="text-xs text-emerald-300 font-medium">Official Fee Receipt</p>
                     </div>
                 </div>
                 <button type="button" onclick="document.getElementById('feeReceiptModal').classList.add('hidden'); document.getElementById('feeReceiptModal').classList.remove('flex');" class="text-white/80 hover:text-white text-2xl font-bold">&times;</button>
@@ -416,7 +416,7 @@
 
             <div class="p-4 bg-white border-t border-slate-200 flex flex-col gap-2.5">
                 <button type="button" id="rcpWhatsAppBtn" onclick="window.shareCurrentReceiptWhatsApp()" class="w-full bg-[#25D366] hover:bg-[#128C7E] text-white font-bold py-3.5 px-4 rounded-xl text-xs md:text-sm transition flex items-center justify-center gap-2 shadow-md cursor-pointer">
-                    <i class="fab fa-whatsapp text-base"></i> WhatsApp Share (ഫോട്ടോ & രസീത് സന്ദേശം)
+                    <i class="fab fa-whatsapp text-base"></i> WhatsApp Share (Photo & Receipt Message)
                 </button>
                 <div class="grid grid-cols-2 gap-2.5">
                     <button type="button" onclick="window.printCurrentReceipt()" class="bg-slate-800 hover:bg-slate-900 text-white font-bold py-2.5 px-3 rounded-xl text-xs transition flex items-center justify-center gap-1.5 shadow cursor-pointer">
@@ -533,7 +533,7 @@
         // PWA, BADGING & SYSTEM NOTIFICATIONS
         window.initPWA = function() {
             if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('/sw.js?v=9').then(reg => {
+                navigator.serviceWorker.register('/sw.js?v=10').then(reg => {
                     console.log('KKHM PWA Service Worker Registered:', reg.scope);
                     try { reg.update(); } catch(e) {}
                     reg.onupdatefound = () => {
@@ -739,33 +739,33 @@
 
         // 2. HELPER FUNCTIONS - MONTH & FEE CALCULATIONS
         window.MALAYALAM_MONTHS = [
-            'ജനുവരി (Jan)', 'ഫെബ്രുവരി (Feb)', 'മാർച്ച് (Mar)', 'ഏപ്രിൽ (Apr)',
-            'മെയ് (May)', 'ജൂൺ (Jun)', 'ജൂലൈ (Jul)', 'ആഗസ്റ്റ് (Aug)',
-            'സെപ്റ്റംബർ (Sep)', 'ഒക്ടോബർ (Oct)', 'നവംബർ (Nov)', 'ഡിസംബർ (Dec)'
+            'January (Jan)', 'February (Feb)', 'March (Mar)', 'April (Apr)',
+            'May (May)', 'June (Jun)', 'July (Jul)', 'August (Aug)',
+            'September (Sep)', 'October (Oct)', 'November (Nov)', 'December (Dec)'
         ];
 
         window.formatMonthMalayalam = function(monthStr) {
-            if (!monthStr || monthStr === 'none') return 'അടച്ചിട്ടില്ല';
+            if (!monthStr || monthStr === 'none') return 'Not Paid';
             const parts = String(monthStr).trim().split('-');
             if (parts.length < 2) return monthStr;
             const y = parseInt(parts[0]);
             const m = parseInt(parts[1]);
             if (isNaN(y) || isNaN(m) || m < 1 || m > 12) return monthStr;
-            const mlNames = ['ജനുവരി', 'ഫെബ്രുവരി', 'മാർച്ച്', 'ഏപ്രിൽ', 'മെയ്', 'ജൂൺ', 'ജൂലൈ', 'ആഗസ്റ്റ്', 'സെപ്റ്റംബർ', 'ഒക്ടോബർ', 'നവംബർ', 'ഡിസംബർ'];
+            const mlNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
             const enNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-            return `${mlNames[m-1]} ${y} (${enNames[m-1]} ${y})`;
+            return `${enNames[m-1]} ${y}`;
         };
 
         window.formatMonthShort = function(monthStr) {
-            if (!monthStr || monthStr === 'none') return 'അടച്ചിട്ടില്ല';
+            if (!monthStr || monthStr === 'none') return 'Not Paid';
             const parts = String(monthStr).trim().split('-');
             if (parts.length < 2) return monthStr;
             const y = parseInt(parts[0]);
             const m = parseInt(parts[1]);
             if (isNaN(y) || isNaN(m) || m < 1 || m > 12) return monthStr;
-            const mlShort = ['ജനു', 'ഫെബ്രു', 'മാർച്ച്', 'ഏപ്രി', 'മെയ്', 'ജൂൺ', 'ജൂലൈ', 'ആഗ', 'സെപ്റ്റം', 'ഒക്ടോ', 'നവം', 'ഡിസം'];
+            const mlShort = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
             const enShort = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-            return `${mlShort[m-1]} ${y} (${enShort[m-1]})`;
+            return `${enShort[m-1]} ${y}`;
         };
 
         window.parseMonthToYyyyMm = function(val) {
@@ -833,7 +833,7 @@
             return window.addMonthsToMonthStr(startM, paidMonths - 1);
         };
 
-        window.getMonthSelectOptions = function(selectedVal = '', includeNone = false, noneLabel = '-- അടച്ചിട്ടില്ല (Not Paid) --') {
+        window.getMonthSelectOptions = function(selectedVal = '', includeNone = false, noneLabel = '-- Not Paid --') {
             const today = new Date();
             const startYear = today.getFullYear() - 1;
             const endYear = today.getFullYear() + 2;
@@ -841,12 +841,12 @@
             if (includeNone) {
                 opts += `<option value="" ${!selectedVal ? 'selected' : ''}>${noneLabel}</option>`;
             }
-            const mlNames = ['ജനുവരി', 'ഫെബ്രുവരി', 'മാർച്ച്', 'ഏപ്രിൽ', 'മെയ്', 'ജൂൺ', 'ജൂലൈ', 'ആഗസ്റ്റ്', 'സെപ്റ്റംബർ', 'ഒക്ടോബർ', 'നവംബർ', 'ഡിസംബർ'];
+            const mlNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
             const enNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
             for (let y = startYear; y <= endYear; y++) {
                 for (let m = 1; m <= 12; m++) {
                     const val = `${y}-${String(m).padStart(2, '0')}`;
-                    const label = `${mlNames[m-1]} ${y} (${enNames[m-1]} ${y})`;
+                    const label = `${mlNames[m-1]} ${y}`;
                     opts += `<option value="${val}" ${selectedVal === val ? 'selected' : ''}>${label}</option>`;
                 }
             }
@@ -928,7 +928,7 @@
                 paidMonthsCount,
                 dueMonthsCount,
                 formattedStartMonth: window.formatMonthMalayalam(startMonth),
-                formattedLastPaidMonth: lastPaidMonth ? window.formatMonthMalayalam(lastPaidMonth) : 'അടച്ചിട്ടില്ല'
+                formattedLastPaidMonth: lastPaidMonth ? window.formatMonthMalayalam(lastPaidMonth) : 'Not Paid'
             };
         };
 
@@ -998,9 +998,9 @@
                 <div class="bg-white rounded-2xl p-4 md:p-5 shadow-sm border border-slate-200">
                     <div class="flex items-center justify-between mb-3 border-b pb-2.5">
                         <h3 class="text-xs font-black uppercase tracking-wider text-slate-500 flex items-center gap-2">
-                            <i class="fas fa-th-large text-emerald-600"></i> Quick Navigation (ഷോർട്ട് കട്ട് മെനു)
+                            <i class="fas fa-th-large text-emerald-600"></i> Quick Navigation
                         </h3>
-                        <span class="text-[11px] text-slate-400 font-bold hidden sm:inline">ഓപ്ഷനുകളിലേക്ക് നേരിട്ട് പോകാൻ ക്ലിക്ക് ചെയ്യുക</span>
+                        <span class="text-[11px] text-slate-400 font-bold hidden sm:inline">Click to jump directly to options</span>
                     </div>
                     <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2.5">
                         ${shortcuts.map(s => `
@@ -1093,7 +1093,7 @@
             res.innerHTML = `
                 <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden"><div class="bg-slate-50 p-6 border-b flex flex-col md:flex-row justify-between items-start md:items-center gap-4"><div class="flex items-center gap-4"><div class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600 text-2xl font-black uppercase shadow-inner overflow-hidden">${std.photo ? `<img src="${std.photo}" class="w-full h-full object-cover">` : std.name.charAt(0)}</div><div><h3 class="text-2xl font-black text-slate-800">${std.name}</h3><p class="text-sm font-bold text-slate-500">Adm No: ${std.admNo} • ${std.class}</p></div></div><div class="flex gap-2">${std.leaveStatus === 'In Campus' ? `<button onclick="window.markLeave('${std.admNo}')" class="bg-amber-100 hover:bg-amber-200 text-amber-800 px-4 py-2 rounded-lg text-sm font-bold border transition"><i class="fas fa-sign-out-alt mr-1"></i>Mark OUT (Home)</button>` : `<button onclick="window.markReturn('${std.admNo}')" class="bg-emerald-100 hover:bg-emerald-200 text-emerald-800 px-4 py-2 rounded-lg text-sm font-bold border transition"><i class="fas fa-sign-in-alt mr-1"></i>Report IN</button>`}
                     ${window.currentUser.role === 'admin' ? `<button onclick="window.openEditStudent('${std.admNo}')" class="bg-blue-50 hover:bg-blue-100 text-blue-600 border px-4 py-2 rounded-lg text-sm font-bold transition"><i class="fas fa-edit"></i></button><button onclick="window.deleteStudent('${std.admNo}')" class="bg-rose-50 hover:bg-rose-100 text-rose-600 border px-4 py-2 rounded-lg text-sm font-bold transition"><i class="fas fa-trash"></i></button>` : ''}</div></div><div class="p-6 grid grid-cols-1 md:grid-cols-2 ${window.currentUser.role === 'admin' ? 'lg:grid-cols-3' : ''} gap-6">
-                        ${window.currentUser.role === 'admin' ? `<div class="border rounded-xl p-5 bg-white shadow-sm relative overflow-hidden"><div class="absolute top-0 left-0 w-full h-1 bg-indigo-500"></div><h4 class="font-bold text-slate-700 mb-4 border-b pb-2"><i class="fas fa-rupee-sign text-emerald-500 mr-2"></i>Fee Status & Payments</h4><div class="space-y-2.5 mb-4"><div class="flex justify-between text-xs text-slate-500"><span>Yearly Total:</span><span class="font-bold text-slate-700">₹${std.yearlyFee || 0}</span></div><div class="flex justify-between text-xs text-slate-500"><span>Monthly Installment:</span><span class="font-bold text-slate-700">₹${std.monthlyFee || 0} / month</span></div><div class="flex justify-between text-xs text-slate-500"><span>ഫീസ് ആരംഭിച്ച മാസം:</span><span class="font-bold text-indigo-600">${fin.formattedStartMonth}</span></div><div class="flex justify-between text-xs text-slate-500"><span>അവസാനം അടച്ച മാസം:</span><span class="font-bold ${fin.lastPaidMonth ? 'text-emerald-700' : 'text-rose-500'}">${fin.formattedLastPaidMonth || 'അടച്ചിട്ടില്ല (Not Paid)'}</span></div><div class="flex justify-between text-xs text-slate-500"><span>ആകെ അടച്ച തുക:</span><span class="font-bold text-emerald-600">₹${std.totalPaid || 0} (${fin.paidMonthsCount} മാസങ്ങൾ)</span></div><div class="flex justify-between text-sm mt-2 pt-2 border-t"><span>ഈ മാസം വരെയുള്ള കുടിശ്ശിക:</span><span class="font-black ${fin.currentDue > 0 ? 'text-rose-600' : 'text-emerald-600'}">₹${fin.currentDue} ${fin.dueMonthsCount > 0 ? `(${fin.dueMonthsCount} മാസം)` : '(കുടിശ്ശികയില്ല)'}</span></div><div class="flex justify-between text-xs text-slate-500"><span>വർഷത്തെ ആകെ ബാക്കി:</span><span class="font-bold text-slate-700">₹${fin.remainingYearly}</span></div></div><div class="flex gap-2 mb-4"><button onclick="window.openFeeUpdate('${std.admNo}')" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold py-2.5 rounded-lg transition shadow">Record Payment</button>${fin.remainingYearly === 0 ? `<button onclick="window.printNoDue('${std.admNo}')" class="flex-1 bg-emerald-50 text-emerald-700 border text-xs font-bold py-2.5 rounded-lg transition"><i class="fas fa-certificate mr-1"></i> No Due</button>` : ''}</div><div class="border-t pt-3"><h5 class="text-xs font-bold text-slate-500 mb-2">Payment History</h5><div class="max-h-24 overflow-y-auto space-y-1 pr-1">${(std.feeHistory || []).slice().reverse().map(f => `<div class="text-[11px] flex justify-between border-b pb-1 border-slate-100"><span><b>${f.month}</b> <span class="text-slate-400">(${f.date})</span></span><span class="text-emerald-600 font-bold">₹${f.amount}</span></div>`).join('') || '<p class="text-[10px] text-slate-400">No records found.</p>'}</div></div></div>` : ''}
+                        ${window.currentUser.role === 'admin' ? `<div class="border rounded-xl p-5 bg-white shadow-sm relative overflow-hidden"><div class="absolute top-0 left-0 w-full h-1 bg-indigo-500"></div><h4 class="font-bold text-slate-700 mb-4 border-b pb-2"><i class="fas fa-rupee-sign text-emerald-500 mr-2"></i>Fee Status & Payments</h4><div class="space-y-2.5 mb-4"><div class="flex justify-between text-xs text-slate-500"><span>Yearly Total:</span><span class="font-bold text-slate-700">₹${std.yearlyFee || 0}</span></div><div class="flex justify-between text-xs text-slate-500"><span>Monthly Installment:</span><span class="font-bold text-slate-700">₹${std.monthlyFee || 0} / month</span></div><div class="flex justify-between text-xs text-slate-500"><span>Fee Start Month:</span><span class="font-bold text-indigo-600">${fin.formattedStartMonth}</span></div><div class="flex justify-between text-xs text-slate-500"><span>Last Paid Month:</span><span class="font-bold ${fin.lastPaidMonth ? 'text-emerald-700' : 'text-rose-500'}">${fin.formattedLastPaidMonth || 'Not Paid'}</span></div><div class="flex justify-between text-xs text-slate-500"><span>Total Paid:</span><span class="font-bold text-emerald-600">₹${std.totalPaid || 0} (${fin.paidMonthsCount} months)</span></div><div class="flex justify-between text-sm mt-2 pt-2 border-t"><span>Current Arrears / Due:</span><span class="font-black ${fin.currentDue > 0 ? 'text-rose-600' : 'text-emerald-600'}">₹${fin.currentDue} ${fin.dueMonthsCount > 0 ? `(${fin.dueMonthsCount} months)` : '(No Dues)'}</span></div><div class="flex justify-between text-xs text-slate-500"><span>Yearly Remaining Balance:</span><span class="font-bold text-slate-700">₹${fin.remainingYearly}</span></div></div><div class="flex gap-2 mb-4"><button onclick="window.openFeeUpdate('${std.admNo}')" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold py-2.5 rounded-lg transition shadow">Record Payment</button>${fin.remainingYearly === 0 ? `<button onclick="window.printNoDue('${std.admNo}')" class="flex-1 bg-emerald-50 text-emerald-700 border text-xs font-bold py-2.5 rounded-lg transition"><i class="fas fa-certificate mr-1"></i> No Due</button>` : ''}</div><div class="border-t pt-3"><h5 class="text-xs font-bold text-slate-500 mb-2">Payment History</h5><div class="max-h-24 overflow-y-auto space-y-1 pr-1">${(std.feeHistory || []).slice().reverse().map(f => `<div class="text-[11px] flex justify-between border-b pb-1 border-slate-100"><span><b>${f.month}</b> <span class="text-slate-400">(${f.date})</span></span><span class="text-emerald-600 font-bold">₹${f.amount}</span></div>`).join('') || '<p class="text-[10px] text-slate-400">No records found.</p>'}</div></div></div>` : ''}
                         <div class="border rounded-xl p-5 shadow-sm relative overflow-hidden ${std.leaveStatus === 'On Leave' ? 'bg-amber-50' : 'bg-emerald-50'}"><h4 class="font-bold text-slate-700 mb-3"><i class="fas fa-edit text-indigo-500 mr-2"></i>Add Record (Discipline / Achievement)</h4><div class="flex flex-col lg:flex-row gap-2"><select id="noteType" class="border p-2.5 rounded-xl text-sm outline-none bg-white font-bold"><option value="discipline">Discipline Issue</option><option value="achievement">Special Achievement</option></select><input type="text" id="newNote" placeholder="Title / Event..." class="flex-1 border p-2.5 rounded-xl text-sm outline-none"><input type="text" id="newRemark" placeholder="Remarks (Optional)..." class="flex-1 border p-2.5 rounded-xl text-sm outline-none"><button onclick="window.addNote('${std.admNo}')" class="bg-slate-800 text-white px-6 py-2.5 rounded-xl text-sm font-bold shadow transition">Save Record</button></div><div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4"><div><h5 class="text-xs font-bold text-rose-500 uppercase mb-2 border-b pb-1">Disciplinary Records</h5><div class="space-y-2">${std.disciplineRecords.map(r => `<div class="bg-white p-3 rounded-lg border border-rose-100 text-sm flex justify-between shadow-sm"><div><span class="text-slate-400 font-mono text-xs mr-2">[${r.date}]</span> <b>${r.note}</b>${r.remark ? `<br><span class="text-slate-500 text-xs mt-1 block">Remark: ${r.remark}</span>` : ''}<span class="text-[10px] text-slate-400 block mt-1">Added by: ${r.addedBy || 'Admin'}</span></div><button onclick="window.deleteRecord('${std.admNo}', 'discipline', '${r.date}')" class="text-rose-400 hover:text-rose-600 ml-2"><i class="fas fa-trash"></i></button></div>`).join('') || '<p class="text-xs text-slate-400">No records.</p>'}</div></div><div><h5 class="text-xs font-bold text-emerald-500 uppercase mb-2 border-b pb-1">Achievements</h5><div class="space-y-2">${std.achievements.map(r => `<div class="bg-white p-3 rounded-lg border border-emerald-100 text-sm flex justify-between shadow-sm"><div><span class="text-slate-400 font-mono text-xs mr-2">[${r.date}]</span> <b>${r.note}</b>${r.remark ? `<br><span class="text-slate-500 text-xs mt-1 block">Remark: ${r.remark}</span>` : ''}<span class="text-[10px] text-slate-400 block mt-1">Added by: ${r.addedBy || 'Admin'}</span></div><button onclick="window.deleteRecord('${std.admNo}', 'achievement', '${r.date}')" class="text-rose-400 hover:text-rose-600 ml-2"><i class="fas fa-trash"></i></button></div>`).join('') || '<p class="text-xs text-slate-400">No achievements.</p>'}</div></div></div></div></div></div>
             `;
         }
@@ -1165,12 +1165,12 @@
                         <div class="flex flex-col md:flex-row items-start md:items-center gap-4">
                             <div class="flex-shrink-0 w-12 h-12 bg-emerald-500/20 rounded-xl flex items-center justify-center text-emerald-400 text-2xl"><i class="fas fa-database"></i></div>
                             <div class="flex-1 min-w-0">
-                                <h3 class="font-extrabold text-base text-emerald-100 mb-1">📋 വിദ്യാർത്ഥി ഡാറ്റ ബൾക്ക് അപ്‌ഡേറ്റ്</h3>
-                                <p class="text-xs text-emerald-300 leading-relaxed"><b class="text-white">1.</b> CSV ഡൗൺലോഡ് ചെയ്യുക &nbsp;→&nbsp; <b class="text-white">2.</b> Excel-ൽ തിരുത്തുക &nbsp;→&nbsp; <b class="text-white">3.</b> CSV ആയി Save ചെയ്ത് Upload ചെയ്യുക</p>
+                                <h3 class="font-extrabold text-base text-emerald-100 mb-1">📋 Bulk Student Data Update</h3>
+                                <p class="text-xs text-emerald-300 leading-relaxed"><b class="text-white">1.</b> Download Excel/CSV &nbsp;→&nbsp; <b class="text-white">2.</b> Edit in Excel &nbsp;→&nbsp; <b class="text-white">3.</b> Save and Upload</p>
                             </div>
                             <div class="flex flex-row gap-2 w-full md:w-auto flex-shrink-0">
-                                <button onclick="window.downloadCurrentStudentsCSV()" class="flex items-center justify-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-white font-extrabold px-4 py-2.5 rounded-xl text-sm transition-all shadow-md cursor-pointer active:scale-95 whitespace-nowrap"><i class="fas fa-file-download"></i> ഡൗൺലോഡ്</button>
-                                <button onclick="document.getElementById('bulkUploadModal').classList.remove('hidden'); document.getElementById('bulkUploadModal').classList.add('flex'); if(window.updateCSVModalUI) window.updateCSVModalUI();" class="flex items-center justify-center gap-2 bg-white/15 hover:bg-white/25 text-white font-extrabold px-4 py-2.5 rounded-xl text-sm transition-all border border-white/30 cursor-pointer active:scale-95 whitespace-nowrap"><i class="fas fa-cloud-upload-alt"></i> അപ്‌ലോഡ്</button>
+                                <button onclick="window.downloadCurrentStudentsCSV()" class="flex items-center justify-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-white font-extrabold px-4 py-2.5 rounded-xl text-sm transition-all shadow-md cursor-pointer active:scale-95 whitespace-nowrap"><i class="fas fa-file-download"></i> Download</button>
+                                <button onclick="document.getElementById('bulkUploadModal').classList.remove('hidden'); document.getElementById('bulkUploadModal').classList.add('flex'); if(window.updateCSVModalUI) window.updateCSVModalUI();" class="flex items-center justify-center gap-2 bg-white/15 hover:bg-white/25 text-white font-extrabold px-4 py-2.5 rounded-xl text-sm transition-all border border-white/30 cursor-pointer active:scale-95 whitespace-nowrap"><i class="fas fa-cloud-upload-alt"></i> Upload</button>
                             </div>
                         </div>
                     </div>` : ''}
@@ -1440,7 +1440,7 @@
 
                 ctx.fillStyle = '#34d399';
                 ctx.font = 'bold 12px "Segoe UI", Arial, sans-serif';
-                ctx.fillText('PAYMENT VOUCHER • ഔദ്യോഗിക രസീത്', cardX + cardW / 2, badgeY + 19);
+                ctx.fillText('PAYMENT VOUCHER • OFFICIAL RECEIPT', cardX + cardW / 2, badgeY + 19);
 
                 // Details Rows
                 let curY = cardY + 185;
@@ -1494,7 +1494,7 @@
                 ctx.textAlign = 'center';
                 ctx.fillStyle = '#065f46';
                 ctx.font = 'bold 13px "Segoe UI", Arial, sans-serif';
-                ctx.fillText('AMOUNT PAID / അടച്ച തുക', boxX + boxW / 2, curY + 30);
+                ctx.fillText('AMOUNT PAID', boxX + boxW / 2, curY + 30);
 
                 ctx.fillStyle = '#059669';
                 ctx.font = 'bold 36px "Segoe UI", Arial, sans-serif';
@@ -1593,7 +1593,7 @@
             const html = `
                 <div class="header">
                     <h2 class="title">KKHM ISLAMIC & ARTS COLLEGE</h2>
-                    <p class="subtitle">FEE PAYMENT RECEIPT • ഔദ്യോഗിക ഫീസ് രസീത്</p>
+                    <p class="subtitle">FEE PAYMENT RECEIPT • Official Fee Receipt</p>
                 </div>
                 <div style="border:1px solid #cbd5e1; padding:20px; border-radius:12px; margin-top:20px; background:#ffffff;">
                     <div style="display:flex; justify-content:space-between; margin-bottom:15px; border-bottom:1px solid #e2e8f0; padding-bottom:10px;">
@@ -1607,7 +1607,7 @@
                         <tr><td><b>Fee Month:</b></td><td><b>${data.month}</b></td></tr>
                     </table>
                     <div style="background:#ecfdf5; border:2px dashed #064e3b; padding:15px; border-radius:10px; margin:20px 0; text-align:center;">
-                        <span style="font-size:13px; color:#065f46; font-weight:bold;">AMOUNT RECEIVED / അടച്ച തുക</span><br>
+                        <span style="font-size:13px; color:#065f46; font-weight:bold;">AMOUNT RECEIVED</span><br>
                         <span style="font-size:28px; color:#064e3b; font-weight:900;">₹${data.amount}</span>
                     </div>
                     <p style="font-size:13px; color:#64748b;">Remaining Balance Due: <b style="color:${parseInt(data.balance) > 0 ? '#e11d48' : '#059669'};">₹${data.balance}</b></p>
@@ -1658,15 +1658,15 @@
                 const filename = `Receipt_${data.receiptNo}.png`;
                 const receiptFile = new File([blob], filename, { type: 'image/png' });
 
-                const baseMsg = `*KKHM ISLAMIC & ARTS COLLEGE*\n*ഔദ്യോഗിക ഫീസ് രസീത് / Fee Receipt*\n\n` +
-                    `പ്രിയപ്പെട്ട രക്ഷിതാവേ,\n` +
-                    `നിങ്ങളുടെ മകൻ/മകൾ *${data.name}* (Adm No: *${data.admNo}*, Class: *${data.class}*)-ന്റെ കോളേജ് ഫീസ് വിജയകരമായി സ്വീകരിച്ചിരിക്കുന്നു.\n\n` +
-                    `🧾 *രസീത് നമ്പർ:* ${data.receiptNo}\n` +
-                    `📅 *തീയതി:* ${data.date}\n` +
-                    `🗓️ *മാസം:* ${data.month}\n` +
-                    `💰 *അടച്ച തുക:* *₹${data.amount}*\n` +
-                    `📉 *ബാക്കി കുടിശ്ശിക:* ₹${data.balance}\n\n` +
-                    `നന്ദി!\n- KKHM Islamic & Arts College Office`;
+                const baseMsg = `*KKHM ISLAMIC & ARTS COLLEGE*\n*Official Fee Receipt*\n\n` +
+                    `Dear Parent,\n` +
+                    `College fee payment for your ward *${data.name}* (Adm No: *${data.admNo}*, Class: *${data.class}*) has been successfully received.\n\n` +
+                    `🧾 *Receipt No:* ${data.receiptNo}\n` +
+                    `📅 *Date:* ${data.date}\n` +
+                    `🗓️ *Month:* ${data.month}\n` +
+                    `💰 *Amount Paid:* *₹${data.amount}*\n` +
+                    `📉 *Balance Due:* ₹${data.balance}\n\n` +
+                    `Thank you!\n- KKHM Islamic & Arts College Office`;
 
                 // 1. Mobile & Web Share API support (shares file + text caption directly)
                 if (navigator.canShare && navigator.canShare({ files: [receiptFile] })) {
@@ -1715,7 +1715,7 @@
                         if (btn) btn.innerHTML = `<i class="fas fa-cloud-upload-alt animate-bounce"></i> Generating Photo Link...`;
                         const driveUrl = await window.uploadToDrive(imgResult.dataUrl, filename);
                         if (driveUrl && driveUrl.startsWith('http')) {
-                            finalMsg += `\n\n📸 *രസീത് ഫോട്ടോ / Receipt Photo Link:*\n${driveUrl}`;
+                            finalMsg += `\n\n📸 *Receipt Photo Link:*\n${driveUrl}`;
                         }
                     } catch (uploadErr) {
                         console.warn("Drive upload fallback:", uploadErr);
@@ -1734,19 +1734,19 @@
                         window.location.href = waUrl;
                     }
                 }
-                window.showToast("രസീത് ഫോട്ടോ ജനറേറ്റ് ചെയ്തു! WhatsApp തുറക്കുന്നു...\nPhoto clipboard-ൽ copy ചെയ്തിട്ടുണ്ട്. WhatsApp-ൽ Ctrl+V / Paste ചെയ്യുക.", "success");
+                window.showToast("Receipt photo generated! Opening WhatsApp...\nPhoto copied to clipboard. Press Ctrl+V to paste in WhatsApp.", "success");
 
             } catch (err) {
                 console.error("Receipt sharing error:", err);
-                const fallbackMsg = `*KKHM ISLAMIC & ARTS COLLEGE*\n*ഔദ്യോഗിക ഫീസ് രസീത് / Fee Receipt*\n\n` +
-                    `പ്രിയപ്പെട്ട രക്ഷിതാവേ,\n` +
-                    `നിങ്ങളുടെ മകൻ/മകൾ *${data.name}* (Adm No: *${data.admNo}*, Class: *${data.class}*)-ന്റെ കോളേജ് ഫീസ് വിജയകരമായി സ്വീകരിച്ചിരിക്കുന്നു.\n\n` +
-                    `🧾 *രസീത് നമ്പർ:* ${data.receiptNo}\n` +
-                    `📅 *തീയതി:* ${data.date}\n` +
-                    `🗓️ *മാസം:* ${data.month}\n` +
-                    `💰 *അടച്ച തുക:* *₹${data.amount}*\n` +
-                    `📉 *ബാക്കി കുടിശ്ശിക:* ₹${data.balance}\n\n` +
-                    `നന്ദി!\n- KKHM Islamic & Arts College Office`;
+                const fallbackMsg = `*KKHM ISLAMIC & ARTS COLLEGE*\n*Official Fee Receipt*\n\n` +
+                    `Dear Parent,\n` +
+                    `College fee payment for your ward *${data.name}* (Adm No: *${data.admNo}*, Class: *${data.class}*) has been successfully received.\n\n` +
+                    `🧾 *Receipt No:* ${data.receiptNo}\n` +
+                    `📅 *Date:* ${data.date}\n` +
+                    `🗓️ *Month:* ${data.month}\n` +
+                    `💰 *Amount Paid:* *₹${data.amount}*\n` +
+                    `📉 *Balance Due:* ₹${data.balance}\n\n` +
+                    `Thank you!\n- KKHM Islamic & Arts College Office`;
                 const waUrl = `https://wa.me/${phone}?text=${encodeURIComponent(fallbackMsg)}`;
                 if (waWindow && !waWindow.closed) {
                     waWindow.location.href = waUrl;
@@ -1776,30 +1776,30 @@
             if(phone.length === 10) phone = '91' + phone;
 
             let statusNotice = '';
-            if (fin.dueStatus === 'OVERDUE') statusNotice = `⚠️ *അവസാന തീയതി കഴിഞ്ഞിരിക്കുന്നു (${fin.daysOverdue} ദിവസങ്ങൾ മുൻപ്)*\n`;
-            else if (fin.dueStatus === 'DUE_TODAY') statusNotice = `⚡ *ഇന്നാണ് ഫീസ് അടക്കേണ്ട അവസാന തീയതി!*\n`;
-            else statusNotice = `🗓️ *അവസാന തീയതി: ${fin.formattedDueDate}*\n`;
+            if (fin.dueStatus === 'OVERDUE') statusNotice = `⚠️ *Payment overdue (${fin.daysOverdue} days ago)*\n`;
+            else if (fin.dueStatus === 'DUE_TODAY') statusNotice = `⚡ *Today is the due date for fee payment!*\n`;
+            else statusNotice = `🗓️ *Due Date: ${fin.formattedDueDate}*\n`;
 
-            const lastPaidDisplay = fin.formattedLastPaidMonth || 'ഇതുവരെ അടച്ചിട്ടില്ല (None)';
+            const lastPaidDisplay = fin.formattedLastPaidMonth || 'Not Paid Yet (None)';
 
-            const msg = `*KKHM ISLAMIC & ARTS COLLEGE*\n*ഫീസ് കുടിശ്ശിക അറിയിപ്പ് / Fee Due Reminder*\n\n` +
-                `പ്രിയപ്പെട്ട രക്ഷിതാവേ,\n` +
-                `KKHM കോളേജിലെ നിങ്ങളുടെ മകൻ/മകൾ *${std.name}* (Adm: *${std.admNo}*, Class: *${std.class}*)-ന്റെ കോളേജ് ഫീസ് വിവരങ്ങൾ താഴെ നൽകുന്നു:\n\n` +
-                `🗓️ *ഫീസ് ആരംഭിച്ച മാസം:* ${fin.formattedStartMonth}\n` +
-                `✅ *അവസാനം അടച്ച മാസം:* ${lastPaidDisplay}\n` +
-                `💰 *പ്രതിമാസ ഫീസ്:* ₹${std.monthlyFee || fin.monthlyRate}\n` +
-                `💵 *ആകെ അടച്ച തുക:* ₹${std.totalPaid || 0} (${fin.paidMonthsCount} മാസം)\n` +
-                `⚠️ *കുടിശ്ശികയുള്ള മാസങ്ങൾ:* ${fin.dueMonthsCount} മാസം\n` +
-                `📌 *അടക്കേണ്ട തുക (Due Amount): ₹${fin.currentDue}*\n` +
+            const msg = `*KKHM ISLAMIC & ARTS COLLEGE*\n*Fee Due Reminder / Fee Due Reminder*\n\n` +
+                `Dear Parent,\n` +
+                `Fee details for your ward *${std.name}* (Adm: *${std.admNo}*, Class: *${std.class}*)at KKHM College are given below:\n\n` +
+                `🗓️ *Fee Start Month:* ${fin.formattedStartMonth}\n` +
+                `✅ *Last Paid Month:* ${lastPaidDisplay}\n` +
+                `💰 *Monthly Fee:* ₹${std.monthlyFee || fin.monthlyRate}\n` +
+                `💵 *Total Paid:* ₹${std.totalPaid || 0} (${fin.paidMonthsCount} months)\n` +
+                `⚠️ *Due Months Count:* ${fin.dueMonthsCount} months\n` +
+                `📌 *Due Amount: ₹${fin.currentDue}*\n` +
                 statusNotice +
-                `\n*ഫീസ് അടക്കാനുള്ള ബാങ്ക് വിവരങ്ങൾ:*\n` +
-                `🏦 ബാങ്ക്: ${db.settings.bankName}\n` +
-                `👤 അക്കൗണ്ട് പേര്: ${db.settings.accName}\n` +
-                `🔢 A/C നമ്പർ: ${db.settings.accNo}\n` +
-                `🔤 IFSC കോഡ്: ${db.settings.ifsc}\n` +
+                `\n*Bank Account Details for Payment:*\n` +
+                `🏦 Bank: ${db.settings.bankName}\n` +
+                `👤 Account Name: ${db.settings.accName}\n` +
+                `🔢 A/C Number: ${db.settings.accNo}\n` +
+                `🔤 IFSC Code: ${db.settings.ifsc}\n` +
                 `📲 UPI ID: ${db.settings.upi}\n\n` +
-                `ഫീസ് അടച്ച ശേഷം വിവരങ്ങൾ ഈ നമ്പറിലേക്ക് അറിയിക്കുമല്ലോ. നന്ദി!\n` +
-                `- പ്രിൻസിപ്പാൾ / ഓഫീസ്, KKHM കോളേജ്`;
+                `Please confirm with the office once the payment is made. Thank you!\n` +
+                `- Principal / Office, KKHM College`;
 
             window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
         };
@@ -1860,12 +1860,12 @@
             // Update row cells directly
             const paidCell = document.getElementById(`fee_paid_${admNo}`);
             if (paidCell) {
-                paidCell.innerHTML = `<span class="text-emerald-700 font-black text-sm">₹${std.totalPaid}</span><div class="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200 inline-block mt-0.5">${fin.paidMonthsCount} മാസം അടച്ചു</div>`;
+                paidCell.innerHTML = `<span class="text-emerald-700 font-black text-sm">₹${std.totalPaid}</span><div class="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200 inline-block mt-0.5">${fin.paidMonthsCount} Months Paid</div>`;
             }
 
             const dueCell = document.getElementById(`fee_due_${admNo}`);
             if (dueCell) {
-                dueCell.innerHTML = `<span class="font-black text-sm ${fin.currentDue > 0 ? 'text-rose-600' : 'text-emerald-600'}">₹${fin.currentDue}</span><div class="text-[10px] font-bold px-2 py-0.5 rounded-full border inline-block mt-0.5 ${fin.currentDue > 0 ? 'bg-rose-50 text-rose-700 border-rose-200' : 'bg-emerald-50 text-emerald-700 border-emerald-200'}">${fin.currentDue > 0 ? `${fin.dueMonthsCount} മാസം കുടിശ്ശിക` : 'പൂർത്തിയായി'}</div>`;
+                dueCell.innerHTML = `<span class="font-black text-sm ${fin.currentDue > 0 ? 'text-rose-600' : 'text-emerald-600'}">₹${fin.currentDue}</span><div class="text-[10px] font-bold px-2 py-0.5 rounded-full border inline-block mt-0.5 ${fin.currentDue > 0 ? 'bg-rose-50 text-rose-700 border-rose-200' : 'bg-emerald-50 text-emerald-700 border-emerald-200'}">${fin.currentDue > 0 ? `${fin.dueMonthsCount} Months Due` : 'Cleared'}</div>`;
             }
 
             const remCell = document.getElementById(`fee_rem_${admNo}`);
@@ -1878,7 +1878,7 @@
 
             // Save to DB
             window.saveDB();
-            window.showToast(`${std.name}: ${fin.paidMonthsCount} മാസം അടച്ചു (₹${std.totalPaid}), കുടിശ്ശിക: ₹${fin.currentDue}`);
+            window.showToast(`${std.name}: ${fin.paidMonthsCount} Months Paid (₹${std.totalPaid}), Due: ₹${fin.currentDue}`);
         };
 
         window.saveStudentFeeRow = function(admNo) {
@@ -1908,7 +1908,7 @@
 
             window.saveDB();
             window.refreshClassFeeSummaryStats(window.feeSelectedClass);
-            window.showToast(`✅ ${std.name} ഫീസ് വിവരങ്ങൾ സേവ് ചെയ്തു!`, 'success');
+            window.showToast(`✅ ${std.name} fee details saved!`, 'success');
         };
 
         window.clearStudentLastPaidMonth = function(admNo) {
@@ -1919,7 +1919,7 @@
 
         window.saveClassFeeChanges = function() {
             window.saveDB();
-            window.showToast('ക്ലാസ് ഫീസ് രജിസ്റ്ററിലെ എല്ലാ മാറ്റങ്ങളും വിജയകരമായി സേവ് ചെയ്തു!', 'success');
+            window.showToast('All changes in class fee register saved successfully!', 'success');
         };
 
         window.refreshClassFeeSummaryStats = function(cls) {
@@ -1943,12 +1943,12 @@
             if (elDue) elDue.innerText = `₹${totalDue}`;
             if (elRem) elRem.innerText = `₹${totalRem}`;
             if (elExp) elExp.innerText = `₹${totalExp}`;
-            if (elCount) elCount.innerText = `${clsStudents.length} കുട്ടികൾ`;
+            if (elCount) elCount.innerText = `${clsStudents.length} Students`;
         };
 
         window.openBatchStartMonthModal = function() {
             const cls = window.feeSelectedClass;
-            if (!cls) return alert("ദയവായി ഒരു ക്ലാസ് തിരഞ്ഞെടുക്കുക");
+            if (!cls) return alert("Please select a class");
             const nameEl = document.getElementById('batchClassTargetName');
             if (nameEl) nameEl.innerText = cls;
             const selectEl = document.getElementById('batchStartMonthSelect');
@@ -1984,13 +1984,13 @@
                 modal.classList.add('hidden');
                 modal.classList.remove('flex');
             }
-            window.showToast(`${cls}-ലെ ${count} വിദ്യാർത്ഥികളുടെ ഫീസ് ആരംഭ മാസം ${window.formatMonthMalayalam(newStart)} ആയി നൽകി!`, 'success');
+            window.showToast(`${cls}: Fee start month updated to ${window.formatMonthMalayalam(newStart)} for ${count} students!`, 'success');
             window.renderApp();
         };
 
         window.printClassFeeStatement = function(cls) {
             const students = db.students.filter(s => s.class === cls).sort((a,b) => String(a.admNo).localeCompare(String(b.admNo), undefined, {numeric: true}));
-            if (students.length === 0) return alert("ഈ ക്ലാസിൽ വിദ്യാർത്ഥികൾ ആരുമില്ല.");
+            if (students.length === 0) return alert("No students found in this class.");
 
             let totalPaidSum = 0;
             let totalDueSum = 0;
@@ -2003,7 +2003,7 @@
                 totalRemSum += fin.remainingYearly;
 
                 const startDisp = fin.formattedStartMonth;
-                const lastPaidDisp = fin.formattedLastPaidMonth || 'അടച്ചിട്ടില്ല';
+                const lastPaidDisp = fin.formattedLastPaidMonth || 'Not Paid';
                 const dueText = fin.currentDue > 0 ? `₹${fin.currentDue} (${fin.dueMonthsCount} m)` : 'Nil';
 
                 return `<tr>
@@ -2023,7 +2023,7 @@
             const html = `
                 <div class="header">
                     <h2 class="title">KKHM ISLAMIC & ARTS COLLEGE</h2>
-                    <p class="subtitle">ക്ലാസ് ഫീസ് രജിസ്റ്റർ / Class Fee Register - ${cls} (${students.length} Students)</p>
+                    <p class="subtitle">Class Fee Register - ${cls} (${students.length} Students)</p>
                     <p style="font-size:11px;color:#64748b;margin-top:4px;">Date: ${new Date().toLocaleDateString('en-GB')}</p>
                 </div>
                 <table>
@@ -2031,14 +2031,14 @@
                         <tr>
                             <th style="width:30px;">#</th>
                             <th>Adm No</th>
-                            <th>വിദ്യാർത്ഥിയുടെ പേര്</th>
-                            <th>ഫോൺ</th>
-                            <th>പ്രതിമാസം</th>
-                            <th>തുടങ്ങുന്ന മാസം</th>
-                            <th>അവസാനം അടച്ചത്</th>
-                            <th>ആകെ അടച്ചത്</th>
-                            <th>കുടിശ്ശിക (Arrears)</th>
-                            <th>വർഷാവസാന ബാക്കി</th>
+                            <th>Student Name</th>
+                            <th>Phone</th>
+                            <th>Monthly Fee</th>
+                            <th>Start Month</th>
+                            <th>Last Paid</th>
+                            <th>Total Paid</th>
+                            <th>Arrears / Due</th>
+                            <th>Year-end Balance</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -2046,7 +2046,7 @@
                     </tbody>
                     <tfoot>
                         <tr style="background:#f1f5f9;font-weight:bold;">
-                            <td colspan="7" style="text-align:right;padding-right:15px;">ആകെത്തുക (Total):</td>
+                            <td colspan="7" style="text-align:right;padding-right:15px;">Total:</td>
                             <td class="center" style="color:#047857;">₹${totalPaidSum}</td>
                             <td class="center" style="color:#b91c1c;">₹${totalDueSum}</td>
                             <td class="center">₹${totalRemSum}</td>
@@ -2058,9 +2058,9 @@
         };
 
         window.exportClassFeeExcel = function(cls) {
-            if (typeof XLSX === 'undefined') return alert('Excel ലൈബ്രറി ലോഡ് ആകുന്നു, ദയവായി അല്പം കഴിഞ്ഞ് വീണ്ടും ശ്രമിക്കുക.');
+            if (typeof XLSX === 'undefined') return alert('Excel library is loading, please try again in a moment.');
             const students = db.students.filter(s => s.class === cls).sort((a,b) => String(a.admNo).localeCompare(String(b.admNo), undefined, {numeric: true}));
-            if (students.length === 0) return alert('ഈ ക്ലാസിൽ കുട്ടികൾ ആരുമില്ല.');
+            if (students.length === 0) return alert('No students found in this class.');
 
             const headers = [
                 'Sl No', 'Adm No', 'Student Name', 'Class', 'Phone',
@@ -2096,7 +2096,7 @@
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, `Register_${cls.substring(0, 20)}`);
             window._xlsxDownload(wb, `Fee_Register_${cls.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.xlsx`);
-            window.showToast(`${cls} ഫീസ് രജിസ്റ്റർ Excel ഫയലായി ഡൗൺലോഡ് ചെയ്തു!`, 'success');
+            window.showToast(`${cls} fee register downloaded as Excel file!`, 'success');
         };
 
         window.renderAdminFee = function() {
@@ -2146,19 +2146,19 @@
                     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                         <div>
                             <h2 class="text-2xl font-black text-slate-800 flex items-center gap-2">
-                                <i class="fas fa-hand-holding-usd text-emerald-600"></i> ഫീസ് മാനേജ്മെന്റ് (Fee Management)
+                                <i class="fas fa-hand-holding-usd text-emerald-600"></i> Fee Management
                             </h2>
-                            <p class="text-xs text-slate-500 mt-1">ക്ലാസ് തിരിച്ചുള്ള ഫീസ് രജിസ്റ്റർ, കുടിശ്ശിക ലിസ്റ്റ്, ഗൂഗിൾ ഷീറ്റ് സിങ്ക്</p>
+                            <p class="text-xs text-slate-500 mt-1">Class-wise fee register, arrears list, Google Sheet sync</p>
                         </div>
                     </div>
 
                     <!-- Sub-tabs Navigation Bar -->
                     <div class="flex gap-2 border-b border-slate-200 overflow-x-auto pb-1">
                         <button onclick="window.switchFeeSubTab('register')" class="px-5 py-2.5 font-black text-xs md:text-sm rounded-xl transition flex items-center gap-2 cursor-pointer ${currentSubTab === 'register' ? 'bg-[#022c22] text-white shadow-md' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'}">
-                            <i class="fas fa-table-list text-amber-400"></i> ക്ലാസ് ഫീസ് രജിസ്റ്റർ (Register)
+                            <i class="fas fa-table-list text-amber-400"></i> Class Fee Register
                         </button>
                         <button onclick="window.switchFeeSubTab('defaulters')" class="px-5 py-2.5 font-black text-xs md:text-sm rounded-xl transition flex items-center gap-2 cursor-pointer ${currentSubTab === 'defaulters' ? 'bg-[#022c22] text-white shadow-md' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'}">
-                            <i class="fas fa-user-clock text-rose-400"></i> കുടിശ്ശികക്കാർ (Defaulters)
+                            <i class="fas fa-user-clock text-rose-400"></i> Defaulters List
                             <span class="text-[10px] font-black px-2 py-0.5 rounded-full ${currentSubTab === 'defaulters' ? 'bg-rose-500 text-white' : 'bg-rose-100 text-rose-700'}">${totalDefaultersCount}</span>
                         </button>
                         <button onclick="window.switchFeeSubTab('sync')" class="px-5 py-2.5 font-black text-xs md:text-sm rounded-xl transition flex items-center gap-2 cursor-pointer ${currentSubTab === 'sync' ? 'bg-[#022c22] text-white shadow-md' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'}">
@@ -2174,20 +2174,20 @@
                                 <div>
                                     <div class="flex items-center gap-2">
                                         <span class="bg-emerald-500/20 text-emerald-300 text-xs font-black uppercase px-2.5 py-1 rounded-lg border border-emerald-400/20">Class-wise Register</span>
-                                        <span class="bg-amber-400/20 text-amber-300 text-xs font-bold px-2 py-0.5 rounded-md">തത്സമയ കണക്കുകൂട്ടൽ</span>
+                                        <span class="bg-amber-400/20 text-amber-300 text-xs font-bold px-2 py-0.5 rounded-md">Live Calculation</span>
                                     </div>
                                     <h3 class="text-2xl font-black mt-2 tracking-tight flex items-center gap-2">
-                                        <span>${activeCls || 'ക്ലാസ് തിരഞ്ഞെടുക്കുക'}</span>
-                                        <span class="text-xs bg-emerald-500/30 text-emerald-200 px-2 py-1 rounded-lg font-bold">${clsStudents.length} കുട്ടികൾ</span>
+                                        <span>${activeCls || 'Select Class'}</span>
+                                        <span class="text-xs bg-emerald-500/30 text-emerald-200 px-2 py-1 rounded-lg font-bold">${clsStudents.length} Students</span>
                                     </h3>
                                     <p class="text-xs text-emerald-200/80 mt-1 max-w-xl leading-relaxed">
-                                        ഓരോ വിദ്യാർത്ഥിയുടെയും <b>ഫീസ് തുടങ്ങുന്ന മാസവും</b> <b>അവസാനം അടച്ച മാസവും</b> ഇവിടെ രേഖപ്പെടുത്താം. അതനുസരിച്ച് അടച്ച തുകയും കുടിശ്ശികയും സ്വയം അപ്‌ഡേറ്റ് ആകും.
+                                        Record each student's <b>Fee Start Month</b> and <b>Last Paid Month</b> here. Paid amounts and dues will be automatically calculated.
                                     </p>
                                 </div>
                                 <div class="w-full md:w-auto flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-                                    <label class="text-xs font-bold text-emerald-200 self-center hidden sm:block whitespace-nowrap">ക്ലാസ്:</label>
+                                    <label class="text-xs font-bold text-emerald-200 self-center hidden sm:block whitespace-nowrap">Class:</label>
                                     <select onchange="window.switchFeeClass(this.value)" class="bg-emerald-900/90 text-white font-extrabold px-4 py-2.5 rounded-xl border border-emerald-500/50 shadow-inner outline-none text-sm cursor-pointer hover:bg-emerald-800 transition">
-                                        ${allClasses.map(c => `<option value="${c}" ${c === activeCls ? 'selected' : ''}>${c} (${classCounts[c] || 0} കുട്ടികൾ)</option>`).join('')}
+                                        ${allClasses.map(c => `<option value="${c}" ${c === activeCls ? 'selected' : ''}>${c} (${classCounts[c] || 0} Students)</option>`).join('')}
                                     </select>
                                 </div>
                             </div>
@@ -2195,7 +2195,7 @@
                             <!-- Class Quick Selection Buttons -->
                             ${allClasses.length > 1 ? `
                             <div class="flex flex-wrap gap-1.5 mt-4 pt-4 border-t border-emerald-800/50 items-center">
-                                <span class="text-[11px] font-bold text-emerald-300 mr-1"><i class="fas fa-layer-group mr-1"></i>ക്ലാസ് മാറ്റാൻ:</span>
+                                <span class="text-[11px] font-bold text-emerald-300 mr-1"><i class="fas fa-layer-group mr-1"></i>Switch Class:</span>
                                 ${allClasses.map(c => `
                                     <button onclick="window.switchFeeClass('${c}')" class="px-3 py-1 rounded-lg text-xs font-bold transition cursor-pointer ${c === activeCls ? 'bg-amber-400 text-slate-950 font-black shadow-md' : 'bg-white/10 hover:bg-white/20 text-emerald-100'}">
                                         ${c} <span class="opacity-70 text-[10px]">(${classCounts[c] || 0})</span>
@@ -2208,35 +2208,35 @@
                         <div class="grid grid-cols-2 md:grid-cols-5 gap-3 md:gap-4">
                             <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
                                 <div class="flex items-center justify-between text-slate-500 mb-1">
-                                    <span class="text-[11px] font-bold uppercase tracking-wider">വിദ്യാർത്ഥികൾ</span>
+                                    <span class="text-[11px] font-bold uppercase tracking-wider">Students</span>
                                     <i class="fas fa-users text-slate-400 text-xs"></i>
                                 </div>
-                                <p class="text-xl md:text-2xl font-black text-slate-800" id="classStatCount">${clsStudents.length} കുട്ടികൾ</p>
+                                <p class="text-xl md:text-2xl font-black text-slate-800" id="classStatCount">${clsStudents.length} Students</p>
                             </div>
                             <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm border-t-4 border-t-blue-500">
                                 <div class="flex items-center justify-between text-slate-500 mb-1">
-                                    <span class="text-[11px] font-bold uppercase tracking-wider">പ്രതീക്ഷിക്കുന്നത്</span>
+                                    <span class="text-[11px] font-bold uppercase tracking-wider">Expected Fee</span>
                                     <i class="fas fa-calendar-alt text-blue-500 text-xs"></i>
                                 </div>
                                 <p class="text-xl md:text-2xl font-black text-slate-800" id="classStatExpected">₹${clsExp}</p>
                             </div>
                             <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm border-t-4 border-t-emerald-500">
                                 <div class="flex items-center justify-between text-slate-500 mb-1">
-                                    <span class="text-[11px] font-bold uppercase tracking-wider">ആകെ അടച്ചത്</span>
+                                    <span class="text-[11px] font-bold uppercase tracking-wider">Total Paid</span>
                                     <i class="fas fa-check-circle text-emerald-500 text-xs"></i>
                                 </div>
                                 <p class="text-xl md:text-2xl font-black text-emerald-600" id="classStatCollected">₹${clsCol}</p>
                             </div>
                             <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm border-t-4 border-t-rose-500">
                                 <div class="flex items-center justify-between text-slate-500 mb-1">
-                                    <span class="text-[11px] font-bold uppercase tracking-wider">നിലവിലെ കുടിശ്ശിക</span>
+                                    <span class="text-[11px] font-bold uppercase tracking-wider">Current Due</span>
                                     <i class="fas fa-exclamation-circle text-rose-500 text-xs"></i>
                                 </div>
                                 <p class="text-xl md:text-2xl font-black text-rose-600" id="classStatDue">₹${clsDue}</p>
                             </div>
                             <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm border-t-4 border-t-amber-500 col-span-2 md:col-span-1">
                                 <div class="flex items-center justify-between text-slate-500 mb-1">
-                                    <span class="text-[11px] font-bold uppercase tracking-wider">വർഷാവസാന ബാക്കി</span>
+                                    <span class="text-[11px] font-bold uppercase tracking-wider">Year-end Balance</span>
                                     <i class="fas fa-hourglass-half text-amber-500 text-xs"></i>
                                 </div>
                                 <p class="text-xl md:text-2xl font-black text-amber-700" id="classStatRem">₹${clsRem}</p>
@@ -2247,20 +2247,20 @@
                         <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row justify-between items-center gap-3">
                             <div class="relative w-full md:w-80">
                                 <i class="fas fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                                <input type="text" oninput="window.filterClassFeeRows(this.value)" placeholder="${activeCls}-ൽ തിരയുക (പേര് / Adm No)..." class="w-full pl-9 pr-4 py-2 rounded-xl border border-slate-200 text-xs md:text-sm font-semibold text-slate-800 outline-none focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 bg-slate-50 transition">
+                                <input type="text" oninput="window.filterClassFeeRows(this.value)" placeholder="Search ${activeCls} (Name / Adm No)..." class="w-full pl-9 pr-4 py-2 rounded-xl border border-slate-200 text-xs md:text-sm font-semibold text-slate-800 outline-none focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 bg-slate-50 transition">
                             </div>
                             
                             <div class="flex flex-wrap items-center gap-2 w-full md:w-auto justify-end">
-                                <button onclick="window.openBatchStartMonthModal()" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-sm cursor-pointer" title="ഈ ക്ലാസിലെ എല്ലാ കുട്ടികൾക്കും ഒരുമിച്ച് ഫീസ് തുടങ്ങുന്ന മാസം നൽകുക">
-                                    <i class="fas fa-bolt text-indigo-500"></i> ബാച്ച് Start Month
+                                <button onclick="window.openBatchStartMonthModal()" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-sm cursor-pointer" title="Set fee start month for all students in this class together">
+                                    <i class="fas fa-bolt text-indigo-500"></i> Batch Start Month
                                 </button>
-                                <button onclick="window.saveClassFeeChanges()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-sm cursor-pointer" title="മാറ്റങ്ങൾ സേവ് ചെയ്യുക">
-                                    <i class="fas fa-save"></i> സേവ് ചെയ്യുക
+                                <button onclick="window.saveClassFeeChanges()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-sm cursor-pointer" title="Save Changes">
+                                    <i class="fas fa-save"></i> Save Changes
                                 </button>
-                                <button onclick="window.printClassFeeStatement('${activeCls}')" class="bg-slate-800 hover:bg-slate-900 text-white px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-sm cursor-pointer" title="ക്ലാസ് റിപ്പോർട്ട് പ്രിന്റ് ചെയ്യുക">
-                                    <i class="fas fa-print"></i> പ്രിന്റ്
+                                <button onclick="window.printClassFeeStatement('${activeCls}')" class="bg-slate-800 hover:bg-slate-900 text-white px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-sm cursor-pointer" title="Print Class Report">
+                                    <i class="fas fa-print"></i> Print
                                 </button>
-                                <button onclick="window.exportClassFeeExcel('${activeCls}')" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-sm cursor-pointer" title="Excel ഫയലായി ഡൗൺലോഡ് ചെയ്യുക">
+                                <button onclick="window.exportClassFeeExcel('${activeCls}')" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-sm cursor-pointer" title="Download as Excel File">
                                     <i class="fas fa-file-excel text-emerald-600"></i> Excel Export
                                 </button>
                             </div>
@@ -2273,14 +2273,14 @@
                                     <thead class="text-[11px] text-slate-500 bg-slate-100 uppercase font-black tracking-wider">
                                         <tr>
                                             <th class="p-3.5 text-center w-12">#</th>
-                                            <th class="p-3.5">വിദ്യാർത്ഥി (Student)</th>
-                                            <th class="p-3.5">പ്രതിമാസ ഫീസ്</th>
-                                            <th class="p-3.5">ഫീസ് തുടങ്ങുന്ന മാസം</th>
-                                            <th class="p-3.5">അവസാനം അടച്ച മാസം</th>
-                                            <th class="p-3.5">അടച്ച തുക (Paid)</th>
-                                            <th class="p-3.5">കുടിശ്ശിക (Due)</th>
-                                            <th class="p-3.5">വർഷാവസാന ബാക്കി</th>
-                                            <th class="p-3.5 text-center">സേവ് & Actions</th>
+                                            <th class="p-3.5">Student</th>
+                                            <th class="p-3.5">Monthly Fee</th>
+                                            <th class="p-3.5">Fee Start Month</th>
+                                            <th class="p-3.5">Last Paid Month</th>
+                                            <th class="p-3.5">Amount Paid</th>
+                                            <th class="p-3.5">Current Due</th>
+                                            <th class="p-3.5">Year-end Balance</th>
+                                            <th class="p-3.5 text-center">Save & Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody class="divide-y divide-slate-100">
@@ -2299,7 +2299,7 @@
                                                         <div>
                                                             <div class="font-black text-slate-800 text-sm leading-tight">${s.name}</div>
                                                             <div class="text-[11px] text-slate-400 font-mono mt-0.5 flex items-center gap-1.5">
-                                                                <i class="fas fa-phone text-[9px]"></i> ${s.phone || 'ഫോൺ ഇല്ല'}
+                                                                <i class="fas fa-phone text-[9px]"></i> ${s.phone || 'No Phone'}
                                                                 ${s.phone ? `<a href="https://wa.me/91${s.phone.replace(/\D/g,'')}" target="_blank" class="text-emerald-600 hover:text-emerald-700"><i class="fab fa-whatsapp"></i></a>` : ''}
                                                             </div>
                                                         </div>
@@ -2312,12 +2312,12 @@
                                                     </div>
                                                 </td>
                                                 <td class="p-3.5">
-                                                    <input type="month" id="fee_start_${s.admNo}" value="${startM}" onchange="window.updateStudentFeeField('${s.admNo}', 'feeStartMonth', this.value)" class="w-36 border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs font-bold text-indigo-900 bg-white shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none cursor-pointer" title="കലണ്ടറിൽ നിന്ന് മാസം തിരഞ്ഞെടുക്കുക">
+                                                    <input type="month" id="fee_start_${s.admNo}" value="${startM}" onchange="window.updateStudentFeeField('${s.admNo}', 'feeStartMonth', this.value)" class="w-36 border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs font-bold text-indigo-900 bg-white shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none cursor-pointer" title="Select month from calendar">
                                                 </td>
                                                 <td class="p-3.5">
                                                     <div class="flex items-center gap-1.5">
-                                                        <input type="month" id="fee_last_${s.admNo}" value="${lastM || ''}" onchange="window.updateStudentFeeField('${s.admNo}', 'lastPaidMonth', this.value)" class="w-36 border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs font-bold text-emerald-900 bg-white shadow-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none cursor-pointer" title="കലണ്ടറിൽ നിന്ന് മാസം തിരഞ്ഞെടുക്കുക">
-                                                        <button type="button" onclick="window.clearStudentLastPaidMonth('${s.admNo}')" class="text-slate-400 hover:text-rose-600 px-1 py-1 rounded text-xs transition" title="അടച്ചിട്ടില്ല എന്ന് മാറ്റുക (Clear)">
+                                                        <input type="month" id="fee_last_${s.admNo}" value="${lastM || ''}" onchange="window.updateStudentFeeField('${s.admNo}', 'lastPaidMonth', this.value)" class="w-36 border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs font-bold text-emerald-900 bg-white shadow-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none cursor-pointer" title="Select month from calendar">
+                                                        <button type="button" onclick="window.clearStudentLastPaidMonth('${s.admNo}')" class="text-slate-400 hover:text-rose-600 px-1 py-1 rounded text-xs transition" title="Mark as Unpaid (Clear)">
                                                             <i class="fas fa-times-circle text-sm"></i>
                                                         </button>
                                                     </div>
@@ -2326,7 +2326,7 @@
                                                     <div id="fee_paid_${s.admNo}">
                                                         <span class="text-emerald-700 font-black text-sm">₹${s.totalPaid || 0}</span>
                                                         <div class="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200 inline-block mt-0.5">
-                                                            ${fin.paidMonthsCount} മാസം അടച്ചു
+                                                            ${fin.paidMonthsCount} Months Paid
                                                         </div>
                                                     </div>
                                                 </td>
@@ -2334,7 +2334,7 @@
                                                     <div id="fee_due_${s.admNo}">
                                                         <span class="font-black text-sm ${fin.currentDue > 0 ? 'text-rose-600' : 'text-emerald-600'}">₹${fin.currentDue}</span>
                                                         <div class="text-[10px] font-bold px-2 py-0.5 rounded-full border inline-block mt-0.5 ${fin.currentDue > 0 ? 'bg-rose-50 text-rose-700 border-rose-200' : 'bg-emerald-50 text-emerald-700 border-emerald-200'}">
-                                                            ${fin.currentDue > 0 ? `${fin.dueMonthsCount} മാസം കുടിശ്ശിക` : 'പൂർത്തിയായി'}
+                                                            ${fin.currentDue > 0 ? `${fin.dueMonthsCount} Months Due` : 'Cleared'}
                                                         </div>
                                                     </div>
                                                 </td>
@@ -2345,13 +2345,13 @@
                                                 </td>
                                                 <td class="p-3.5 text-center">
                                                     <div class="inline-flex items-center gap-1.5">
-                                                        <button onclick="window.saveStudentFeeRow('${s.admNo}')" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 px-2.5 py-1.5 rounded-lg text-xs font-bold transition shadow-sm cursor-pointer" title="സേവ് ചെയ്യുക">
+                                                        <button onclick="window.saveStudentFeeRow('${s.admNo}')" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 px-2.5 py-1.5 rounded-lg text-xs font-bold transition shadow-sm cursor-pointer" title="Save">
                                                             <i class="fas fa-save mr-1"></i>Save
                                                         </button>
-                                                        <button onclick="window.sendWhatsAppDueReminder('${s.admNo}')" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 px-2.5 py-1.5 rounded-lg text-xs font-bold transition shadow-sm cursor-pointer" title="WhatsApp കുടിശ്ശിക ഓർമ്മപ്പെടുത്തൽ അയക്കുക">
+                                                        <button onclick="window.sendWhatsAppDueReminder('${s.admNo}')" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 px-2.5 py-1.5 rounded-lg text-xs font-bold transition shadow-sm cursor-pointer" title="Send WhatsApp Due Reminder">
                                                             <i class="fab fa-whatsapp text-emerald-600 text-sm"></i>
                                                         </button>
-                                                        <button onclick="window.openFeeUpdate('${s.admNo}')" class="bg-slate-800 hover:bg-slate-900 text-white px-2.5 py-1.5 rounded-lg text-xs font-bold transition shadow-sm cursor-pointer" title="ഫീസ് രേഖപ്പെടുത്തുക (Pay)">
+                                                        <button onclick="window.openFeeUpdate('${s.admNo}')" class="bg-slate-800 hover:bg-slate-900 text-white px-2.5 py-1.5 rounded-lg text-xs font-bold transition shadow-sm cursor-pointer" title="Record Payment (Pay)">
                                                             Pay
                                                         </button>
                                                     </div>
@@ -2360,7 +2360,7 @@
                                         }).join('') : `
                                             <tr>
                                                 <td colspan="9" class="p-8 text-center text-slate-400 font-bold">
-                                                    ഈ ക്ലാസിൽ വിദ്യാർത്ഥികളെ കണ്ടെത്തിയില്ല.
+                                                    No students found in this class.
                                                 </td>
                                             </tr>
                                         `}
@@ -2368,7 +2368,7 @@
                                 </table>
                             </div>
                             <div id="classFeeEmptySearch" style="display:none;" class="p-8 text-center text-slate-400 font-bold border-t">
-                                തിരഞ്ഞ വാക്കിന് അനുയോജ്യമായ വിദ്യാർത്ഥികളെ ഈ ക്ലാസിൽ കണ്ടെത്തിയില്ല.
+                                No matching students found in this class.
                             </div>
                         </div>
                     ` : ''}
@@ -2435,7 +2435,7 @@
                                                 <td class="p-4 font-bold text-slate-800">${s.name}</td>
                                                 <td class="p-4">${s.class}</td>
                                                 <td class="p-4 font-bold text-indigo-700 text-xs">${fin.formattedStartMonth}</td>
-                                                <td class="p-4 font-bold text-emerald-700 text-xs">${fin.formattedLastPaidMonth || 'അടച്ചിട്ടില്ല'}</td>
+                                                <td class="p-4 font-bold text-emerald-700 text-xs">${fin.formattedLastPaidMonth || 'Not Paid'}</td>
                                                 <td class="p-4 font-black text-rose-600 text-base">₹${s._currentDue}</td>
                                                 <td class="p-4">${badgeHtml}</td>
                                                 <td class="p-4 text-center">
@@ -2459,7 +2459,7 @@
                         <div class="bg-indigo-50 rounded-2xl shadow-sm border border-indigo-200 p-6 flex flex-col md:flex-row gap-4 items-center justify-between">
                             <div>
                                 <h3 class="font-bold text-indigo-900 text-lg"><i class="fas fa-sync text-indigo-600 mr-2"></i>Sync Fees from Google Sheet</h3>
-                                <p class="text-xs text-indigo-700 mt-1">Google Sheet-ൽ ഫീസ് സൂക്ഷിക്കുന്നുണ്ടെങ്കിൽ, 'Publish to web as CSV' ലിങ്ക് ഇവിടെ നൽകി നേരിട്ട് വിവരങ്ങൾ സിങ്ക് ചെയ്യാം.</p>
+                                <p class="text-xs text-indigo-700 mt-1">If maintaining fees in Google Sheets, paste the 'Publish to web as CSV' link here to sync directly.</p>
                             </div>
                             <div class="flex gap-2 w-full md:w-auto">
                                 <input type="text" id="gsheetLink" placeholder="Paste Published CSV Link here..." class="flex-1 md:w-80 px-4 py-2.5 rounded-xl border border-indigo-200 text-xs md:text-sm outline-none bg-white shadow-sm">
@@ -2487,7 +2487,7 @@
                         <td class="p-4 font-bold text-slate-800">${s.name}</td>
                         <td class="p-4">${s.class}</td>
                         <td class="p-4 font-bold text-indigo-700 text-xs">${fin.formattedStartMonth}</td>
-                        <td class="p-4 font-bold text-emerald-700 text-xs">${fin.formattedLastPaidMonth || 'അടച്ചിട്ടില്ല'}</td>
+                        <td class="p-4 font-bold text-emerald-700 text-xs">${fin.formattedLastPaidMonth || 'Not Paid'}</td>
                         <td class="p-4 font-black text-rose-600 text-base">₹${fin.currentDue}</td>
                         <td class="p-4">${badgeHtml}</td>
                         <td class="p-4 text-center">
@@ -2907,7 +2907,7 @@
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, 'Students');
             window._xlsxDownload(wb, `KKHM_Students_Data_${new Date().toISOString().split('T')[0]}.xlsx`);
-            window.showToast('Excel ഫയൽ ഡൗൺലോഡ് ആയി! (.xlsx)', 'success');
+            window.showToast('Excel file downloaded! (.xlsx)', 'success');
         };
 
         // Keep CSV export too (used internally if needed)
@@ -2998,7 +2998,7 @@
         window.handleCSVUpload = function() {
             const fileInput = document.getElementById('csvFileInput');
             const file = fileInput.files[0];
-            if (!file) return alert('Excel (.xlsx) അല്ലെങ്കിൽ CSV ഫയൽ ആദ്യം തിരഞ്ഞെടുക്കുക.');
+            if (!file) return alert('Please select an Excel (.xlsx) or CSV file first.');
             if (typeof XLSX === 'undefined') {
                 alert('Excel library not loaded yet. Please wait a moment and try again.');
                 return;
@@ -3067,7 +3067,7 @@
                         const rawStartM = colStartMonth !== -1 && cols[colStartMonth] !== undefined ? cols[colStartMonth].trim() : '';
                         const rawLastM = colLastPaid !== -1 && cols[colLastPaid] !== undefined ? cols[colLastPaid].trim() : '';
                         const parsedStartM = rawStartM ? window.parseMonthToYyyyMm(rawStartM) : (feeStartDate ? window.parseMonthToYyyyMm(feeStartDate) : '');
-                        const parsedLastM = (rawLastM && rawLastM.toLowerCase() !== 'none' && !rawLastM.includes('അടച്ചിട്ടില്ല')) ? window.parseMonthToYyyyMm(rawLastM) : (rawLastM ? '' : undefined);
+                        const parsedLastM = (rawLastM && rawLastM.toLowerCase() !== 'none' && !rawLastM.includes('Not Paid')) ? window.parseMonthToYyyyMm(rawLastM) : (rawLastM ? '' : undefined);
 
                         const existing = db.students.find(s => String(s.admNo).trim() === String(adm).trim());
                         if (existing) {
@@ -3130,8 +3130,8 @@
 
                     if (updatedCount > 0 || addedCount > 0) {
                         window.saveDB();
-                        window.showToast(`ഡാറ്റ വിജയകരമായി അപ്‌ഡേറ്റ് ചെയ്തു! (${updatedCount} Updated, ${addedCount} Added)`, 'success');
-                        alert(`വിജയകരമായി പൂർത്തിയായി!\n\n• അപ്‌ഡേറ്റ് ചെയ്തത്: ${updatedCount}\n• പുതുതായി ചേർത്തത്: ${addedCount}`);
+                        window.showToast(`Data updated successfully! (${updatedCount} Updated, ${addedCount} Added)`, 'success');
+                        alert(`Successfully Completed!\n\n• Updated: ${updatedCount}\n• Added: ${addedCount}`);
                         document.getElementById('bulkUploadModal').classList.add('hidden');
                         document.getElementById('bulkUploadModal').classList.remove('flex');
                         if (fileInput) fileInput.value = '';
@@ -3254,8 +3254,8 @@
                     setTimeout(() => {
                         window.openFeeDueAlert(std, fin);
                         if (Notification.permission === 'granted') {
-                            window.showDeviceNotification("KKHM ERP: ഫീസ് കുടിശ്ശിക അറിയിപ്പ്", {
-                                body: `${std.name} (Adm: ${std.admNo})-ന്റെ ₹${fin.currentDue} ഫീസ് അടക്കാനുള്ള സമയമായി.`,
+                            window.showDeviceNotification("KKHM ERP: Fee Due Reminder", {
+                                body: `${std.name} (Adm: ${std.admNo}): ₹${fin.currentDue} fee payment is pending.`,
                                 tag: 'fee-due-alert'
                             });
                         }
@@ -3357,39 +3357,39 @@
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-6"><div class="bg-white p-6 rounded-2xl border border-t-4 border-t-emerald-500 shadow-sm text-center"><p class="text-xs font-bold text-slate-500">TOTAL PAID YTD</p><p class="text-3xl font-black text-emerald-600 mt-2">₹${std.totalPaid || 0}</p></div><div class="bg-white p-6 rounded-2xl border border-t-4 ${fin.currentDue > 0 ? 'border-rose-300 bg-rose-50 border-t-rose-500' : 'border-t-emerald-500'} shadow-sm text-center relative overflow-hidden">${fin.currentDue > 0 ? '<div class="absolute top-0 right-0 bg-rose-500 text-white text-[10px] font-bold px-2 py-1 rounded-bl-lg">ACTION REQUIRED</div>' : ''}<p class="text-xs font-bold text-slate-500">CURRENT DUE (ARREARS)</p><p class="text-3xl font-black ${fin.currentDue > 0 ? 'text-rose-600' : 'text-emerald-600'} mt-2">₹${fin.currentDue}</p></div><div class="bg-white p-6 rounded-2xl border border-t-4 border-t-slate-300 shadow-sm text-center"><p class="text-xs font-bold text-slate-500">YEARLY REMAINING</p><p class="text-3xl font-black text-slate-800 mt-2">₹${fin.remainingYearly}</p></div></div>
                 <div class="bg-indigo-50 border border-indigo-100 rounded-2xl p-6 mb-6 shadow-sm">
                     <h4 class="font-bold text-indigo-900 mb-4 border-b border-indigo-200 pb-2 flex items-center justify-between">
-                        <span><i class="fas fa-chart-bar mr-2"></i>ഫീസ് സംഗ്രഹം (Fee Summary)</span>
+                        <span><i class="fas fa-chart-bar mr-2"></i>Fee Summary</span>
                         <span class="text-xs font-bold text-indigo-600 bg-white px-2.5 py-1 rounded-lg border border-indigo-200">Academic Year</span>
                     </h4>
                     <ul class="space-y-2.5 text-sm text-indigo-900">
-                        <li class="flex justify-between"><span>വാർഷിക ആകെ ഫീസ് (Yearly Total):</span> <b>₹${std.yearlyFee || 0}</b></li>
-                        <li class="flex justify-between"><span>പ്രതിമാസ ഫീസ് (Monthly Installment):</span> <b>₹${std.monthlyFee || 0} / month</b></li>
+                        <li class="flex justify-between"><span>Yearly Total Fee:</span> <b>₹${std.yearlyFee || 0}</b></li>
+                        <li class="flex justify-between"><span>Monthly Fee (Monthly Installment):</span> <b>₹${std.monthlyFee || 0} / month</b></li>
                         <li class="flex justify-between border-t border-indigo-200 pt-2 text-xs text-indigo-700">
-                            <span>ഫീസ് ആരംഭിച്ച മാസം (Fee Start Month):</span> 
+                            <span>Fee Start Month:</span> 
                             <b>${fin.formattedStartMonth}</b>
                         </li>
                         <li class="flex justify-between text-xs text-indigo-700">
-                            <span>അവസാനം അടച്ച മാസം (Last Paid Month):</span> 
-                            <b>${fin.formattedLastPaidMonth || 'ഇതുവരെ അടച്ചിട്ടില്ല'}</b>
+                            <span>Last Paid Month (Last Paid Month):</span> 
+                            <b>${fin.formattedLastPaidMonth || 'Not Paid Yet'}</b>
                         </li>
                         <li class="flex justify-between text-xs text-indigo-600 mb-2 border-b border-indigo-200 pb-2">
-                            <span>പ്രതിമാസ അവസാന തീയതി (Due Date):</span> 
+                            <span>Monthly Due Date:</span> 
                             <b>${dueText}</b>
                         </li>
                         <li class="flex justify-between pt-1">
-                            <span>ഇതുവരെ പ്രതീക്ഷിക്കുന്നത് (${fin.monthsPassed} മാസം):</span> 
+                            <span>Expected Till Date (${fin.monthsPassed} months):</span> 
                             <b>₹${fin.expectedTotal}</b>
                         </li>
                         <li class="flex justify-between text-emerald-700 font-bold">
-                            <span>നിങ്ങൾ ആകെ അടച്ച തുക (${fin.paidMonthsCount} മാസം):</span> 
+                            <span>Total Amount Paid (${fin.paidMonthsCount} months):</span> 
                             <b>- ₹${std.totalPaid || 0}</b>
                         </li>
                         ${fin.currentDue > 0 ? `
                         <li class="flex justify-between text-xs text-rose-700 font-bold">
-                            <span>കുടിശ്ശികയുള്ള മാസങ്ങൾ:</span>
-                            <b>${fin.dueMonthsCount} മാസം കുടിശ്ശിക</b>
+                            <span>Due Months Count:</span>
+                            <b>${fin.dueMonthsCount} Months Due</b>
                         </li>` : ''}
                         <li class="flex justify-between text-lg border-t border-indigo-300 pt-2 mt-2 ${fin.currentDue > 0 ? 'text-rose-600' : 'text-emerald-700'}">
-                            <span><b>നിലവിലെ കുടിശ്ശിക (Due Now):</b></span> 
+                            <span><b>Current Due Now:</b></span> 
                             <b>₹${fin.currentDue}</b>
                         </li>
                     </ul>
