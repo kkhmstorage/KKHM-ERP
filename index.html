@@ -533,7 +533,7 @@
         // PWA, BADGING & SYSTEM NOTIFICATIONS
         window.initPWA = function() {
             if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('/sw.js?v=7').then(reg => {
+                navigator.serviceWorker.register('/sw.js?v=8').then(reg => {
                     console.log('KKHM PWA Service Worker Registered:', reg.scope);
                     try { reg.update(); } catch(e) {}
                     reg.onupdatefound = () => {
