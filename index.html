@@ -468,6 +468,59 @@
         </div>
     </div>
 
+    <!-- Add Global Achievement Modal -->
+    <div id="addGlobalAchModal" class="fixed inset-0 bg-black/60 z-50 hidden items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col">
+            <div class="bg-gradient-to-r from-emerald-700 to-emerald-900 p-4 sm:p-5 flex justify-between items-center text-white">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center text-amber-300">
+                        <i class="fas fa-trophy text-lg"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-extrabold text-base">Add Student Achievement</h3>
+                        <p class="text-[11px] text-emerald-200">Recognize academic, sports or arts excellence</p>
+                    </div>
+                </div>
+                <button type="button" onclick="window.closeGlobalAchModal()" class="text-white/80 hover:text-white text-2xl leading-none cursor-pointer">&times;</button>
+            </div>
+            <form onsubmit="window.saveGlobalAchievement(event)" class="p-6 space-y-4 bg-slate-50 max-h-[80vh] overflow-y-auto">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1">Select Class <span class="text-rose-500">*</span></label>
+                        <select id="achModalClass" required onchange="window.updateAchModalStudents()" class="w-full border border-slate-300 p-2.5 rounded-xl text-sm bg-white font-medium outline-none focus:ring-2 focus:ring-emerald-500">
+                            <option value="">-- Choose Class --</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1">Select Student <span class="text-rose-500">*</span></label>
+                        <select id="achModalStudent" required class="w-full border border-slate-300 p-2.5 rounded-xl text-sm bg-white font-medium outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50" disabled>
+                            <option value="">First choose class...</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1">Date</label>
+                    <input type="date" id="achModalDate" class="w-full border border-slate-300 p-2.5 rounded-xl text-sm bg-white outline-none focus:ring-2 focus:ring-emerald-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1">Achievement Title / Honor <span class="text-rose-500">*</span></label>
+                    <input type="text" id="achModalTitle" required placeholder="e.g. State Level Quran Recitation 1st Prize, Quiz Winner..." class="w-full border border-slate-300 p-2.5 rounded-xl text-sm bg-white outline-none focus:ring-2 focus:ring-emerald-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1">Remarks / Details (Optional)</label>
+                    <textarea id="achModalRemark" rows="2" placeholder="Competition details, venue, certificates, etc..." class="w-full border border-slate-300 p-2.5 rounded-xl text-sm bg-white outline-none focus:ring-2 focus:ring-emerald-500"></textarea>
+                </div>
+                <div class="flex gap-2 pt-2">
+                    <button type="button" onclick="window.closeGlobalAchModal()" class="flex-1 bg-slate-200 hover:bg-slate-300 text-slate-700 py-3 rounded-xl text-sm font-bold transition cursor-pointer">Cancel</button>
+                    <button type="submit" class="flex-1 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white py-3 rounded-xl text-sm font-bold shadow-md transition flex items-center justify-center gap-1.5 cursor-pointer">
+                        <i class="fas fa-check"></i>
+                        <span>Save Achievement</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
 
     <!-- FULL JAVASCRIPT LOGIC -->
     <script type="module">
@@ -1077,7 +1130,36 @@
         // 4. STUDENT PROFILE & DIRECTORY
         window.renderStudentSearchUI = function() {
             const classes = [...new Set(db.students.map(s => s.class))].filter(Boolean).sort();
-            return `<div class="max-w-5xl mx-auto space-y-6"><div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200"><h2 class="text-xl font-bold text-slate-800 mb-4"><i class="fas fa-search text-indigo-500 mr-2"></i> Find Student</h2><div class="grid grid-cols-1 md:grid-cols-3 gap-4"><div><label class="block text-xs font-bold text-slate-500 mb-1">Select Class</label><select id="searchClass" onchange="window.updateSearchNames()" class="w-full border p-3 rounded-xl bg-slate-50 outline-none"><option value="">-- Choose Class --</option>${classes.map(c => `<option value="${c}">${c}</option>`).join('')}</select></div><div class="md:col-span-2"><label class="block text-xs font-bold text-slate-500 mb-1">Select Student</label><div class="flex gap-2"><select id="searchName" class="flex-1 border p-3 rounded-xl bg-slate-50 outline-none disabled:opacity-50" disabled><option value="">First select a class...</option></select><button onclick="window.searchStudent()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-xl font-bold shadow-md transition whitespace-nowrap">View Profile</button></div></div></div></div><div id="studentProfileResult"></div></div>`;
+            return `
+            <div class="max-w-7xl mx-auto space-y-6">
+                <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <h2 class="text-xl font-bold text-slate-800 mb-4 flex items-center">
+                        <i class="fas fa-search text-indigo-500 mr-2"></i> Find Student
+                    </h2>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-12 gap-3 sm:gap-4">
+                        <div class="sm:col-span-1 md:col-span-4">
+                            <label class="block text-xs font-bold text-slate-500 mb-1">Select Class</label>
+                            <select id="searchClass" onchange="window.updateSearchNames()" class="w-full border p-3 rounded-xl bg-slate-50 outline-none font-medium focus:ring-2 focus:ring-indigo-500">
+                                <option value="">-- Choose Class --</option>
+                                ${classes.map(c => `<option value="${c}">${c}</option>`).join('')}
+                            </select>
+                        </div>
+                        <div class="sm:col-span-1 md:col-span-5">
+                            <label class="block text-xs font-bold text-slate-500 mb-1">Select Student</label>
+                            <select id="searchName" onchange="if(this.value) window.searchStudent()" class="w-full border p-3 rounded-xl bg-slate-50 outline-none disabled:opacity-50 font-medium focus:ring-2 focus:ring-indigo-500" disabled>
+                                <option value="">First select a class...</option>
+                            </select>
+                        </div>
+                        <div class="sm:col-span-2 md:col-span-3 flex items-end">
+                            <button onclick="window.searchStudent()" class="w-full bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white px-5 py-3 rounded-xl font-bold shadow-md transition flex items-center justify-center gap-2 cursor-pointer">
+                                <i class="fas fa-id-card"></i>
+                                <span>View Profile</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div id="studentProfileResult"></div>
+            </div>`;
         }
 
         window.updateSearchNames = function() { const cls = document.getElementById('searchClass').value; const nameSelect = document.getElementById('searchName'); nameSelect.innerHTML = '<option value="">-- Select Student --</option>'; if(cls) { db.students.filter(s => s.class === cls).sort((a,b) => a.name.localeCompare(b.name)).forEach(s => { nameSelect.innerHTML += `<option value="${s.admNo}">${s.name} (Adm: ${s.admNo})</option>`; }); nameSelect.disabled = false; } else { nameSelect.innerHTML = '<option value="">First select a class...</option>'; nameSelect.disabled = true; } }
@@ -1085,16 +1167,161 @@
         window.searchStudent = function(directAdmNo = null) {
             const adm = directAdmNo || document.getElementById('searchName').value; 
             const res = document.getElementById('studentProfileResult'); 
-            const std = db.students.find(s => String(s.admNo).trim() === String(adm).trim());
+            const std = db.students.find(s => String(s.admNo).trim() === String(adm).trim()); 
             
             if(!std) { res.innerHTML = `<div class="bg-rose-50 text-rose-600 p-4 rounded-xl text-center border font-bold">Please select a student.</div>`; return; }
             const fin = window.getStudentFinancials(std);
             
             res.innerHTML = `
-                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden"><div class="bg-slate-50 p-6 border-b flex flex-col md:flex-row justify-between items-start md:items-center gap-4"><div class="flex items-center gap-4"><div class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600 text-2xl font-black uppercase shadow-inner overflow-hidden">${std.photo ? `<img src="${std.photo}" class="w-full h-full object-cover">` : std.name.charAt(0)}</div><div><h3 class="text-2xl font-black text-slate-800">${std.name}</h3><p class="text-sm font-bold text-slate-500">Adm No: ${std.admNo} • ${std.class}</p></div></div><div class="flex gap-2">${std.leaveStatus === 'In Campus' ? `<button onclick="window.markLeave('${std.admNo}')" class="bg-amber-100 hover:bg-amber-200 text-amber-800 px-4 py-2 rounded-lg text-sm font-bold border transition"><i class="fas fa-sign-out-alt mr-1"></i>Mark OUT (Home)</button>` : `<button onclick="window.markReturn('${std.admNo}')" class="bg-emerald-100 hover:bg-emerald-200 text-emerald-800 px-4 py-2 rounded-lg text-sm font-bold border transition"><i class="fas fa-sign-in-alt mr-1"></i>Report IN</button>`}
-                    ${window.currentUser.role === 'admin' ? `<button onclick="window.openEditStudent('${std.admNo}')" class="bg-blue-50 hover:bg-blue-100 text-blue-600 border px-4 py-2 rounded-lg text-sm font-bold transition"><i class="fas fa-edit"></i></button><button onclick="window.deleteStudent('${std.admNo}')" class="bg-rose-50 hover:bg-rose-100 text-rose-600 border px-4 py-2 rounded-lg text-sm font-bold transition"><i class="fas fa-trash"></i></button>` : ''}</div></div><div class="p-6 grid grid-cols-1 md:grid-cols-2 ${window.currentUser.role === 'admin' ? 'lg:grid-cols-3' : ''} gap-6">
-                        ${window.currentUser.role === 'admin' ? `<div class="border rounded-xl p-5 bg-white shadow-sm relative overflow-hidden"><div class="absolute top-0 left-0 w-full h-1 bg-indigo-500"></div><h4 class="font-bold text-slate-700 mb-4 border-b pb-2"><i class="fas fa-rupee-sign text-emerald-500 mr-2"></i>Fee Status & Payments</h4><div class="space-y-2.5 mb-4"><div class="flex justify-between text-xs text-slate-500"><span>Yearly Total:</span><span class="font-bold text-slate-700">₹${std.yearlyFee || 0}</span></div><div class="flex justify-between text-xs text-slate-500"><span>Monthly Installment:</span><span class="font-bold text-slate-700">₹${std.monthlyFee || 0} / month</span></div><div class="flex justify-between text-xs text-slate-500"><span>Fee Start Month:</span><span class="font-bold text-indigo-600">${fin.formattedStartMonth}</span></div><div class="flex justify-between text-xs text-slate-500"><span>Last Paid Month:</span><span class="font-bold ${fin.lastPaidMonth ? 'text-emerald-700' : 'text-rose-500'}">${fin.formattedLastPaidMonth || 'Not Paid'}</span></div><div class="flex justify-between text-xs text-slate-500"><span>Total Paid:</span><span class="font-bold text-emerald-600">₹${std.totalPaid || 0} (${fin.paidMonthsCount} months)</span></div><div class="flex justify-between text-sm mt-2 pt-2 border-t"><span>Current Arrears / Due:</span><span class="font-black ${fin.currentDue > 0 ? 'text-rose-600' : 'text-emerald-600'}">₹${fin.currentDue} ${fin.dueMonthsCount > 0 ? `(${fin.dueMonthsCount} months)` : '(No Dues)'}</span></div><div class="flex justify-between text-xs text-slate-500"><span>Yearly Remaining Balance:</span><span class="font-bold text-slate-700">₹${fin.remainingYearly}</span></div></div><div class="flex gap-2 mb-4"><button onclick="window.openFeeUpdate('${std.admNo}')" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold py-2.5 rounded-lg transition shadow">Record Payment</button>${fin.remainingYearly === 0 ? `<button onclick="window.printNoDue('${std.admNo}')" class="flex-1 bg-emerald-50 text-emerald-700 border text-xs font-bold py-2.5 rounded-lg transition"><i class="fas fa-certificate mr-1"></i> No Due</button>` : ''}</div><div class="border-t pt-3"><h5 class="text-xs font-bold text-slate-500 mb-2">Payment History</h5><div class="max-h-24 overflow-y-auto space-y-1 pr-1">${(std.feeHistory || []).slice().reverse().map(f => `<div class="text-[11px] flex justify-between border-b pb-1 border-slate-100"><span><b>${f.month}</b> <span class="text-slate-400">(${f.date})</span></span><span class="text-emerald-600 font-bold">₹${f.amount}</span></div>`).join('') || '<p class="text-[10px] text-slate-400">No records found.</p>'}</div></div></div>` : ''}
-                        <div class="border rounded-xl p-5 shadow-sm relative overflow-hidden ${std.leaveStatus === 'On Leave' ? 'bg-amber-50' : 'bg-emerald-50'}"><h4 class="font-bold text-slate-700 mb-3"><i class="fas fa-edit text-indigo-500 mr-2"></i>Add Record (Discipline / Achievement)</h4><div class="flex flex-col lg:flex-row gap-2"><select id="noteType" class="border p-2.5 rounded-xl text-sm outline-none bg-white font-bold"><option value="discipline">Discipline Issue</option><option value="achievement">Special Achievement</option></select><input type="text" id="newNote" placeholder="Title / Event..." class="flex-1 border p-2.5 rounded-xl text-sm outline-none"><input type="text" id="newRemark" placeholder="Remarks (Optional)..." class="flex-1 border p-2.5 rounded-xl text-sm outline-none"><button onclick="window.addNote('${std.admNo}')" class="bg-slate-800 text-white px-6 py-2.5 rounded-xl text-sm font-bold shadow transition">Save Record</button></div><div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4"><div><h5 class="text-xs font-bold text-rose-500 uppercase mb-2 border-b pb-1">Disciplinary Records</h5><div class="space-y-2">${std.disciplineRecords.map(r => `<div class="bg-white p-3 rounded-lg border border-rose-100 text-sm flex justify-between shadow-sm"><div><span class="text-slate-400 font-mono text-xs mr-2">[${r.date}]</span> <b>${r.note}</b>${r.remark ? `<br><span class="text-slate-500 text-xs mt-1 block">Remark: ${r.remark}</span>` : ''}<span class="text-[10px] text-slate-400 block mt-1">Added by: ${r.addedBy || 'Admin'}</span></div><button onclick="window.deleteRecord('${std.admNo}', 'discipline', '${r.date}')" class="text-rose-400 hover:text-rose-600 ml-2"><i class="fas fa-trash"></i></button></div>`).join('') || '<p class="text-xs text-slate-400">No records.</p>'}</div></div><div><h5 class="text-xs font-bold text-emerald-500 uppercase mb-2 border-b pb-1">Achievements</h5><div class="space-y-2">${std.achievements.map(r => `<div class="bg-white p-3 rounded-lg border border-emerald-100 text-sm flex justify-between shadow-sm"><div><span class="text-slate-400 font-mono text-xs mr-2">[${r.date}]</span> <b>${r.note}</b>${r.remark ? `<br><span class="text-slate-500 text-xs mt-1 block">Remark: ${r.remark}</span>` : ''}<span class="text-[10px] text-slate-400 block mt-1">Added by: ${r.addedBy || 'Admin'}</span></div><button onclick="window.deleteRecord('${std.admNo}', 'achievement', '${r.date}')" class="text-rose-400 hover:text-rose-600 ml-2"><i class="fas fa-trash"></i></button></div>`).join('') || '<p class="text-xs text-slate-400">No achievements.</p>'}</div></div></div></div></div></div>
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                    <div class="bg-slate-50 p-4 sm:p-6 border-b flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                        <div class="flex items-center gap-3 sm:gap-4 min-w-0">
+                            <div class="w-14 h-14 sm:w-16 sm:h-16 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600 text-xl sm:text-2xl font-black uppercase shadow-inner overflow-hidden flex-shrink-0">
+                                ${std.photo ? `<img src="${std.photo}" class="w-full h-full object-cover">` : std.name.charAt(0)}
+                            </div>
+                            <div class="min-w-0">
+                                <h3 class="text-xl sm:text-2xl font-black text-slate-800 truncate">${std.name}</h3>
+                                <p class="text-xs sm:text-sm font-bold text-slate-500">Adm No: ${std.admNo} • ${std.class}</p>
+                            </div>
+                        </div>
+                        <div class="flex flex-wrap gap-2 w-full md:w-auto">
+                            ${std.leaveStatus === 'In Campus' ? `<button onclick="window.markLeave('${std.admNo}')" class="flex-1 md:flex-initial bg-amber-100 hover:bg-amber-200 text-amber-800 px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-bold border transition whitespace-nowrap"><i class="fas fa-sign-out-alt mr-1"></i>Mark OUT (Home)</button>` : `<button onclick="window.markReturn('${std.admNo}')" class="flex-1 md:flex-initial bg-emerald-100 hover:bg-emerald-200 text-emerald-800 px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-bold border transition whitespace-nowrap"><i class="fas fa-sign-in-alt mr-1"></i>Report IN</button>`}
+                            ${window.currentUser.role === 'admin' ? `<button onclick="window.openEditStudent('${std.admNo}')" class="bg-blue-50 hover:bg-blue-100 text-blue-600 border px-3 sm:px-4 py-2 rounded-lg text-sm font-bold transition"><i class="fas fa-edit"></i></button><button onclick="window.deleteStudent('${std.admNo}')" class="bg-rose-50 hover:bg-rose-100 text-rose-600 border px-3 sm:px-4 py-2 rounded-lg text-sm font-bold transition"><i class="fas fa-trash"></i></button>` : ''}
+                        </div>
+                    </div>
+                    <div class="p-4 sm:p-6 grid grid-cols-1 ${window.currentUser.role === 'admin' ? 'lg:grid-cols-3' : ''} gap-6">
+                        ${window.currentUser.role === 'admin' ? `
+                        <div class="border rounded-xl p-4 sm:p-5 bg-white shadow-sm relative overflow-hidden lg:col-span-1">
+                            <div class="absolute top-0 left-0 w-full h-1 bg-indigo-500"></div>
+                            <h4 class="font-bold text-slate-700 mb-4 border-b pb-2"><i class="fas fa-rupee-sign text-emerald-500 mr-2"></i>Fee Status & Payments</h4>
+                            <div class="space-y-2.5 mb-4">
+                                <div class="flex justify-between text-xs text-slate-500"><span>Yearly Total:</span><span class="font-bold text-slate-700">₹${std.yearlyFee || 0}</span></div>
+                                <div class="flex justify-between text-xs text-slate-500"><span>Monthly Installment:</span><span class="font-bold text-slate-700">₹${std.monthlyFee || 0} / month</span></div>
+                                <div class="flex justify-between text-xs text-slate-500"><span>Fee Start Month:</span><span class="font-bold text-indigo-600">${fin.formattedStartMonth}</span></div>
+                                <div class="flex justify-between text-xs text-slate-500"><span>Last Paid Month:</span><span class="font-bold ${fin.lastPaidMonth ? 'text-emerald-700' : 'text-rose-500'}">${fin.formattedLastPaidMonth || 'Not Paid'}</span></div>
+                                <div class="flex justify-between text-xs text-slate-500"><span>Total Paid:</span><span class="font-bold text-emerald-600">₹${std.totalPaid || 0} (${fin.paidMonthsCount} months)</span></div>
+                                <div class="flex justify-between text-sm mt-2 pt-2 border-t"><span>Current Arrears / Due:</span><span class="font-black ${fin.currentDue > 0 ? 'text-rose-600' : 'text-emerald-600'}">₹${fin.currentDue} ${fin.dueMonthsCount > 0 ? `(${fin.dueMonthsCount} months)` : '(No Dues)'}</span></div>
+                                <div class="flex justify-between text-xs text-slate-500"><span>Yearly Remaining Balance:</span><span class="font-bold text-slate-700">₹${fin.remainingYearly}</span></div>
+                            </div>
+                            <div class="flex gap-2 mb-4">
+                                <button onclick="window.openFeeUpdate('${std.admNo}')" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold py-2.5 rounded-lg transition shadow cursor-pointer">Record Payment</button>
+                                ${fin.remainingYearly === 0 ? `<button onclick="window.printNoDue('${std.admNo}')" class="flex-1 bg-emerald-50 text-emerald-700 border text-xs font-bold py-2.5 rounded-lg transition"><i class="fas fa-certificate mr-1"></i> No Due</button>` : ''}
+                            </div>
+                            <div class="border-t pt-3">
+                                <h5 class="text-xs font-bold text-slate-500 mb-2">Payment History</h5>
+                                <div class="max-h-24 overflow-y-auto space-y-1 pr-1">${(std.feeHistory || []).slice().reverse().map(f => `<div class="text-[11px] flex justify-between border-b pb-1 border-slate-100"><span><b>${f.month}</b> <span class="text-slate-400">(${f.date})</span></span><span class="text-emerald-600 font-bold">₹${f.amount}</span></div>`).join('') || '<p class="text-[10px] text-slate-400">No records found.</p>'}</div>
+                            </div>
+                        </div>` : ''}
+
+                        <div class="border rounded-xl p-4 sm:p-6 shadow-sm relative bg-white ${window.currentUser.role === 'admin' ? 'lg:col-span-2' : 'col-span-full'}">
+                            <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-3 mb-4 border-b gap-2">
+                                <h4 class="font-extrabold text-slate-800 text-base sm:text-lg flex items-center gap-2">
+                                    <i class="fas fa-clipboard-check text-indigo-600"></i>
+                                    <span>Discipline & Special Achievements</span>
+                                </h4>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-xs font-bold text-rose-700 bg-rose-50 border border-rose-200 px-2.5 py-1 rounded-lg">
+                                        ⚠️ ${std.disciplineRecords ? std.disciplineRecords.length : 0} Issues
+                                    </span>
+                                    <span class="text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-lg">
+                                        🏆 ${std.achievements ? std.achievements.length : 0} Honors
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- Add Record Form -->
+                            <div class="bg-slate-50 p-4 sm:p-5 rounded-2xl border border-slate-200 mb-6 shadow-sm">
+                                <div class="text-xs font-extrabold uppercase tracking-wide text-slate-600 mb-3 flex items-center gap-1.5">
+                                    <i class="fas fa-plus-circle text-indigo-500"></i>
+                                    <span>Record New Issue / Achievement</span>
+                                </div>
+                                <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-end">
+                                    <div class="sm:col-span-4 lg:col-span-3">
+                                        <label class="block text-[11px] font-bold text-slate-600 mb-1">Record Type</label>
+                                        <select id="noteType" class="w-full border border-slate-300 p-2.5 rounded-xl text-xs sm:text-sm bg-white font-bold text-slate-700 outline-none focus:ring-2 focus:ring-indigo-500 transition shadow-sm cursor-pointer">
+                                            <option value="discipline">⚠️ Discipline Issue</option>
+                                            <option value="achievement">🏆 Special Achievement</option>
+                                        </select>
+                                    </div>
+                                    <div class="sm:col-span-8 lg:col-span-4">
+                                        <label class="block text-[11px] font-bold text-slate-600 mb-1">Title / Event <span class="text-rose-500 font-bold">*</span></label>
+                                        <input type="text" id="newNote" onkeydown="if(event.key === 'Enter') window.addNote('${std.admNo}')" placeholder="Title or Event description..." class="w-full border border-slate-300 p-2.5 rounded-xl text-xs sm:text-sm bg-white outline-none focus:ring-2 focus:ring-indigo-500 transition shadow-sm">
+                                    </div>
+                                    <div class="sm:col-span-8 lg:col-span-3">
+                                        <label class="block text-[11px] font-bold text-slate-600 mb-1">Remarks (Optional)</label>
+                                        <input type="text" id="newRemark" onkeydown="if(event.key === 'Enter') window.addNote('${std.admNo}')" placeholder="Remarks or additional details..." class="w-full border border-slate-300 p-2.5 rounded-xl text-xs sm:text-sm bg-white outline-none focus:ring-2 focus:ring-indigo-500 transition shadow-sm">
+                                    </div>
+                                    <div class="sm:col-span-4 lg:col-span-2">
+                                        <button type="button" onclick="window.addNote('${std.admNo}')" class="w-full bg-slate-800 hover:bg-slate-900 active:scale-95 text-white py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold shadow-md hover:shadow transition flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap">
+                                            <i class="fas fa-check"></i>
+                                            <span>Save Record</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Records History -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                <!-- Disciplinary Records -->
+                                <div class="bg-rose-50/40 rounded-2xl p-4 border border-rose-100 flex flex-col">
+                                    <div class="flex items-center justify-between pb-2 mb-3 border-b border-rose-200/60">
+                                        <h5 class="text-xs font-black text-rose-700 uppercase tracking-wider flex items-center gap-1.5">
+                                            <i class="fas fa-exclamation-triangle"></i> Disciplinary Records
+                                        </h5>
+                                        <span class="text-[10px] font-extrabold bg-rose-100 text-rose-800 px-2 py-0.5 rounded-full">
+                                            ${std.disciplineRecords ? std.disciplineRecords.length : 0}
+                                        </span>
+                                    </div>
+                                    <div class="space-y-2.5 max-h-72 overflow-y-auto pr-1">
+                                        ${(std.disciplineRecords && std.disciplineRecords.length > 0) ? std.disciplineRecords.slice().reverse().map(r => `
+                                            <div class="bg-white p-3 rounded-xl border border-rose-100 text-xs sm:text-sm flex justify-between items-start shadow-sm hover:shadow transition">
+                                                <div class="flex-1 pr-2 min-w-0">
+                                                    <div class="flex items-center gap-2 mb-1 flex-wrap">
+                                                        <span class="text-slate-500 font-mono text-[10px] bg-slate-50 px-1.5 py-0.5 rounded border border-slate-100 font-semibold">${r.date}</span>
+                                                        <span class="text-[10px] text-slate-400">by ${r.addedBy || 'Admin'}</span>
+                                                    </div>
+                                                    <p class="font-bold text-slate-800 leading-snug break-words">${r.note}</p>
+                                                    ${r.remark ? `<p class="text-xs text-slate-500 mt-1 italic break-words">Remark: ${r.remark}</p>` : ''}
+                                                </div>
+                                                <button type="button" onclick="window.deleteRecord('${std.admNo}', 'discipline', '${r.date}', '${encodeURIComponent(r.note || '')}')" title="Delete Record" class="text-rose-400 hover:text-rose-600 hover:bg-rose-50 p-1.5 rounded-lg transition flex-shrink-0 cursor-pointer">
+                                                    <i class="fas fa-trash-alt text-xs"></i>
+                                                </button>
+                                            </div>
+                                        `).join('') : '<div class="text-center py-8 text-xs text-slate-400 italic">No disciplinary records found.</div>'}
+                                    </div>
+                                </div>
+
+                                <!-- Achievements -->
+                                <div class="bg-emerald-50/40 rounded-2xl p-4 border border-emerald-100 flex flex-col">
+                                    <div class="flex items-center justify-between pb-2 mb-3 border-b border-emerald-200/60">
+                                        <h5 class="text-xs font-black text-emerald-700 uppercase tracking-wider flex items-center gap-1.5">
+                                            <i class="fas fa-trophy"></i> Achievements
+                                        </h5>
+                                        <span class="text-[10px] font-extrabold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full">
+                                            ${std.achievements ? std.achievements.length : 0}
+                                        </span>
+                                    </div>
+                                    <div class="space-y-2.5 max-h-72 overflow-y-auto pr-1">
+                                        ${(std.achievements && std.achievements.length > 0) ? std.achievements.slice().reverse().map(r => `
+                                            <div class="bg-white p-3 rounded-xl border border-emerald-100 text-xs sm:text-sm flex justify-between items-start shadow-sm hover:shadow transition">
+                                                <div class="flex-1 pr-2 min-w-0">
+                                                    <div class="flex items-center gap-2 mb-1 flex-wrap">
+                                                        <span class="text-slate-500 font-mono text-[10px] bg-slate-50 px-1.5 py-0.5 rounded border border-slate-100 font-semibold">${r.date}</span>
+                                                        <span class="text-[10px] text-emerald-600 font-bold bg-emerald-50 px-1.5 py-0.5 rounded">by ${r.addedBy || 'Admin'}</span>
+                                                    </div>
+                                                    <p class="font-bold text-slate-800 leading-snug break-words">${r.note}</p>
+                                                    ${r.remark ? `<p class="text-xs text-slate-500 mt-1 italic break-words">Remark: ${r.remark}</p>` : ''}
+                                                </div>
+                                                <button type="button" onclick="window.deleteRecord('${std.admNo}', 'achievement', '${r.date}', '${encodeURIComponent(r.note || '')}')" title="Delete Achievement" class="text-rose-400 hover:text-rose-600 hover:bg-rose-50 p-1.5 rounded-lg transition flex-shrink-0 cursor-pointer">
+                                                    <i class="fas fa-trash-alt text-xs"></i>
+                                                </button>
+                                            </div>
+                                        `).join('') : '<div class="text-center py-8 text-xs text-slate-400 italic">No achievements found.</div>'}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
             `;
         }
 
@@ -1300,8 +1527,65 @@
 
         window.exportAttendanceCSV = function() { let csv = "Adm No,Name,Class,Current Location Status,Total Leave Records,Last Leave Date,Last Leave Reason\n"; db.students.forEach(s => { const totalLeaves = s.leaveHistory ? s.leaveHistory.length : 0; const lastLeave = totalLeaves > 0 ? s.leaveHistory[totalLeaves - 1] : null; const lastDate = lastLeave ? lastLeave.dateOut : 'N/A'; const lastReason = lastLeave ? (lastLeave.reason || 'N/A').replace(/,/g, ' ') : 'N/A'; csv += `${s.admNo},${s.name},${s.class},${s.leaveStatus},${totalLeaves},${lastDate},${lastReason}\n`; }); const blob = new Blob([csv], { type: 'text/csv' }); const url = window.URL.createObjectURL(blob); const a = document.createElement('a'); a.setAttribute('href', url); a.setAttribute('download', `KKHM_Attendance_Report_${new Date().toISOString().split('T')[0]}.csv`); a.click(); window.showToast("Attendance Report Downloaded!"); }
         
-        window.addNote = function(admNo) { const type = document.getElementById('noteType').value; const note = document.getElementById('newNote').value.trim(); const remark = document.getElementById('newRemark') ? document.getElementById('newRemark').value.trim() : ''; if(!note) return; const std = db.students.find(s => String(s.admNo).trim() === String(admNo).trim()); const addedBy = window.currentUser ? window.currentUser.name : 'Unknown'; if(type === 'discipline') std.disciplineRecords.push({ date: new Date().toISOString().split('T')[0], note: note, remark: remark, addedBy: addedBy }); else std.achievements.push({ date: new Date().toISOString().split('T')[0], note: note, remark: remark, addedBy: addedBy }); window.saveDB(); window.showToast('Record saved'); window.searchStudent(admNo); }
-        window.deleteRecord = function(admNo, type, date) { if(!confirm('Delete this record?')) return; const std = db.students.find(s => String(s.admNo).trim() === String(admNo).trim()); if(type === 'discipline') std.disciplineRecords = std.disciplineRecords.filter(r => r.date !== date); else std.achievements = std.achievements.filter(r => r.date !== date); window.saveDB(); window.searchStudent(admNo); }
+        window.addNote = function(admNo) { 
+            const type = document.getElementById('noteType').value; 
+            const note = document.getElementById('newNote').value.trim(); 
+            const remark = document.getElementById('newRemark') ? document.getElementById('newRemark').value.trim() : ''; 
+            if(!note) {
+                window.showToast('Please enter Title / Event description', 'error');
+                return;
+            }
+            const std = db.students.find(s => String(s.admNo).trim() === String(admNo).trim()); 
+            if(!std) {
+                window.showToast('Student not found', 'error');
+                return;
+            }
+            if(!std.disciplineRecords) std.disciplineRecords = [];
+            if(!std.achievements) std.achievements = [];
+            const addedBy = window.currentUser ? window.currentUser.name : 'Admin'; 
+            const today = new Date().toISOString().split('T')[0];
+            if(type === 'discipline') {
+                std.disciplineRecords.push({ date: today, note: note, remark: remark, addedBy: addedBy }); 
+            } else {
+                std.achievements.push({ date: today, note: note, remark: remark, addedBy: addedBy }); 
+            }
+            window.saveDB(); 
+            window.showToast(type === 'discipline' ? 'Discipline record saved' : 'Achievement honor saved'); 
+            window.searchStudent(admNo); 
+        };
+
+        window.deleteRecord = function(admNo, type, date, note) { 
+            if(!confirm('Delete this record?')) return; 
+            const std = db.students.find(s => String(s.admNo).trim() === String(admNo).trim()); 
+            if(!std) return; 
+            const decodedNote = note ? decodeURIComponent(note) : null;
+            if(type === 'discipline') {
+                if(!std.disciplineRecords) std.disciplineRecords = [];
+                if(decodedNote) {
+                    const idx = std.disciplineRecords.findIndex(r => r.date === date && r.note === decodedNote);
+                    if(idx !== -1) std.disciplineRecords.splice(idx, 1);
+                    else std.disciplineRecords = std.disciplineRecords.filter(r => r.date !== date);
+                } else {
+                    std.disciplineRecords = std.disciplineRecords.filter(r => r.date !== date);
+                }
+            } else {
+                if(!std.achievements) std.achievements = [];
+                if(decodedNote) {
+                    const idx = std.achievements.findIndex(r => r.date === date && r.note === decodedNote);
+                    if(idx !== -1) std.achievements.splice(idx, 1);
+                    else std.achievements = std.achievements.filter(r => r.date !== date);
+                } else {
+                    std.achievements = std.achievements.filter(r => r.date !== date);
+                }
+            }
+            window.saveDB(); 
+            window.showToast('Record deleted'); 
+            if(window.currentTab === 'search') {
+                window.searchStudent(admNo); 
+            } else {
+                window.renderApp(); 
+            }
+        };
 
         // 5. FEE & PAYMENT
         window.openFeeUpdate = function(admNo) { 
@@ -2699,7 +2983,122 @@
         window.deleteTeacher = function(id) { if(confirm('Delete this teacher profile?')) { db.teachers = db.teachers.filter(t => t.id !== id); window.saveDB(); window.showToast('Teacher Deleted', 'error'); window.renderApp(); } }
 
         // 8. NOTICES & ACHIEVEMENTS
-        window.renderGlobalAchievements = function() { let allAch = []; db.students.forEach(s => { if(s.achievements) s.achievements.forEach(a => allAch.push({ name: s.name, class: s.class, ...a })); }); allAch.sort((a,b) => new Date(b.date) - new Date(a.date)); return `<div class="max-w-5xl mx-auto space-y-6"><h2 class="text-2xl font-extrabold text-slate-800">Global Student Achievements</h2><div class="grid grid-cols-1 md:grid-cols-2 gap-4">${allAch.map(a => `<div class="bg-white p-5 rounded-xl border border-emerald-200 shadow-sm flex items-start gap-4"><div class="bg-emerald-100 p-3 rounded-full text-emerald-600"><i class="fas fa-trophy text-xl"></i></div><div><h4 class="font-bold text-slate-800 text-lg">${a.name}</h4><p class="text-xs font-bold text-slate-500">${a.class} • ${a.date}</p><p class="text-sm mt-2 font-bold text-slate-800">${a.note}</p>${a.remark ? `<p class="text-xs mt-1 text-slate-500">Remark: ${a.remark}</p>` : ''}<p class="text-[10px] text-emerald-700 mt-2 font-bold bg-emerald-50 inline-block px-2 py-0.5 rounded">Added by: ${a.addedBy || 'Admin'}</p></div></div>`).join('') || '<p class="text-slate-500 w-full text-center p-8">No records.</p>'}</div></div>`; }
+        window.renderGlobalAchievements = function() { 
+            let allAch = []; 
+            db.students.forEach(s => { 
+                if(s.achievements) s.achievements.forEach(a => allAch.push({ name: s.name, class: s.class, admNo: s.admNo, ...a })); 
+            }); 
+            allAch.sort((a,b) => new Date(b.date) - new Date(a.date)); 
+            return `
+            <div class="max-w-6xl mx-auto space-y-6">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <div>
+                        <h2 class="text-2xl font-extrabold text-slate-800 flex items-center gap-2">
+                            <i class="fas fa-trophy text-amber-500"></i>
+                            <span>Global Student Achievements</span>
+                        </h2>
+                        <p class="text-xs font-bold text-slate-500 mt-1">Honors & Recognitions across all classes (${allAch.length} Total)</p>
+                    </div>
+                    ${window.currentUser.role !== 'parent' ? `
+                        <button onclick="window.openGlobalAchModal()" class="bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold shadow-md transition flex items-center gap-2 cursor-pointer whitespace-nowrap">
+                            <i class="fas fa-plus-circle"></i>
+                            <span>Add Achievement</span>
+                        </button>
+                    ` : ''}
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    ${allAch.map(a => `
+                        <div class="bg-white p-5 rounded-2xl border border-emerald-100 shadow-sm hover:shadow-md transition flex items-start gap-4 relative">
+                            <div class="bg-emerald-100/70 p-3 rounded-2xl text-emerald-600 flex-shrink-0">
+                                <i class="fas fa-trophy text-xl"></i>
+                            </div>
+                            <div class="flex-1 min-w-0 pr-6">
+                                <h4 class="font-black text-slate-800 text-lg truncate">${a.name}</h4>
+                                <p class="text-xs font-bold text-slate-500">${a.class} • Adm: ${a.admNo} • <span class="font-mono text-emerald-700">${a.date}</span></p>
+                                <p class="text-sm mt-2 font-bold text-slate-800 leading-snug">${a.note}</p>
+                                ${a.remark ? `<p class="text-xs mt-1 text-slate-500 italic">Remark: ${a.remark}</p>` : ''}
+                                <div class="mt-2.5 flex items-center gap-2">
+                                    <span class="text-[10px] text-emerald-700 font-bold bg-emerald-50 border border-emerald-200/60 px-2 py-0.5 rounded-md">Added by: ${a.addedBy || 'Admin'}</span>
+                                </div>
+                            </div>
+                            ${(window.currentUser.role === 'admin' || window.currentUser.role === 'admin1') ? `
+                                <button onclick="window.deleteRecord('${a.admNo}', 'achievement', '${a.date}', '${encodeURIComponent(a.note || '')}')" title="Delete Achievement" class="absolute top-4 right-4 text-rose-300 hover:text-rose-600 p-1.5 rounded-lg transition hover:bg-rose-50 cursor-pointer">
+                                    <i class="fas fa-trash-alt text-xs"></i>
+                                </button>
+                            ` : ''}
+                        </div>
+                    `).join('') || '<div class="col-span-full text-slate-400 text-center py-12 bg-white rounded-2xl border italic font-medium">No achievement records found.</div>'}
+                </div>
+            </div>`; 
+        };
+
+        window.openGlobalAchModal = function() {
+            const modal = document.getElementById('addGlobalAchModal');
+            if (!modal) return;
+            const clsSelect = document.getElementById('achModalClass');
+            const stdSelect = document.getElementById('achModalStudent');
+            const dateInput = document.getElementById('achModalDate');
+            const titleInput = document.getElementById('achModalTitle');
+            const remInput = document.getElementById('achModalRemark');
+            
+            const classes = [...new Set(db.students.map(s => s.class))].filter(Boolean).sort();
+            clsSelect.innerHTML = '<option value="">-- Choose Class --</option>' + classes.map(c => `<option value="${c}">${c}</option>`).join('');
+            stdSelect.innerHTML = '<option value="">First choose class...</option>';
+            stdSelect.disabled = true;
+            dateInput.value = new Date().toISOString().split('T')[0];
+            titleInput.value = '';
+            remInput.value = '';
+            
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        };
+
+        window.closeGlobalAchModal = function() {
+            const modal = document.getElementById('addGlobalAchModal');
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
+        };
+
+        window.updateAchModalStudents = function() {
+            const cls = document.getElementById('achModalClass').value;
+            const stdSelect = document.getElementById('achModalStudent');
+            if (!cls) {
+                stdSelect.innerHTML = '<option value="">First choose class...</option>';
+                stdSelect.disabled = true;
+                return;
+            }
+            const studentsInClass = db.students.filter(s => s.class === cls).sort((a,b) => a.name.localeCompare(b.name));
+            stdSelect.innerHTML = '<option value="">-- Select Student --</option>' + studentsInClass.map(s => `<option value="${s.admNo}">${s.name} (Adm: ${s.admNo})</option>`).join('');
+            stdSelect.disabled = false;
+        };
+
+        window.saveGlobalAchievement = function(e) {
+            e.preventDefault();
+            const admNo = document.getElementById('achModalStudent').value;
+            const date = document.getElementById('achModalDate').value || new Date().toISOString().split('T')[0];
+            const note = document.getElementById('achModalTitle').value.trim();
+            const remark = document.getElementById('achModalRemark').value.trim();
+            if (!admNo || !note) {
+                window.showToast('Please select a student and enter title', 'error');
+                return;
+            }
+            const std = db.students.find(s => String(s.admNo).trim() === String(admNo).trim());
+            if (!std) {
+                window.showToast('Student not found', 'error');
+                return;
+            }
+            if (!std.achievements) std.achievements = [];
+            const addedBy = window.currentUser ? window.currentUser.name : 'Admin';
+            std.achievements.push({ date, note, remark, addedBy });
+            window.saveDB();
+            window.showToast('Achievement Added Successfully!');
+            window.closeGlobalAchModal();
+            if (window.currentTab === 'achieve') {
+                window.renderApp();
+            }
+        };
         window.renderNoticeContent = function(text, attachedLink) {
             if (!text) text = '';
             // Escape HTML entities to prevent XSS
