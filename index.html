@@ -597,6 +597,59 @@
         </div>
     </div>
 
+    <!-- Bulk Discipline Modal -->
+    <div id="bulkDisciplineModal" class="fixed inset-0 bg-black/60 z-50 hidden items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[92vh]">
+            <div class="bg-gradient-to-r from-rose-700 to-rose-900 p-4 sm:p-5 flex justify-between items-center text-white flex-shrink-0">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center text-amber-300">
+                        <i class="fas fa-exclamation-triangle text-lg"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-extrabold text-base">Bulk Discipline Record</h3>
+                        <p class="text-[11px] text-rose-200">Record a violation for a group of students</p>
+                    </div>
+                </div>
+                <button type="button" onclick="window.closeBulkDisciplineModal()" class="text-white/80 hover:text-white text-2xl leading-none cursor-pointer">&times;</button>
+            </div>
+            <div class="p-5 space-y-4 bg-slate-50 overflow-y-auto flex-1">
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1">Select Class <span class="text-rose-500">*</span></label>
+                    <select id="bulkDiscClass" onchange="window.updateBulkDisciplineStudents()" class="w-full border border-slate-300 p-2.5 rounded-xl text-sm bg-white font-medium outline-none focus:ring-2 focus:ring-rose-500">
+                        <option value="">-- Choose Class --</option>
+                    </select>
+                </div>
+                <div>
+                    <div class="flex items-center justify-between mb-2">
+                        <label class="block text-xs font-bold text-slate-600">Select Students <span class="text-rose-500">*</span></label>
+                        <button type="button" onclick="window.toggleSelectAllBulkDisc()" id="bulkDiscSelectAllBtn" class="text-xs font-bold text-indigo-600 hover:text-indigo-800 underline cursor-pointer">Select All</button>
+                    </div>
+                    <div id="bulkDisciplineStudentList" class="bg-white border border-slate-200 rounded-xl max-h-44 overflow-y-auto p-2 space-y-1 text-sm">
+                        <p class="text-xs text-slate-400 text-center py-4">First choose a class above</p>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1">Violation / Issue Title <span class="text-rose-500">*</span></label>
+                    <input type="text" id="bulkDiscNote" placeholder="e.g. Late for class, Mobile phone violation..." class="w-full border border-slate-300 p-2.5 rounded-xl text-sm bg-white outline-none focus:ring-2 focus:ring-rose-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1">Remarks / Details (Optional)</label>
+                    <textarea id="bulkDiscRemark" rows="2" placeholder="Additional details, time, location..." class="w-full border border-slate-300 p-2.5 rounded-xl text-sm bg-white outline-none focus:ring-2 focus:ring-rose-500"></textarea>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1">Date</label>
+                    <input type="date" id="bulkDiscDate" class="w-full border border-slate-300 p-2.5 rounded-xl text-sm bg-white outline-none focus:ring-2 focus:ring-rose-500">
+                </div>
+                <div class="flex gap-2 pt-1">
+                    <button type="button" onclick="window.closeBulkDisciplineModal()" class="flex-1 bg-slate-200 hover:bg-slate-300 text-slate-700 py-3 rounded-xl text-sm font-bold transition cursor-pointer">Cancel</button>
+                    <button type="button" onclick="window.saveBulkDiscipline()" class="flex-1 bg-rose-600 hover:bg-rose-700 active:scale-95 text-white py-3 rounded-xl text-sm font-bold shadow-md transition flex items-center justify-center gap-1.5 cursor-pointer">
+                        <i class="fas fa-save"></i>
+                        <span>Save for All Selected</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- FULL JAVASCRIPT LOGIC -->
     <script type="module">
@@ -1207,27 +1260,33 @@
         // 4. STUDENT PROFILE & DIRECTORY
         window.renderStudentSearchUI = function() {
             const classes = [...new Set(db.students.map(s => s.class))].filter(Boolean).sort();
+            const isAdmin = window.currentUser && (window.currentUser.role === 'admin' || window.currentUser.role === 'admin1' || window.currentUser.role === 'mentor');
             return `
             <div class="max-w-7xl mx-auto space-y-6">
                 <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200">
-                    <h2 class="text-xl font-bold text-slate-800 mb-4 flex items-center">
-                        <i class="fas fa-search text-indigo-500 mr-2"></i> Find Student
-                    </h2>
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+                        <h2 class="text-xl font-bold text-slate-800 flex items-center">
+                            <i class="fas fa-search text-indigo-500 mr-2"></i> Find Student
+                        </h2>
+                        ${isAdmin ? `<button onclick="window.openBulkDisciplineModal()" class="flex items-center gap-2 bg-rose-600 hover:bg-rose-700 active:scale-95 text-white px-4 py-2.5 rounded-xl text-sm font-bold shadow-md transition cursor-pointer whitespace-nowrap">
+                            <i class="fas fa-users"></i> Group Discipline Record
+                        </button>` : ''}
+                    </div>
                     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-12 gap-3 sm:gap-4">
-                        <div class="sm:col-span-1 md:col-span-4">
+                        <div class="col-span-full sm:col-span-1 md:col-span-4">
                             <label class="block text-xs font-bold text-slate-500 mb-1">Select Class</label>
                             <select id="searchClass" onchange="window.updateSearchNames()" class="w-full border p-3 rounded-xl bg-slate-50 outline-none font-medium focus:ring-2 focus:ring-indigo-500">
                                 <option value="">-- Choose Class --</option>
                                 ${classes.map(c => `<option value="${c}">${c}</option>`).join('')}
                             </select>
                         </div>
-                        <div class="sm:col-span-1 md:col-span-5">
+                        <div class="col-span-full sm:col-span-1 md:col-span-5">
                             <label class="block text-xs font-bold text-slate-500 mb-1">Select Student</label>
                             <select id="searchName" onchange="if(this.value) window.searchStudent()" class="w-full border p-3 rounded-xl bg-slate-50 outline-none disabled:opacity-50 font-medium focus:ring-2 focus:ring-indigo-500" disabled>
                                 <option value="">First select a class...</option>
                             </select>
                         </div>
-                        <div class="sm:col-span-2 md:col-span-3 flex items-end">
+                        <div class="col-span-full sm:col-span-2 md:col-span-3 flex items-end">
                             <button onclick="window.searchStudent()" class="w-full bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white px-5 py-3 rounded-xl font-bold shadow-md transition flex items-center justify-center gap-2 cursor-pointer">
                                 <i class="fas fa-id-card"></i>
                                 <span>View Profile</span>
@@ -1629,6 +1688,84 @@
             window.saveDB(); 
             window.showToast(type === 'discipline' ? 'Discipline record saved' : 'Achievement honor saved'); 
             window.searchStudent(admNo); 
+        };
+
+        // BULK DISCIPLINE FUNCTIONS
+        window.openBulkDisciplineModal = function() {
+            const modal = document.getElementById('bulkDisciplineModal');
+            if (!modal) return;
+            // Populate classes
+            const classes = [...new Set(db.students.map(s => s.class))].filter(Boolean).sort();
+            const clsSel = document.getElementById('bulkDiscClass');
+            clsSel.innerHTML = '<option value="">-- Choose Class --</option>' + classes.map(c => `<option value="${c}">${c}</option>`).join('');
+            document.getElementById('bulkDisciplineStudentList').innerHTML = '<p class="text-xs text-slate-400 text-center py-4">First choose a class above</p>';
+            document.getElementById('bulkDiscNote').value = '';
+            document.getElementById('bulkDiscRemark').value = '';
+            document.getElementById('bulkDiscDate').value = new Date().toISOString().split('T')[0];
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        };
+
+        window.closeBulkDisciplineModal = function() {
+            const modal = document.getElementById('bulkDisciplineModal');
+            if (modal) { modal.classList.add('hidden'); modal.classList.remove('flex'); }
+        };
+
+        window.updateBulkDisciplineStudents = function() {
+            const cls = document.getElementById('bulkDiscClass').value;
+            const listDiv = document.getElementById('bulkDisciplineStudentList');
+            if (!cls) {
+                listDiv.innerHTML = '<p class="text-xs text-slate-400 text-center py-4">First choose a class above</p>';
+                return;
+            }
+            const students = db.students.filter(s => s.class === cls).sort((a, b) => a.name.localeCompare(b.name));
+            if (students.length === 0) {
+                listDiv.innerHTML = '<p class="text-xs text-slate-400 text-center py-4">No students found in this class</p>';
+                return;
+            }
+            listDiv.innerHTML = students.map(s => `
+                <label class="flex items-center gap-2.5 p-2 rounded-lg hover:bg-rose-50 cursor-pointer transition">
+                    <input type="checkbox" class="bulk-disc-chk w-4 h-4 accent-rose-600 cursor-pointer" value="${s.admNo}">
+                    <span class="text-sm font-medium text-slate-800">${s.name}</span>
+                    <span class="text-xs text-slate-400 ml-auto">${s.admNo}</span>
+                </label>
+            `).join('');
+            document.getElementById('bulkDiscSelectAllBtn').textContent = 'Select All';
+        };
+
+        window.toggleSelectAllBulkDisc = function() {
+            const checkboxes = document.querySelectorAll('.bulk-disc-chk');
+            const btn = document.getElementById('bulkDiscSelectAllBtn');
+            const allChecked = [...checkboxes].every(c => c.checked);
+            checkboxes.forEach(c => c.checked = !allChecked);
+            btn.textContent = allChecked ? 'Select All' : 'Deselect All';
+        };
+
+        window.saveBulkDiscipline = function() {
+            const note = document.getElementById('bulkDiscNote').value.trim();
+            const remark = document.getElementById('bulkDiscRemark').value.trim();
+            const dateVal = document.getElementById('bulkDiscDate').value;
+            const selected = [...document.querySelectorAll('.bulk-disc-chk:checked')].map(c => c.value);
+            if (!note) { window.showToast('Please enter the Violation / Issue Title', 'error'); return; }
+            if (selected.length === 0) { window.showToast('Please select at least one student', 'error'); return; }
+            const date = dateVal || new Date().toISOString().split('T')[0];
+            const addedBy = window.currentUser ? window.currentUser.name : 'Admin';
+            let count = 0;
+            selected.forEach(admNo => {
+                const std = db.students.find(s => String(s.admNo).trim() === String(admNo).trim());
+                if (std) {
+                    if (!std.disciplineRecords) std.disciplineRecords = [];
+                    std.disciplineRecords.push({ date, note, remark, addedBy });
+                    count++;
+                }
+            });
+            if (count > 0) {
+                window.saveDB();
+                window.showToast(`Discipline record saved for ${count} student(s)`);
+                window.closeBulkDisciplineModal();
+            } else {
+                window.showToast('No records saved. Try again.', 'error');
+            }
         };
 
         window.deleteRecord = function(admNo, type, date, note) { 
