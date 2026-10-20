@@ -651,6 +651,188 @@
         </div>
     </div>
 
+    <!-- Discontinue Student Modal (Admin Only) -->
+    <div id="discontinueStdModal" class="fixed inset-0 bg-black/60 z-50 hidden items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[92vh]">
+            <div class="bg-gradient-to-r from-rose-700 via-rose-800 to-slate-900 p-4 sm:p-5 flex justify-between items-center text-white flex-shrink-0">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-10 h-10 rounded-xl bg-white/15 flex items-center justify-center text-amber-300 text-xl shadow-inner">
+                        <i class="fas fa-user-slash"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-extrabold text-base" id="discModalTitle">Record Student Discontinuation</h3>
+                        <p class="text-[11px] text-rose-200">പഠനം നിർത്തലാക്കൽ രേഖപ്പെടുത്തുക (Admin Only)</p>
+                    </div>
+                </div>
+                <button type="button" onclick="window.closeDiscontinueModal()" class="text-white/80 hover:text-white text-2xl leading-none cursor-pointer">&times;</button>
+            </div>
+            <form onsubmit="window.handleSaveDiscontinuation(event)" class="p-5 sm:p-6 space-y-4 bg-slate-50 overflow-y-auto flex-1">
+                <input type="hidden" id="discAdmNo">
+                
+                <!-- Target Student Info Card -->
+                <div class="bg-white p-3.5 rounded-xl border border-rose-100 flex items-center justify-between shadow-sm">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-rose-50 text-rose-600 flex items-center justify-center font-black text-sm" id="discStdAvatar">S</div>
+                        <div>
+                            <h4 class="font-bold text-slate-800 text-sm" id="discStdName">Student Name</h4>
+                            <p class="text-xs text-slate-500 font-medium"><span id="discStdAdm">Adm: 000</span> • <span id="discStdClass">Class</span></p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <span class="text-[11px] font-bold text-slate-400 block">Current Status</span>
+                        <span class="text-xs font-black" id="discCurrentStatusBadge">Active</span>
+                        <p class="text-[10px] text-slate-500 font-bold mt-0.5" id="discStdFeeSummary"></p>
+                    </div>
+                </div>
+
+                <!-- Discontinuation Date & Reason -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">
+                            Discontinuation Date / തിയ്യതി <span class="text-rose-600">*</span>
+                        </label>
+                        <input type="date" required id="discDate" class="w-full border border-slate-300 p-2.5 rounded-xl text-sm bg-white font-semibold text-slate-800 outline-none focus:ring-2 focus:ring-rose-500 shadow-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">
+                            Primary Reason / പ്രധാന കാരണം <span class="text-rose-600">*</span>
+                        </label>
+                        <select required id="discReason" class="w-full border border-slate-300 p-2.5 rounded-xl text-sm bg-white font-semibold text-slate-800 outline-none focus:ring-2 focus:ring-rose-500 shadow-sm cursor-pointer">
+                            <option value="">-- Choose Reason --</option>
+                            <option value="College Transfer / TC">College Transfer / TC (മറ്റൊരു സ്ഥാപനത്തിലേക്ക്)</option>
+                            <option value="Financial Difficulties">Financial Difficulties (സാമ്പത്തിക പ്രയാസം)</option>
+                            <option value="Health / Medical Reasons">Health / Medical Reasons (ആരോഗ്യ പ്രശ്നങ്ങൾ)</option>
+                            <option value="Family / Personal Circumstances">Family / Personal Reasons (കുടുംബ/വ്യക്തിപരം)</option>
+                            <option value="Course Discontinuation">Course Discontinuation (പഠന താല്പര്യക്കുറവ്)</option>
+                            <option value="Relocation / Abroad">Relocation / Abroad (സ്ഥലം മാറ്റം / വിദേശത്തേക്ക്)</option>
+                            <option value="Disciplinary Action">Disciplinary Action (അച്ചടക്ക നടപടി)</option>
+                            <option value="Other">Other Reason (മറ്റു കാരണങ്ങൾ)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Detailed Context / Notes -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">
+                        Reason Details / വിശദാംശങ്ങൾ <span class="text-rose-600">*</span>
+                    </label>
+                    <textarea required id="discReasonDetail" rows="2" placeholder="വിദ്യാർത്ഥി പഠനം അവസാനിപ്പിച്ചതിന്റെ വിശദമായ കാരണം ഇവിടെ രേഖപ്പെടുത്തുക..." class="w-full border border-slate-300 p-2.5 rounded-xl text-sm bg-white outline-none focus:ring-2 focus:ring-rose-500 shadow-sm leading-relaxed"></textarea>
+                </div>
+
+                <!-- Clearance and TC Details (അനുബന്ധ കാര്യങ്ങള്) -->
+                <div class="border-t border-slate-200 pt-3">
+                    <h5 class="text-xs font-black uppercase tracking-wider text-slate-600 mb-2 flex items-center gap-1.5">
+                        <i class="fas fa-file-invoice text-indigo-500"></i>
+                        <span>Clearance & TC Details / അനുബന്ധ വിവരങ്ങൾ</span>
+                    </h5>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-600 mb-1">Transfer Certificate (TC) No</label>
+                            <input type="text" id="discTcNo" placeholder="e.g. TC/2026/042" class="w-full border border-slate-300 p-2.5 rounded-xl text-xs sm:text-sm bg-white outline-none focus:ring-2 focus:ring-rose-500 shadow-sm">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-600 mb-1">TC Issue Date</label>
+                            <input type="date" id="discTcDate" class="w-full border border-slate-300 p-2.5 rounded-xl text-xs sm:text-sm bg-white outline-none focus:ring-2 focus:ring-rose-500 shadow-sm">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-600 mb-1">Fee Settlement Status</label>
+                            <select id="discFeeStatus" class="w-full border border-slate-300 p-2.5 rounded-xl text-xs sm:text-sm bg-white font-medium outline-none focus:ring-2 focus:ring-rose-500 shadow-sm cursor-pointer">
+                                <option value="All Dues Cleared">All Dues Cleared (ഫീസ് ബാക്കിയില്ല)</option>
+                                <option value="Pending Dues Recorded">Pending Dues Recorded (ബാക്കി തുകയുണ്ട്)</option>
+                                <option value="Fees Waived / Concession">Fees Waived / Exempted (ഇളവ് നൽകി)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-600 mb-1">Library & Belongings</label>
+                            <select id="discLibraryStatus" class="w-full border border-slate-300 p-2.5 rounded-xl text-xs sm:text-sm bg-white font-medium outline-none focus:ring-2 focus:ring-rose-500 shadow-sm cursor-pointer">
+                                <option value="Cleared">Cleared (ബുക്കുകളും രേഖകളും തിരികെ നൽകി)</option>
+                                <option value="Pending Return">Pending Return (തിരികെ നൽകാനുണ്ട്)</option>
+                                <option value="Not Applicable">Not Applicable</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Verification checkboxes -->
+                <div class="bg-rose-50/60 p-3 rounded-xl border border-rose-100 space-y-2">
+                    <label class="flex items-center gap-2 cursor-pointer text-xs font-semibold text-slate-700">
+                        <input type="checkbox" id="discParentNotified" class="w-4 h-4 rounded text-rose-600 focus:ring-rose-500 cursor-pointer">
+                        <span>Parent / Guardian officially informed (രക്ഷിതാവിനെ അറിയിച്ചിട്ടുണ്ട്)</span>
+                    </label>
+                </div>
+
+                <!-- Admin Remarks -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">
+                        Administrative Remarks (Optional)
+                    </label>
+                    <input type="text" id="discRemarks" placeholder="Additional administrative remarks or notes..." class="w-full border border-slate-300 p-2.5 rounded-xl text-xs sm:text-sm bg-white outline-none focus:ring-2 focus:ring-rose-500 shadow-sm">
+                </div>
+
+                <!-- Buttons -->
+                <div class="flex gap-2.5 pt-2">
+                    <button type="button" onclick="window.closeDiscontinueModal()" class="flex-1 bg-slate-200 hover:bg-slate-300 text-slate-700 py-3 rounded-xl text-xs sm:text-sm font-bold transition cursor-pointer">Cancel</button>
+                    <button type="submit" id="discSubmitBtn" class="flex-1 bg-rose-600 hover:bg-rose-700 active:scale-95 text-white py-3 rounded-xl text-xs sm:text-sm font-black shadow-md hover:shadow-lg transition flex items-center justify-center gap-2 cursor-pointer">
+                        <i class="fas fa-check-circle"></i>
+                        <span id="discSubmitBtnText">Confirm Discontinuation</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Discontinued Students List Modal -->
+    <div id="discontinuedListModal" class="fixed inset-0 bg-black/60 z-50 hidden items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl overflow-hidden flex flex-col max-h-[90vh]">
+            <div class="bg-gradient-to-r from-rose-800 via-rose-900 to-slate-900 p-4 sm:p-5 flex justify-between items-center text-white flex-shrink-0">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-white/15 flex items-center justify-center text-amber-300 text-xl shadow-inner">
+                        <i class="fas fa-user-slash"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-extrabold text-base sm:text-lg">Discontinued Students Register</h3>
+                        <p class="text-[11px] sm:text-xs text-rose-200">പഠനം നിർത്തലാക്കിയ വിദ്യാർത്ഥികളുടെ വിവരങ്ങൾ</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button type="button" onclick="window.exportDiscontinuedStudentsCSV()" class="bg-white/15 hover:bg-white/25 text-white text-xs font-bold px-3 py-1.5 rounded-lg border border-white/20 transition flex items-center gap-1.5 cursor-pointer">
+                        <i class="fas fa-file-download"></i> Export Excel
+                    </button>
+                    <button type="button" onclick="window.closeDiscontinuedListModal()" class="text-white/80 hover:text-white text-2xl leading-none cursor-pointer ml-1">&times;</button>
+                </div>
+            </div>
+            <div class="p-4 sm:p-6 bg-slate-50 flex-1 overflow-y-auto space-y-4">
+                <div class="flex flex-col sm:flex-row gap-3 justify-between items-stretch sm:items-center">
+                    <div class="relative flex-1">
+                        <i class="fas fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                        <input type="text" id="discontinuedModalSearch" oninput="window.renderDiscontinuedModalTable(this.value)" placeholder="Search discontinued students by name, adm no, or class..." class="w-full pl-9 pr-4 py-2 rounded-xl border border-slate-200 text-xs sm:text-sm bg-white outline-none focus:ring-2 focus:ring-rose-500 shadow-sm">
+                    </div>
+                    <span class="text-xs font-bold text-slate-500 self-center" id="discontinuedModalCount">0 Students</span>
+                </div>
+                <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs sm:text-sm whitespace-nowrap">
+                            <thead class="bg-slate-100 text-slate-600 font-bold uppercase text-[11px] tracking-wider border-b border-slate-200">
+                                <tr>
+                                    <th class="p-3.5">Adm No</th>
+                                    <th class="p-3.5">Student Name</th>
+                                    <th class="p-3.5">Class</th>
+                                    <th class="p-3.5">Discontinued Date</th>
+                                    <th class="p-3.5">Reason</th>
+                                    <th class="p-3.5">Fee Clearance</th>
+                                    <th class="p-3.5 text-center">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="discontinuedModalTableBody" class="divide-y divide-slate-100 font-medium">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- FULL JAVASCRIPT LOGIC -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
@@ -693,6 +875,8 @@
                 db.students.forEach(s => {
                     if(!s.leaveHistory) s.leaveHistory = []; if(!s.disciplineRecords) s.disciplineRecords = [];
                     if(!s.achievements) s.achievements = []; if(!s.examMarks) s.examMarks = {};
+                    if(!s.status) s.status = 'active';
+                    if(!s.discontinuationHistory) s.discontinuationHistory = [];
                 });
                 db.exams.forEach(ex => { if (ex.isPublished === undefined) ex.isPublished = false; });
                 
@@ -1117,7 +1301,7 @@
 
         window.getStudentRank = function(exId, admNo) {
             const ex = db.exams.find(e => e.id === exId); if (!ex) return '-';
-            const stds = db.students.filter(s => s.class === ex.class); let totals = [];
+            const stds = db.students.filter(s => s.class === ex.class && s.status !== 'discontinued'); let totals = [];
             stds.forEach(s => {
                 let tot = 0; let hasMarks = false;
                 ex.subjects.forEach(sub => { let m = (ex.marks[s.admNo] && ex.marks[s.admNo][sub.name] !== undefined) ? ex.marks[s.admNo][sub.name] : '-'; if (m !== '-' && m !== 'AB') { tot += parseInt(m); hasMarks = true; } });
@@ -1131,19 +1315,27 @@
         // 3. MAIN UI MODULES
         window.renderDashboard = function() {
             const total = db.students.length; 
-            const inCampus = db.students.filter(s => s.leaveStatus === 'In Campus').length; 
-            const onLeave = total - inCampus;
+            const discontinuedStudents = db.students.filter(s => s.status === 'discontinued');
+            const activeStudents = db.students.filter(s => s.status !== 'discontinued');
+            const inCampus = activeStudents.filter(s => s.leaveStatus === 'In Campus').length; 
+            const onLeave = activeStudents.filter(s => s.leaveStatus === 'On Leave').length;
             const classes = {}; 
-            db.students.forEach(s => { 
-                if(!classes[s.class]) classes[s.class] = { total: 0, leave: 0 }; 
+            activeStudents.forEach(s => { 
+                if(!classes[s.class]) classes[s.class] = { total: 0, leave: 0, disc: 0 }; 
                 classes[s.class].total++; 
                 if(s.leaveStatus === 'On Leave') classes[s.class].leave++; 
             });
+            discontinuedStudents.forEach(s => {
+                if(s.class) {
+                    if(!classes[s.class]) classes[s.class] = { total: 0, leave: 0, disc: 0 };
+                    classes[s.class].disc++;
+                }
+            });
             
-            let leaveHtml = db.students.filter(s => s.leaveStatus === 'On Leave').map(s => { 
+            let leaveHtml = activeStudents.filter(s => s.leaveStatus === 'On Leave').map(s => { 
                 const activeLeave = (s.leaveHistory || []).find(l => !l.dateIn) || {}; 
-                return `<tr class="hover:bg-slate-50"><td class="p-4 font-bold text-slate-800">${s.name} <br><span class="text-xs font-mono text-slate-400">${s.admNo}</span></td><td class="p-4">${s.class}</td><td class="p-4 font-mono font-bold text-rose-500">${activeLeave.dateOut || 'N/A'}</td><td class="p-4 whitespace-normal max-w-xs text-slate-600">${activeLeave.reason || 'N/A'}</td><td class="p-4 text-center"><button onclick="window.markReturn('${s.admNo}')" class="bg-emerald-100 text-emerald-700 border border-emerald-200 px-3 py-1.5 rounded-lg text-xs font-bold transition hover:bg-emerald-200"><i class="fas fa-sign-in-alt mr-1"></i> Report IN</button></td></tr>` 
-            }).join('') || '<tr><td colspan="5" class="p-8 text-center text-slate-500 font-bold">No students are currently on leave.</td></tr>';
+                return `<tr class="hover:bg-slate-50"><td class="p-4 font-bold text-slate-800">${s.name} <br><span class="text-xs font-mono text-slate-400">${s.admNo}</span></td><td class="p-4">${s.class}</td><td class="p-4 font-mono font-bold text-rose-500">${activeLeave.dateOut || 'N/A'}</td><td class="p-4 whitespace-normal max-w-xs text-slate-600">${activeLeave.reason || 'N/A'}</td><td class="p-4 text-center"><button onclick="window.markReturn('${s.admNo}')" class="bg-emerald-100 text-emerald-700 border border-emerald-200 px-3 py-1.5 rounded-lg text-xs font-bold transition hover:bg-emerald-200 cursor-pointer"><i class="fas fa-sign-in-alt mr-1"></i> Report IN</button></td></tr>` 
+            }).join('') || '<tr><td colspan="5" class="p-8 text-center text-slate-500 font-bold">No active students are currently on leave.</td></tr>';
             document.getElementById('leaveListTableBody').innerHTML = leaveHtml;
             
             // Build Quick Navigation Shortcuts for Current Role
@@ -1210,43 +1402,53 @@
 
                     ${shortcutsHtml}
 
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 border-t-4 border-t-indigo-500">
-                            <p class="text-slate-500 text-xs font-bold uppercase mb-1">Total Students</p>
-                            <p class="text-4xl font-black text-slate-800">${total}</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+                        <div class="bg-white p-5 sm:p-6 rounded-2xl shadow-sm border border-slate-200 border-t-4 border-t-indigo-500">
+                            <p class="text-slate-500 text-xs font-bold uppercase mb-1">Active Students</p>
+                            <p class="text-3xl sm:text-4xl font-black text-slate-800">${activeStudents.length}</p>
+                            <span class="text-[11px] text-slate-400 font-semibold">Total records: ${total}</span>
                         </div>
-                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 border-t-4 border-t-emerald-500">
+                        <div class="bg-white p-5 sm:p-6 rounded-2xl shadow-sm border border-slate-200 border-t-4 border-t-emerald-500">
                             <p class="text-slate-500 text-xs font-bold uppercase mb-1">In Campus</p>
-                            <p class="text-4xl font-black text-emerald-600">${inCampus}</p>
+                            <p class="text-3xl sm:text-4xl font-black text-emerald-600">${inCampus}</p>
+                            <span class="text-[11px] text-emerald-600 font-bold">Present in Hostel/Campus</span>
                         </div>
-                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 border-t-4 border-t-amber-500 relative">
+                        <div class="bg-white p-5 sm:p-6 rounded-2xl shadow-sm border border-slate-200 border-t-4 border-t-amber-500 relative">
                             <p class="text-slate-500 text-xs font-bold uppercase mb-1">Currently on Leave</p>
-                            <p class="text-4xl font-black text-amber-600">${onLeave}</p>
-                            <button onclick="document.getElementById('leaveListModal').classList.remove('hidden'); document.getElementById('leaveListModal').classList.add('flex');" class="absolute top-6 right-6 bg-amber-100 text-amber-800 hover:bg-amber-200 px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm">View List <i class="fas fa-list ml-1"></i></button>
+                            <p class="text-3xl sm:text-4xl font-black text-amber-600">${onLeave}</p>
+                            <button onclick="document.getElementById('leaveListModal').classList.remove('hidden'); document.getElementById('leaveListModal').classList.add('flex');" class="mt-2 bg-amber-100 hover:bg-amber-200 text-amber-800 px-2.5 py-1 rounded-lg text-xs font-bold transition shadow-sm flex items-center gap-1 cursor-pointer">View Leave List <i class="fas fa-list"></i></button>
+                        </div>
+                        <div class="bg-white p-5 sm:p-6 rounded-2xl shadow-sm border border-slate-200 border-t-4 border-t-rose-500 relative">
+                            <p class="text-slate-500 text-xs font-bold uppercase mb-1">Discontinued</p>
+                            <p class="text-3xl sm:text-4xl font-black text-rose-600">${discontinuedStudents.length}</p>
+                            <button onclick="window.openDiscontinuedListModal()" class="mt-2 bg-rose-100 hover:bg-rose-200 text-rose-800 px-2.5 py-1 rounded-lg text-xs font-bold transition shadow-sm flex items-center gap-1 cursor-pointer">View Register <i class="fas fa-user-slash"></i></button>
                         </div>
                     </div>
 
                     <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-                        <div class="bg-slate-50 p-4 border-b border-slate-200">
-                            <h3 class="font-bold text-slate-800"><i class="fas fa-layer-group text-indigo-500 mr-2"></i>Class-wise Status</h3>
+                        <div class="bg-slate-50 p-4 border-b border-slate-200 flex justify-between items-center">
+                            <h3 class="font-bold text-slate-800"><i class="fas fa-layer-group text-indigo-500 mr-2"></i>Class-wise Student & Attendance Status</h3>
+                            <span class="text-xs font-bold text-slate-500">Live Roster</span>
                         </div>
                         <div class="p-0 overflow-x-auto">
-                            <table class="w-full text-left text-sm">
+                            <table class="w-full text-left text-sm whitespace-nowrap">
                                 <thead class="text-xs text-slate-500 uppercase bg-slate-100">
                                     <tr>
                                         <th class="p-4">Class Name</th>
-                                        <th class="p-4 text-center">Total</th>
-                                        <th class="p-4 text-center">On Leave (Home)</th>
+                                        <th class="p-4 text-center">Active Enrolled</th>
                                         <th class="p-4 text-center">In Campus</th>
+                                        <th class="p-4 text-center">On Leave (Home)</th>
+                                        <th class="p-4 text-center">Discontinued</th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-slate-100">
                                     ${Object.keys(classes).sort().map(c => `
                                         <tr class="hover:bg-slate-50">
                                             <td class="p-4 font-bold text-slate-700">${c}</td>
-                                            <td class="p-4 text-center">${classes[c].total}</td>
-                                            <td class="p-4 text-center"><span class="bg-amber-100 text-amber-700 px-3 py-1 rounded-md font-bold text-xs">${classes[c].leave}</span></td>
+                                            <td class="p-4 text-center font-bold text-slate-800">${classes[c].total}</td>
                                             <td class="p-4 text-center font-bold text-emerald-600">${classes[c].total - classes[c].leave}</td>
+                                            <td class="p-4 text-center"><span class="bg-amber-100 text-amber-700 px-3 py-1 rounded-md font-bold text-xs">${classes[c].leave}</span></td>
+                                            <td class="p-4 text-center"><span class="${classes[c].disc > 0 ? 'bg-rose-100 text-rose-700 font-bold px-2.5 py-1 rounded-md text-xs' : 'text-slate-400 font-semibold'}">${classes[c].disc || 0}</span></td>
                                         </tr>
                                     `).join('')}
                                 </tbody>
@@ -1298,7 +1500,21 @@
             </div>`;
         }
 
-        window.updateSearchNames = function() { const cls = document.getElementById('searchClass').value; const nameSelect = document.getElementById('searchName'); nameSelect.innerHTML = '<option value="">-- Select Student --</option>'; if(cls) { db.students.filter(s => s.class === cls).sort((a,b) => a.name.localeCompare(b.name)).forEach(s => { nameSelect.innerHTML += `<option value="${s.admNo}">${s.name} (Adm: ${s.admNo})</option>`; }); nameSelect.disabled = false; } else { nameSelect.innerHTML = '<option value="">First select a class...</option>'; nameSelect.disabled = true; } }
+        window.updateSearchNames = function() { 
+            const cls = document.getElementById('searchClass').value; 
+            const nameSelect = document.getElementById('searchName'); 
+            nameSelect.innerHTML = '<option value="">-- Select Student --</option>'; 
+            if(cls) { 
+                db.students.filter(s => s.class === cls).sort((a,b) => a.name.localeCompare(b.name)).forEach(s => { 
+                    const statusTag = s.status === 'discontinued' ? ' ⚠️ [Discontinued]' : '';
+                    nameSelect.innerHTML += `<option value="${s.admNo}">${s.name} (Adm: ${s.admNo})${statusTag}</option>`; 
+                }); 
+                nameSelect.disabled = false; 
+            } else { 
+                nameSelect.innerHTML = '<option value="">First select a class...</option>'; 
+                nameSelect.disabled = true; 
+            } 
+        };
         
         window.searchStudent = function(directAdmNo = null) {
             const adm = directAdmNo || document.getElementById('searchName').value; 
@@ -1307,9 +1523,61 @@
             
             if(!std) { res.innerHTML = `<div class="bg-rose-50 text-rose-600 p-4 rounded-xl text-center border font-bold">Please select a student.</div>`; return; }
             const fin = window.getStudentFinancials(std);
+            const isDiscontinued = std.status === 'discontinued';
+            const isAdmin = window.currentUser && window.currentUser.role === 'admin';
             
             res.innerHTML = `
                 <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                    ${isDiscontinued ? `
+                    <!-- Discontinued Status Banner -->
+                    <div class="bg-gradient-to-r from-rose-950 via-rose-900 to-slate-900 text-white p-5 sm:p-6 border-b border-rose-800/80">
+                        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                            <div class="flex items-start gap-3.5">
+                                <div class="w-12 h-12 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center text-rose-300 text-2xl flex-shrink-0 shadow-inner">
+                                    <i class="fas fa-user-slash"></i>
+                                </div>
+                                <div>
+                                    <div class="flex items-center gap-2 flex-wrap">
+                                        <span class="bg-rose-500 text-white text-[11px] font-black uppercase px-2.5 py-0.5 rounded-full tracking-wider shadow-sm">
+                                            DISCONTINUED / പഠനം നിർത്തിവെച്ചു
+                                        </span>
+                                        <span class="text-xs text-rose-200 font-bold bg-white/10 px-2 py-0.5 rounded-md border border-white/10">
+                                            <i class="fas fa-calendar-alt mr-1"></i> ${std.discontinued?.date || 'N/A'}
+                                        </span>
+                                    </div>
+                                    <h4 class="text-base sm:text-lg font-black mt-1.5 text-white flex items-center gap-2">
+                                        <span>Reason: ${std.discontinued?.reason || 'Course Discontinued'}</span>
+                                    </h4>
+                                    <p class="text-xs sm:text-sm text-rose-100/90 mt-1 leading-relaxed max-w-2xl bg-white/5 p-2.5 rounded-xl border border-white/10">
+                                        <i class="fas fa-quote-left text-rose-400 mr-1.5 text-xs"></i>${std.discontinued?.reasonDetail || 'No detailed reason specified.'}
+                                    </p>
+                                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-3 pt-2 border-t border-rose-800/60 text-xs">
+                                        <div><span class="text-rose-300 block text-[10px] uppercase font-bold">TC Number:</span><span class="font-bold text-white">${std.discontinued?.tcNo || 'Not Issued'}</span></div>
+                                        <div><span class="text-rose-300 block text-[10px] uppercase font-bold">TC Issue Date:</span><span class="font-bold text-white">${std.discontinued?.tcDate || '-'}</span></div>
+                                        <div><span class="text-rose-300 block text-[10px] uppercase font-bold">Fee Clearance:</span><span class="font-bold text-white">${std.discontinued?.feeStatus || 'Cleared'}</span></div>
+                                        <div><span class="text-rose-300 block text-[10px] uppercase font-bold">Library / Books:</span><span class="font-bold text-white">${std.discontinued?.libraryStatus || 'Cleared'}</span></div>
+                                    </div>
+                                    <div class="flex flex-wrap items-center gap-3 text-[11px] text-rose-300/80 mt-2">
+                                        <span><i class="fas fa-user-check text-rose-400 mr-1"></i>Recorded By: <b>${std.discontinued?.recordedBy || 'Admin'}</b></span>
+                                        ${std.discontinued?.parentNotified ? '<span class="text-emerald-300"><i class="fas fa-check-circle mr-1"></i>Parent Informed</span>' : ''}
+                                        ${std.discontinued?.remarks ? `<span><i class="fas fa-info-circle mr-1"></i>Note: ${std.discontinued.remarks}</span>` : ''}
+                                    </div>
+                                </div>
+                            </div>
+                            ${isAdmin ? `
+                                <div class="flex flex-row md:flex-col gap-2 w-full md:w-auto flex-shrink-0 self-stretch md:self-auto justify-end">
+                                    <button onclick="window.openDiscontinueModal('${std.admNo}')" class="flex-1 md:flex-initial bg-white/15 hover:bg-white/25 active:scale-95 text-white border border-white/30 px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap shadow-sm">
+                                        <i class="fas fa-edit"></i> Edit Record
+                                    </button>
+                                    <button onclick="window.reactivateStudent('${std.admNo}')" class="flex-1 md:flex-initial bg-emerald-500 hover:bg-emerald-600 active:scale-95 text-white px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-md cursor-pointer whitespace-nowrap">
+                                        <i class="fas fa-undo"></i> Re-activate Student
+                                    </button>
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                    ` : ''}
+
                     <div class="bg-slate-50 p-4 sm:p-6 border-b flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                         <div class="flex items-center gap-3 sm:gap-4 min-w-0">
                             <div class="w-14 h-14 sm:w-16 sm:h-16 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600 text-xl sm:text-2xl font-black uppercase shadow-inner overflow-hidden flex-shrink-0">
@@ -1320,9 +1588,18 @@
                                 <p class="text-xs sm:text-sm font-bold text-slate-500">Adm No: ${std.admNo} • ${std.class}</p>
                             </div>
                         </div>
-                        <div class="flex flex-wrap gap-2 w-full md:w-auto">
-                            ${std.leaveStatus === 'In Campus' ? `<button onclick="window.markLeave('${std.admNo}')" class="flex-1 md:flex-initial bg-amber-100 hover:bg-amber-200 text-amber-800 px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-bold border transition whitespace-nowrap"><i class="fas fa-sign-out-alt mr-1"></i>Mark OUT (Home)</button>` : `<button onclick="window.markReturn('${std.admNo}')" class="flex-1 md:flex-initial bg-emerald-100 hover:bg-emerald-200 text-emerald-800 px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-bold border transition whitespace-nowrap"><i class="fas fa-sign-in-alt mr-1"></i>Report IN</button>`}
-                            ${window.currentUser.role === 'admin' ? `<button onclick="window.openEditStudent('${std.admNo}')" class="bg-blue-50 hover:bg-blue-100 text-blue-600 border px-3 sm:px-4 py-2 rounded-lg text-sm font-bold transition"><i class="fas fa-edit"></i></button><button onclick="window.deleteStudent('${std.admNo}')" class="bg-rose-50 hover:bg-rose-100 text-rose-600 border px-3 sm:px-4 py-2 rounded-lg text-sm font-bold transition"><i class="fas fa-trash"></i></button>` : ''}
+                        <div class="flex flex-wrap gap-2 w-full md:w-auto items-center">
+                            ${isDiscontinued ? `
+                                <span class="bg-rose-100 text-rose-800 border border-rose-300 font-bold px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm flex items-center gap-1.5"><i class="fas fa-user-slash text-rose-600"></i> Discontinued / പഠനം നിർത്തി</span>
+                                ${isAdmin ? `
+                                    <button onclick="window.openDiscontinueModal('${std.admNo}')" class="bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-300 px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-bold transition flex items-center gap-1.5 cursor-pointer shadow-sm"><i class="fas fa-edit"></i> Edit Discontinuation</button>
+                                    <button onclick="window.reactivateStudent('${std.admNo}')" class="bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-bold transition flex items-center gap-1.5 shadow-sm cursor-pointer"><i class="fas fa-undo"></i> Re-activate</button>
+                                ` : ''}
+                            ` : `
+                                ${std.leaveStatus === 'In Campus' ? `<button onclick="window.markLeave('${std.admNo}')" class="flex-1 md:flex-initial bg-amber-100 hover:bg-amber-200 text-amber-800 px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-bold border transition whitespace-nowrap cursor-pointer"><i class="fas fa-sign-out-alt mr-1"></i>Mark OUT (Home)</button>` : `<button onclick="window.markReturn('${std.admNo}')" class="flex-1 md:flex-initial bg-emerald-100 hover:bg-emerald-200 text-emerald-800 px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-bold border transition whitespace-nowrap cursor-pointer"><i class="fas fa-sign-in-alt mr-1"></i>Report IN</button>`}
+                                ${isAdmin ? `<button onclick="window.openDiscontinueModal('${std.admNo}')" class="bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-bold transition flex items-center gap-1.5 cursor-pointer shadow-sm"><i class="fas fa-user-slash"></i> Discontinue Student</button>` : ''}
+                            `}
+                            ${isAdmin ? `<button onclick="window.openEditStudent('${std.admNo}')" class="bg-blue-50 hover:bg-blue-100 text-blue-600 border px-3 sm:px-4 py-2 rounded-lg text-sm font-bold transition cursor-pointer" title="Edit Profile"><i class="fas fa-edit"></i></button><button onclick="window.deleteStudent('${std.admNo}')" class="bg-rose-50 hover:bg-rose-100 text-rose-600 border px-3 sm:px-4 py-2 rounded-lg text-sm font-bold transition cursor-pointer" title="Delete Student"><i class="fas fa-trash"></i></button>` : ''}
                         </div>
                     </div>
                     <div class="p-4 sm:p-6 grid grid-cols-1 ${window.currentUser.role === 'admin' ? 'lg:grid-cols-3' : ''} gap-6">
@@ -1463,9 +1740,13 @@
 
         // LEAVE MANAGEMENT FIXES
         window.markLeave = function(admNo) { 
+            const std = db.students.find(s => String(s.admNo).trim() === String(admNo).trim()); 
+            if(std && std.status === 'discontinued') {
+                alert("Cannot mark leave: Student has discontinued studies. (പഠനം നിർത്തിയ വിദ്യാർത്ഥിക്ക് ലീവ് രേഖപ്പെടുത്താൻ കഴിയില്ല)");
+                return;
+            }
             const reason = prompt("Enter reason for leave:"); 
             if(reason) { 
-                const std = db.students.find(s => String(s.admNo).trim() === String(admNo).trim()); 
                 if(std) {
                     std.leaveStatus = 'On Leave'; 
                     if(!std.leaveHistory) std.leaveHistory = []; 
@@ -1476,10 +1757,14 @@
                     else window.renderApp(); 
                 }
             } 
-        }
+        };
 
         window.markReturn = function(admNo) { 
             const std = db.students.find(s => String(s.admNo).trim() === String(admNo).trim()); 
+            if(std && std.status === 'discontinued') {
+                alert("Cannot record return: Student has discontinued studies. (പഠനം നിർത്തിയ വിദ്യാർത്ഥിയുടെ റിട്ടേൺ രേഖപ്പെടുത്താൻ കഴിയില്ല)");
+                return;
+            }
             if(std) {
                 std.leaveStatus = 'In Campus'; 
                 if(!std.leaveHistory) std.leaveHistory = []; 
@@ -1492,37 +1777,70 @@
                 if(window.currentTab === 'search') window.searchStudent(admNo); 
                 else window.renderApp(); 
             }
-        }
+        };
 
         window.markAllMonthlyLeave = function() { 
-            if(!confirm("Are you sure you want to mark all students currently 'In Campus' as on 'Monthly Leave'?")) return; 
+            if(!confirm("Are you sure you want to mark all active students currently 'In Campus' as on 'Monthly Leave'?")) return; 
             let count = 0; const today = new Date().toISOString().split('T')[0]; 
             db.students.forEach(s => { 
-                if(s.leaveStatus === 'In Campus') { 
+                if(s.status !== 'discontinued' && s.leaveStatus === 'In Campus') { 
                     s.leaveStatus = 'On Leave'; 
                     s.leaveHistory.push({ dateOut: today, reason: 'Monthly Leave', dateIn: null }); 
                     count++; 
                 } 
             }); 
             if(count > 0) { window.saveDB(); window.showToast(count + " students marked on Monthly Leave"); window.renderApp(); } 
-        }
+        };
 
         window.renderDirectory = function() {
             const isAdmin = window.currentUser.role === 'admin';
             const isAdminOrAdmin1 = isAdmin || window.currentUser.role === 'admin1';
+            const currentFilter = window.directoryFilter || 'active';
+            const activeStudents = db.students.filter(s => s.status !== 'discontinued');
+            const discontinuedStudents = db.students.filter(s => s.status === 'discontinued');
+            
+            let displayedStudents = db.students;
+            if (currentFilter === 'active') displayedStudents = activeStudents;
+            else if (currentFilter === 'discontinued') displayedStudents = discontinuedStudents;
+
             return `
                 <div class="space-y-4 flex flex-col h-full">
                     <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                        <h2 class="text-2xl font-extrabold text-slate-800">Student Directory</h2>
+                        <div>
+                            <h2 class="text-2xl font-extrabold text-slate-800 flex items-center gap-2">
+                                <span>Student Directory</span>
+                            </h2>
+                            <p class="text-xs text-slate-500 mt-0.5">Enrolled students, leave status, and discontinuation records</p>
+                        </div>
                         <div class="flex flex-wrap gap-2 w-full md:w-auto">
-                            ${isAdminOrAdmin1 ? `<button onclick="window.exportAttendanceCSV()" class="bg-emerald-50 text-emerald-700 border border-emerald-200 px-3 py-2 rounded-xl text-xs md:text-sm font-bold shadow-sm transition hover:bg-emerald-100"><i class="fas fa-download"></i> Attendance Report</button><button onclick="window.markAllMonthlyLeave()" class="bg-amber-100 text-amber-800 border px-3 py-2 rounded-xl text-xs md:text-sm font-bold shadow-sm transition"><i class="fas fa-home"></i> Monthly Leave</button>` : ''}
+                            ${isAdminOrAdmin1 ? `<button onclick="window.exportAttendanceCSV()" class="bg-emerald-50 text-emerald-700 border border-emerald-200 px-3 py-2 rounded-xl text-xs md:text-sm font-bold shadow-sm transition hover:bg-emerald-100 cursor-pointer"><i class="fas fa-download"></i> Attendance Report</button><button onclick="window.markAllMonthlyLeave()" class="bg-amber-100 text-amber-800 border px-3 py-2 rounded-xl text-xs md:text-sm font-bold shadow-sm transition cursor-pointer"><i class="fas fa-home"></i> Monthly Leave</button>` : ''}
                             ${isAdmin ? `
+                                <button onclick="window.openDiscontinuedListModal()" class="bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 px-3.5 py-2 rounded-xl text-xs md:text-sm font-bold shadow-sm transition flex items-center gap-1.5 cursor-pointer" title="View Discontinued Students Register">
+                                    <i class="fas fa-user-slash text-rose-500"></i> Discontinued Register (${discontinuedStudents.length})
+                                </button>
                                 <button onclick="window.downloadCurrentStudentsCSV()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3.5 py-2 rounded-xl text-xs md:text-sm font-bold shadow-sm transition flex items-center gap-1.5 cursor-pointer"><i class="fas fa-file-download text-sm"></i> Download CSV</button>
                                 <button onclick="document.getElementById('bulkUploadModal').classList.remove('hidden'); document.getElementById('bulkUploadModal').classList.add('flex'); if(window.updateCSVModalUI) window.updateCSVModalUI();" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3.5 py-2 rounded-xl text-xs md:text-sm font-bold shadow-sm transition flex items-center gap-1.5 cursor-pointer"><i class="fas fa-file-upload text-sm"></i> Upload CSV</button>
                                 <button onclick="window.openAddStudentModal()" class="bg-slate-800 hover:bg-slate-900 text-white px-3.5 py-2 rounded-xl text-xs md:text-sm font-bold shadow transition cursor-pointer">+ Add Student</button>
                             ` : ''}
                         </div>
                     </div>
+
+                    <!-- Directory Sub-filter Tabs -->
+                    <div class="flex flex-wrap items-center gap-2 border-b border-slate-200 pb-2">
+                        <button onclick="window.setDirectoryFilter('active')" class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${currentFilter === 'active' ? 'bg-[#022c22] text-white shadow' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}">
+                            <i class="fas fa-user-check text-emerald-400"></i> Active Students
+                            <span class="px-1.5 py-0.5 rounded-full text-[10px] font-black ${currentFilter === 'active' ? 'bg-emerald-600 text-white' : 'bg-slate-200 text-slate-700'}">${activeStudents.length}</span>
+                        </button>
+                        <button onclick="window.setDirectoryFilter('discontinued')" class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${currentFilter === 'discontinued' ? 'bg-rose-900 text-white shadow' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}">
+                            <i class="fas fa-user-slash text-rose-400"></i> Discontinued
+                            <span class="px-1.5 py-0.5 rounded-full text-[10px] font-black ${currentFilter === 'discontinued' ? 'bg-rose-600 text-white' : 'bg-rose-100 text-rose-700'}">${discontinuedStudents.length}</span>
+                        </button>
+                        <button onclick="window.setDirectoryFilter('all')" class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${currentFilter === 'all' ? 'bg-slate-800 text-white shadow' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}">
+                            <i class="fas fa-users text-indigo-400"></i> All Records
+                            <span class="px-1.5 py-0.5 rounded-full text-[10px] font-black ${currentFilter === 'all' ? 'bg-slate-600 text-white' : 'bg-slate-200 text-slate-700'}">${db.students.length}</span>
+                        </button>
+                    </div>
+
                     ${isAdmin ? `
                     <div class="bg-gradient-to-r from-emerald-900 to-[#022c22] rounded-2xl p-4 md:p-5 shadow-lg text-white">
                         <div class="flex flex-col md:flex-row items-start md:items-center gap-4">
@@ -1537,21 +1855,400 @@
                             </div>
                         </div>
                     </div>` : ''}
+
                     <div class="bg-white rounded-2xl shadow-sm border border-slate-200 flex-1 overflow-hidden flex flex-col">
                         <div class="overflow-x-auto flex-1 p-0">
-                            <table class="w-full text-left text-sm whitespace-nowrap">
-                                <thead class="text-xs text-slate-500 uppercase bg-slate-100 sticky top-0"><tr><th class="p-4">Adm No</th><th class="p-4">Name</th><th class="p-4">Class</th><th class="p-4">Location</th><th class="p-4 text-center">Actions</th></tr></thead>
-                                <tbody class="divide-y divide-slate-100">
-                                ${db.students.map(s => `<tr class="hover:bg-slate-50"><td class="p-4 font-mono text-slate-500">${s.admNo}</td><td class="p-4 font-bold text-slate-800">${s.name}</td><td class="p-4">${s.class}</td><td class="p-4"><span class="px-2 py-1 rounded-md text-xs font-bold ${s.leaveStatus === 'In Campus' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}">${s.leaveStatus}</span></td><td class="p-4 text-center">${s.leaveStatus === 'On Leave' ? '<button onclick="window.markReturn(\'' + s.admNo + '\')" class="bg-emerald-100 text-emerald-700 border border-emerald-200 px-3 py-1.5 rounded-lg text-xs font-bold mr-1 transition hover:bg-emerald-200">Report IN</button>' : '<button onclick="window.markLeave(\'' + s.admNo + '\')" class="bg-amber-100 text-amber-700 border border-amber-200 px-3 py-1.5 rounded-lg text-xs font-bold mr-1 transition hover:bg-amber-200">Mark OUT</button>'}<button onclick="window.openStudentDirectly('${s.admNo}', '${s.class}')" class="text-indigo-600 border px-3 py-1.5 rounded-lg text-xs font-bold">Manage</button>${isAdmin ? '<button onclick="window.deleteStudent(\'' + s.admNo + '\')" class="text-rose-500 border px-3 py-1.5 rounded-lg text-xs font-bold ml-1">Delete</button>' : ''}</td></tr>`).join('')}
-                                </tbody>
-                            </table>
+                            ${currentFilter === 'discontinued' ? `
+                                <table class="w-full text-left text-sm whitespace-nowrap">
+                                    <thead class="text-xs text-rose-800 uppercase bg-rose-50/80 sticky top-0 border-b border-rose-100">
+                                        <tr>
+                                            <th class="p-4">Adm No</th>
+                                            <th class="p-4">Student Name & Class</th>
+                                            <th class="p-4">Discontinued Date</th>
+                                            <th class="p-4">Reason & Details</th>
+                                            <th class="p-4">TC & Clearance</th>
+                                            <th class="p-4 text-center">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-slate-100">
+                                        ${discontinuedStudents.length > 0 ? discontinuedStudents.map(s => {
+                                            const d = s.discontinued || {};
+                                            return `
+                                            <tr class="hover:bg-rose-50/40 transition">
+                                                <td class="p-4 font-mono font-bold text-slate-600">${s.admNo}</td>
+                                                <td class="p-4">
+                                                    <div class="font-bold text-slate-800">${s.name}</div>
+                                                    <div class="text-xs text-slate-400 font-mono mt-0.5">Class: ${s.class}</div>
+                                                </td>
+                                                <td class="p-4">
+                                                    <span class="font-bold text-rose-700 font-mono text-xs bg-rose-50 px-2 py-1 rounded border border-rose-200">${d.date || 'N/A'}</span>
+                                                </td>
+                                                <td class="p-4 max-w-xs">
+                                                    <div class="font-bold text-xs text-slate-800">${d.reason || 'Discontinued'}</div>
+                                                    ${d.reasonDetail ? `<div class="text-[11px] text-slate-500 italic mt-0.5 truncate" title="${d.reasonDetail}">${d.reasonDetail}</div>` : ''}
+                                                </td>
+                                                <td class="p-4">
+                                                    <div class="flex flex-col gap-1 text-[11px]">
+                                                        <div class="flex items-center gap-1">
+                                                            <span class="font-bold ${d.feeStatus === 'Pending Dues Recorded' ? 'text-rose-600' : 'text-emerald-700'}">Fee: ${d.feeStatus || 'Cleared'}</span>
+                                                        </div>
+                                                        ${d.tcNo ? `<span class="text-indigo-700 font-mono text-[10px] bg-indigo-50 px-1.5 py-0.5 rounded border border-indigo-200 inline-block w-fit">TC: ${d.tcNo}</span>` : ''}
+                                                    </div>
+                                                </td>
+                                                <td class="p-4 text-center">
+                                                    <div class="inline-flex items-center gap-1.5">
+                                                        <button onclick="window.openStudentDirectly('${s.admNo}', '${s.class}')" class="text-indigo-600 hover:bg-indigo-50 border border-indigo-200 px-2.5 py-1.5 rounded-lg text-xs font-bold transition">Profile</button>
+                                                        ${isAdmin ? `
+                                                            <button onclick="window.openDiscontinueModal('${s.admNo}')" class="text-amber-700 hover:bg-amber-100 bg-amber-50 border border-amber-200 px-2.5 py-1.5 rounded-lg text-xs font-bold transition" title="Edit Discontinuation Details"><i class="fas fa-edit mr-1"></i>Edit</button>
+                                                            <button onclick="window.reactivateStudent('${s.admNo}')" class="text-emerald-700 hover:bg-emerald-100 bg-emerald-50 border border-emerald-300 px-2.5 py-1.5 rounded-lg text-xs font-bold transition" title="Reactivate back to active status"><i class="fas fa-user-plus mr-1"></i>Reactivate</button>
+                                                            <button onclick="window.deleteStudent('${s.admNo}')" class="text-rose-500 hover:bg-rose-50 border border-rose-200 px-2.5 py-1.5 rounded-lg text-xs font-bold transition">Delete</button>
+                                                        ` : ''}
+                                                    </div>
+                                                </td>
+                                            </tr>`;
+                                        }).join('') : `
+                                            <tr>
+                                                <td colspan="6" class="p-8 text-center text-slate-400 font-bold">
+                                                    No discontinued students found.
+                                                </td>
+                                            </tr>
+                                        `}
+                                    </tbody>
+                                </table>
+                            ` : `
+                                <table class="w-full text-left text-sm whitespace-nowrap">
+                                    <thead class="text-xs text-slate-500 uppercase bg-slate-100 sticky top-0"><tr><th class="p-4">Adm No</th><th class="p-4">Name</th><th class="p-4">Class</th><th class="p-4">Status / Location</th><th class="p-4 text-center">Actions</th></tr></thead>
+                                    <tbody class="divide-y divide-slate-100">
+                                    ${displayedStudents.map(s => {
+                                        const isDisc = s.status === 'discontinued';
+                                        return `<tr class="hover:bg-slate-50 ${isDisc ? 'bg-rose-50/30' : ''}">
+                                            <td class="p-4 font-mono text-slate-500 font-bold">${s.admNo}</td>
+                                            <td class="p-4">
+                                                <div class="font-bold text-slate-800 flex items-center gap-1.5">
+                                                    <span>${s.name}</span>
+                                                    ${isDisc ? `<span class="bg-rose-100 text-rose-700 text-[10px] font-black px-1.5 py-0.5 rounded border border-rose-200">Discontinued</span>` : ''}
+                                                </div>
+                                            </td>
+                                            <td class="p-4 font-bold text-slate-700">${s.class}</td>
+                                            <td class="p-4">
+                                                ${isDisc ? `
+                                                    <span class="px-2 py-1 rounded-md text-xs font-bold bg-rose-100 text-rose-700 border border-rose-200 flex items-center gap-1 w-fit">
+                                                        <i class="fas fa-user-slash text-[11px]"></i> Discontinued (${s.discontinued?.date || 'Recorded'})
+                                                    </span>
+                                                ` : `
+                                                    <span class="px-2 py-1 rounded-md text-xs font-bold ${s.leaveStatus === 'In Campus' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}">${s.leaveStatus}</span>
+                                                `}
+                                            </td>
+                                            <td class="p-4 text-center">
+                                                ${isDisc ? `
+                                                    <button onclick="window.openStudentDirectly('${s.admNo}', '${s.class}')" class="text-indigo-600 hover:bg-indigo-50 border border-indigo-200 px-3 py-1.5 rounded-lg text-xs font-bold transition">Manage</button>
+                                                    ${isAdmin ? `
+                                                        <button onclick="window.openDiscontinueModal('${s.admNo}')" class="text-amber-700 hover:bg-amber-100 bg-amber-50 border border-amber-200 px-2.5 py-1.5 rounded-lg text-xs font-bold ml-1 transition" title="Edit Discontinuation Details"><i class="fas fa-edit mr-1"></i>Edit</button>
+                                                        <button onclick="window.reactivateStudent('${s.admNo}')" class="text-emerald-700 hover:bg-emerald-100 bg-emerald-50 border border-emerald-300 px-2.5 py-1.5 rounded-lg text-xs font-bold ml-1 transition" title="Reactivate Student"><i class="fas fa-user-plus mr-1"></i>Reactivate</button>
+                                                        <button onclick="window.deleteStudent('${s.admNo}')" class="text-rose-500 hover:bg-rose-50 border border-rose-200 px-2.5 py-1.5 rounded-lg text-xs font-bold ml-1 transition">Delete</button>
+                                                    ` : ''}
+                                                ` : `
+                                                    ${s.leaveStatus === 'On Leave' ? '<button onclick="window.markReturn(\'' + s.admNo + '\')" class="bg-emerald-100 text-emerald-700 border border-emerald-200 px-3 py-1.5 rounded-lg text-xs font-bold mr-1 transition hover:bg-emerald-200 cursor-pointer">Report IN</button>' : '<button onclick="window.markLeave(\'' + s.admNo + '\')" class="bg-amber-100 text-amber-700 border border-amber-200 px-3 py-1.5 rounded-lg text-xs font-bold mr-1 transition hover:bg-amber-200 cursor-pointer">Mark OUT</button>'}
+                                                    <button onclick="window.openStudentDirectly('${s.admNo}', '${s.class}')" class="text-indigo-600 hover:bg-indigo-50 border border-indigo-200 px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer">Manage</button>
+                                                    ${isAdmin ? `
+                                                        <button onclick="window.openDiscontinueModal('${s.admNo}')" class="text-rose-600 hover:bg-rose-50 border border-rose-200 px-2 py-1.5 rounded-lg text-xs font-bold ml-1 transition cursor-pointer" title="Record Discontinuation"><i class="fas fa-user-slash mr-1"></i>Discontinue</button>
+                                                        <button onclick="window.deleteStudent('${s.admNo}')" class="text-rose-500 hover:bg-rose-50 border border-rose-200 px-2.5 py-1.5 rounded-lg text-xs font-bold ml-1 transition cursor-pointer">Delete</button>
+                                                    ` : ''}
+                                                `}
+                                            </td>
+                                        </tr>`;
+                                    }).join('')}
+                                    </tbody>
+                                </table>
+                            `}
                         </div>
                     </div>
                 </div>`;
-        }
+        };
 
-        window.openStudentDirectly = function(admNo, cls) { window.currentTab = 'search'; document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active')); window.renderApp(); setTimeout(() => { document.getElementById('searchClass').value = cls; window.updateSearchNames(); document.getElementById('searchName').value = admNo; window.searchStudent(admNo); }, 50); }
-        window.deleteStudent = function(admNo) { if(confirm('Are you sure?')) { db.students = db.students.filter(s => String(s.admNo).trim() !== String(admNo).trim()); window.saveDB(); window.renderApp(); window.showToast('Student Deleted'); } }
+        window.setDirectoryFilter = function(filter) {
+            window.directoryFilter = filter;
+            window.renderApp();
+        };
+
+        window.openStudentDirectly = function(admNo, cls) { window.currentTab = 'search'; document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active')); window.renderApp(); setTimeout(() => { document.getElementById('searchClass').value = cls; window.updateSearchNames(); document.getElementById('searchName').value = admNo; window.searchStudent(admNo); }, 50); };
+        window.deleteStudent = function(admNo) { if(confirm('Are you sure?')) { db.students = db.students.filter(s => String(s.admNo).trim() !== String(admNo).trim()); window.saveDB(); window.renderApp(); window.showToast('Student Deleted'); } };
+
+        // ==========================================
+        // STUDENT DISCONTINUATION SYSTEM (ADMIN ONLY)
+        // ==========================================
+        window.openDiscontinueModal = function(admNo) {
+            if (!window.currentUser || window.currentUser.role !== 'admin') {
+                alert('Access denied: Only System Administrator can manage student discontinuation.');
+                return;
+            }
+            const std = db.students.find(s => String(s.admNo).trim() === String(admNo).trim());
+            if (!std) { alert('Student not found'); return; }
+
+            const fin = window.getStudentFinancials(std);
+
+            document.getElementById('discAdmNo').value = std.admNo;
+            document.getElementById('discStdName').textContent = std.name;
+            document.getElementById('discStdAdm').textContent = 'Adm: ' + std.admNo;
+            document.getElementById('discStdClass').textContent = std.class || 'N/A';
+            document.getElementById('discStdAvatar').textContent = (std.name || 'S').charAt(0).toUpperCase();
+
+            const currentBadge = document.getElementById('discCurrentStatusBadge');
+            if (std.status === 'discontinued') {
+                currentBadge.className = 'text-xs font-black text-rose-600 bg-rose-50 px-2 py-0.5 rounded-full border border-rose-200';
+                currentBadge.textContent = 'Discontinued';
+                document.getElementById('discModalTitle').textContent = 'Edit Discontinuation Record';
+                document.getElementById('discSubmitBtnText').textContent = 'Update Discontinuation';
+            } else {
+                currentBadge.className = 'text-xs font-black text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200';
+                currentBadge.textContent = 'Active Student';
+                document.getElementById('discModalTitle').textContent = 'Record Student Discontinuation';
+                document.getElementById('discSubmitBtnText').textContent = 'Confirm Discontinuation';
+            }
+
+            const feeSummary = document.getElementById('discStdFeeSummary');
+            if (feeSummary) {
+                feeSummary.textContent = fin.currentDue > 0 ? `Dues: ₹${fin.currentDue}` : 'Fee Cleared';
+                feeSummary.className = fin.currentDue > 0 ? 'text-[10px] text-rose-600 font-bold mt-0.5' : 'text-[10px] text-emerald-600 font-bold mt-0.5';
+            }
+
+            if (std.discontinued) {
+                document.getElementById('discDate').value = std.discontinued.date || '';
+                document.getElementById('discReason').value = std.discontinued.reason || '';
+                document.getElementById('discReasonDetail').value = std.discontinued.reasonDetail || '';
+                document.getElementById('discTcNo').value = std.discontinued.tcNo || '';
+                document.getElementById('discTcDate').value = std.discontinued.tcDate || '';
+                document.getElementById('discFeeStatus').value = std.discontinued.feeStatus || (fin.currentDue > 0 ? 'Pending Dues Recorded' : 'All Dues Cleared');
+                document.getElementById('discLibraryStatus').value = std.discontinued.libraryStatus || 'Cleared';
+                document.getElementById('discParentNotified').checked = std.discontinued.parentNotified !== false;
+                document.getElementById('discRemarks').value = std.discontinued.remarks || '';
+            } else {
+                document.getElementById('discDate').value = new Date().toISOString().split('T')[0];
+                document.getElementById('discReason').value = '';
+                document.getElementById('discReasonDetail').value = '';
+                document.getElementById('discTcNo').value = '';
+                document.getElementById('discTcDate').value = '';
+                document.getElementById('discFeeStatus').value = fin.currentDue > 0 ? 'Pending Dues Recorded' : 'All Dues Cleared';
+                document.getElementById('discLibraryStatus').value = 'Cleared';
+                document.getElementById('discParentNotified').checked = true;
+                document.getElementById('discRemarks').value = '';
+            }
+
+            const modal = document.getElementById('discontinueStdModal');
+            if (modal) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            }
+        };
+
+        window.closeDiscontinueModal = function() {
+            const modal = document.getElementById('discontinueStdModal');
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
+        };
+
+        window.handleSaveDiscontinuation = function(e) {
+            if (e) e.preventDefault();
+            if (!window.currentUser || window.currentUser.role !== 'admin') {
+                alert('Access denied: Only System Administrator can manage student discontinuation.');
+                return;
+            }
+            const admNo = document.getElementById('discAdmNo').value;
+            const std = db.students.find(s => String(s.admNo).trim() === String(admNo).trim());
+            if (!std) { alert('Student not found'); return; }
+
+            const date = document.getElementById('discDate').value;
+            const reason = document.getElementById('discReason').value;
+            const reasonDetail = document.getElementById('discReasonDetail').value.trim();
+            const tcNo = document.getElementById('discTcNo').value.trim();
+            const tcDate = document.getElementById('discTcDate').value;
+            const feeStatus = document.getElementById('discFeeStatus').value;
+            const libraryStatus = document.getElementById('discLibraryStatus').value;
+            const parentNotified = document.getElementById('discParentNotified').checked;
+            const remarks = document.getElementById('discRemarks').value.trim();
+
+            if (!date) { alert('Please select discontinuation date / തിയ്യതി തിരഞ്ഞെടുക്കുക.'); return; }
+            if (!reason) { alert('Please select discontinuation reason / കാരണം തിരഞ്ഞെടുക്കുക.'); return; }
+
+            const record = {
+                date,
+                reason,
+                reasonDetail,
+                tcNo,
+                tcDate,
+                feeStatus,
+                libraryStatus,
+                parentNotified,
+                remarks,
+                recordedBy: window.currentUser.name || window.currentUser.username || 'System Admin',
+                recordedAt: new Date().toISOString()
+            };
+
+            if (!std.discontinuationHistory) std.discontinuationHistory = [];
+            std.discontinuationHistory.push(record);
+            std.discontinued = record;
+            std.status = 'discontinued';
+            std.leaveStatus = 'Discontinued';
+
+            window.saveDB();
+            window.closeDiscontinueModal();
+            window.showToast(`Student ${std.name} recorded as Discontinued`);
+            if (window.currentTab === 'search') {
+                window.searchStudent(admNo);
+            } else {
+                window.renderApp();
+            }
+        };
+
+        window.reactivateStudent = function(admNo) {
+            if (!window.currentUser || window.currentUser.role !== 'admin') {
+                alert('Access denied: Only System Administrator can reactivate discontinued students.');
+                return;
+            }
+            const std = db.students.find(s => String(s.admNo).trim() === String(admNo).trim());
+            if (!std) { alert('Student not found'); return; }
+
+            if (!confirm(`Are you sure you want to re-activate student ${std.name} (${std.admNo}) back to Active rolls?`)) return;
+
+            std.status = 'active';
+            std.leaveStatus = 'In Campus';
+            if (!std.discontinuationHistory) std.discontinuationHistory = [];
+            std.discontinuationHistory.push({
+                reactivatedAt: new Date().toISOString(),
+                reactivatedBy: window.currentUser.name || window.currentUser.username || 'System Admin',
+                note: 'Student re-admitted / re-activated to active rolls'
+            });
+
+            window.saveDB();
+            window.showToast(`Student ${std.name} re-activated to Active rolls`);
+            if (window.currentTab === 'search') {
+                window.searchStudent(admNo);
+            } else {
+                window.renderApp();
+            }
+        };
+
+        window.openDiscontinuedListModal = function() {
+            const modal = document.getElementById('discontinuedListModal');
+            if (modal) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                const searchInput = document.getElementById('discontinuedModalSearch');
+                if (searchInput) searchInput.value = '';
+                window.renderDiscontinuedModalTable('');
+            }
+        };
+
+        window.closeDiscontinuedListModal = function() {
+            const modal = document.getElementById('discontinuedListModal');
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
+        };
+
+        window.renderDiscontinuedModalTable = function(query) {
+            const tbody = document.getElementById('discontinuedModalTableBody');
+            const countEl = document.getElementById('discontinuedModalCount');
+            if (!tbody) return;
+
+            const q = (query || '').toLowerCase().trim();
+            const list = db.students.filter(s => s.status === 'discontinued').filter(s => {
+                if (!q) return true;
+                const tag = `${s.admNo} ${s.name} ${s.class} ${s.discontinued?.reason || ''} ${s.discontinued?.date || ''} ${s.discontinued?.tcNo || ''}`.toLowerCase();
+                return tag.includes(q);
+            }).sort((a,b) => {
+                const dateA = a.discontinued?.date || '';
+                const dateB = b.discontinued?.date || '';
+                return dateB.localeCompare(dateA);
+            });
+
+            if (countEl) countEl.textContent = `${list.length} Student${list.length === 1 ? '' : 's'}`;
+
+            if (list.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="p-8 text-center text-slate-400 font-bold">No discontinued students found${q ? ' matching search' : ''}.</td></tr>`;
+                return;
+            }
+
+            const isAdmin = window.currentUser && window.currentUser.role === 'admin';
+
+            tbody.innerHTML = list.map(s => {
+                const d = s.discontinued || {};
+                return `<tr class="hover:bg-slate-50/80 transition">
+                    <td class="p-3.5 font-mono font-bold text-slate-700">${s.admNo}</td>
+                    <td class="p-3.5">
+                        <div class="font-bold text-slate-800 text-sm">${s.name}</div>
+                        <div class="text-[11px] text-slate-400 font-mono">${s.phone || 'No Phone'}</div>
+                    </td>
+                    <td class="p-3.5 font-bold text-slate-700">${s.class}</td>
+                    <td class="p-3.5 font-bold text-rose-700 font-mono text-xs">${d.date || 'N/A'}</td>
+                    <td class="p-3.5">
+                        <div class="font-bold text-xs text-slate-800">${d.reason || 'N/A'}</div>
+                        ${d.reasonDetail ? `<div class="text-[11px] text-slate-500 italic max-w-xs truncate" title="${d.reasonDetail}">${d.reasonDetail}</div>` : ''}
+                    </td>
+                    <td class="p-3.5">
+                        <div class="flex flex-col gap-1 text-[11px]">
+                            <span class="font-bold ${d.feeStatus === 'Pending Dues Recorded' ? 'text-rose-600' : 'text-emerald-700'}">${d.feeStatus || 'Cleared'}</span>
+                            ${d.tcNo ? `<span class="text-indigo-600 font-mono text-[10px]">TC: ${d.tcNo}</span>` : ''}
+                        </div>
+                    </td>
+                    <td class="p-3.5 text-center">
+                        <div class="inline-flex items-center gap-1.5">
+                            <button onclick="window.closeDiscontinuedListModal(); window.openStudentDirectly('${s.admNo}', '${s.class}')" class="text-indigo-600 hover:bg-indigo-50 border border-indigo-200 px-2.5 py-1.5 rounded-lg text-xs font-bold transition">Profile</button>
+                            ${isAdmin ? `
+                                <button onclick="window.closeDiscontinuedListModal(); window.openDiscontinueModal('${s.admNo}')" class="text-amber-700 hover:bg-amber-100 bg-amber-50 border border-amber-200 px-2.5 py-1.5 rounded-lg text-xs font-bold transition"><i class="fas fa-edit mr-1"></i>Edit</button>
+                                <button onclick="window.reactivateStudent('${s.admNo}')" class="text-emerald-700 hover:bg-emerald-100 bg-emerald-50 border border-emerald-300 px-2.5 py-1.5 rounded-lg text-xs font-bold transition"><i class="fas fa-user-plus mr-1"></i>Reactivate</button>
+                            ` : ''}
+                        </div>
+                    </td>
+                </tr>`;
+            }).join('');
+        };
+
+        window.exportDiscontinuedStudentsCSV = function() {
+            const list = db.students.filter(s => s.status === 'discontinued');
+            if (list.length === 0) {
+                alert('No discontinued students to export.');
+                return;
+            }
+            const headers = [
+                "Admission No", "Student Name", "Class", "Phone",
+                "Discontinuation Date", "Primary Reason", "Reason Details",
+                "TC Number", "TC Date", "Fee Clearance Status",
+                "Library Clearance Status", "Parent Notified",
+                "Administrative Remarks", "Recorded By", "Recorded At"
+            ];
+            const rows = list.map(s => {
+                const d = s.discontinued || {};
+                return [
+                    `"${s.admNo}"`,
+                    `"${(s.name || '').replace(/"/g, '""')}"`,
+                    `"${s.class || ''}"`,
+                    `"${s.phone || ''}"`,
+                    `"${d.date || ''}"`,
+                    `"${(d.reason || '').replace(/"/g, '""')}"`,
+                    `"${(d.reasonDetail || '').replace(/"/g, '""')}"`,
+                    `"${(d.tcNo || '').replace(/"/g, '""')}"`,
+                    `"${d.tcDate || ''}"`,
+                    `"${(d.feeStatus || '').replace(/"/g, '""')}"`,
+                    `"${(d.libraryStatus || '').replace(/"/g, '""')}"`,
+                    `"${d.parentNotified ? 'Yes' : 'No'}"`,
+                    `"${(d.remarks || '').replace(/"/g, '""')}"`,
+                    `"${(d.recordedBy || '').replace(/"/g, '""')}"`,
+                    `"${d.recordedAt || ''}"`
+                ];
+            });
+            const csvContent = "data:text/csv;charset=utf-8,\uFEFF" + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `KKHM_Discontinued_Students_${new Date().toISOString().split('T')[0]}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        };
         
         window.openAddStudentModal = function() {
             const modal = document.getElementById('addStdModal');
@@ -2795,7 +3492,10 @@
                                                     <div class="flex items-center gap-2.5">
                                                         <span class="font-mono font-bold text-xs bg-slate-100 text-slate-700 px-2 py-0.5 rounded border border-slate-200">${s.admNo}</span>
                                                         <div>
-                                                            <div class="font-black text-slate-800 text-sm leading-tight">${s.name}</div>
+                                                            <div class="font-black text-slate-800 text-sm leading-tight flex items-center gap-1.5">
+                                                                <span>${s.name}</span>
+                                                                ${s.status === 'discontinued' ? `<span class="bg-rose-100 text-rose-700 text-[10px] font-black px-1.5 py-0.5 rounded border border-rose-200">Discontinued</span>` : ''}
+                                                            </div>
                                                             <div class="text-[11px] text-slate-400 font-mono mt-0.5 flex items-center gap-1.5">
                                                                 <i class="fas fa-phone text-[9px]"></i> ${s.phone || 'No Phone'}
                                                                 ${s.phone ? `<a href="https://wa.me/91${s.phone.replace(/\D/g,'')}" target="_blank" class="text-emerald-600 hover:text-emerald-700"><i class="fab fa-whatsapp"></i></a>` : ''}
@@ -2930,7 +3630,12 @@
 
                                             return `<tr class="hover:bg-slate-50">
                                                 <td class="p-4 font-mono font-bold text-slate-600">${s.admNo}</td>
-                                                <td class="p-4 font-bold text-slate-800">${s.name}</td>
+                                                <td class="p-4 font-bold text-slate-800">
+                                                    <div class="flex items-center gap-1.5">
+                                                        <span>${s.name}</span>
+                                                        ${s.status === 'discontinued' ? `<span class="bg-rose-100 text-rose-700 text-[10px] font-black px-1.5 py-0.5 rounded border border-rose-200">Discontinued</span>` : ''}
+                                                    </div>
+                                                </td>
                                                 <td class="p-4">${s.class}</td>
                                                 <td class="p-4 font-bold text-indigo-700 text-xs">${fin.formattedStartMonth}</td>
                                                 <td class="p-4 font-bold text-emerald-700 text-xs">${fin.formattedLastPaidMonth || 'Not Paid'}</td>
@@ -2982,7 +3687,12 @@
 
                     rows += `<tr class="hover:bg-slate-50">
                         <td class="p-4 font-mono font-bold text-slate-600">${s.admNo}</td>
-                        <td class="p-4 font-bold text-slate-800">${s.name}</td>
+                        <td class="p-4 font-bold text-slate-800">
+                            <div class="flex items-center gap-1.5">
+                                <span>${s.name}</span>
+                                ${s.status === 'discontinued' ? `<span class="bg-rose-100 text-rose-700 text-[10px] font-black px-1.5 py-0.5 rounded border border-rose-200">Discontinued</span>` : ''}
+                            </div>
+                        </td>
                         <td class="p-4">${s.class}</td>
                         <td class="p-4 font-bold text-indigo-700 text-xs">${fin.formattedStartMonth}</td>
                         <td class="p-4 font-bold text-emerald-700 text-xs">${fin.formattedLastPaidMonth || 'Not Paid'}</td>
@@ -3028,7 +3738,7 @@
                     </tr>
                     ${list.map(s=>`<tr>
                         <td class="center font-mono">${s.admNo}</td>
-                        <td>${s.name}</td>
+                        <td>${s.name}${s.status === 'discontinued' ? ' <span style="color:#b91c1c;font-weight:bold;font-size:10px;">[Discontinued]</span>' : ''}</td>
                         <td class="center">${s.class}</td>
                         <td class="center">${s._fin.formattedStartMonth}</td>
                         <td class="center">${s._fin.formattedLastPaidMonth || 'None'}</td>
