@@ -7,3 +7,7 @@ Thumbs.db
 .vscode/
 .idea/
 .netlify/
+
+# Local backups
+*.backup.*
+kkhm_database_backup_*.json

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'kkhm-erp-cache-v13';
+const CACHE_NAME = 'kkhm-erp-cache-v18';
 const urlsToCache = [
   '/',
   '/index.html',
@@ -78,7 +78,7 @@ self.addEventListener('fetch', event => {
           caches.open(CACHE_NAME).then(cache => cache.put(req, clone));
         }
         return networkResponse;
-      }).catch(() => {});
+      }).catch(() => { });
 
       return cachedResponse || fetchPromise;
     })
@@ -144,9 +144,9 @@ self.addEventListener('notificationclick', event => {
 self.addEventListener('message', event => {
   if (event.data) {
     if (event.data.action === 'setBadge' && navigator.setAppBadge) {
-      navigator.setAppBadge(event.data.count || 1).catch(() => {});
+      navigator.setAppBadge(event.data.count || 1).catch(() => { });
     } else if (event.data.action === 'clearBadge' && navigator.clearAppBadge) {
-      navigator.clearAppBadge().catch(() => {});
+      navigator.clearAppBadge().catch(() => { });
     }
   }
 });
