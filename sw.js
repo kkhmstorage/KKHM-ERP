@@ -1,4 +1,4 @@
-const CACHE_NAME = 'kkhm-erp-cache-v18';
+const CACHE_NAME = 'kkhm-erp-cache-v19';
 const urlsToCache = [
   '/',
   '/index.html',

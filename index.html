@@ -2304,6 +2304,7 @@
             const err = document.getElementById('loginError'); err.classList.add('hidden');
             if (user === 'admin' && pass === 'admin') window.currentUser = { role: 'admin', name: 'System Administrator' };
             else if (user === 'admin1' && pass === 'admin1') window.currentUser = { role: 'admin1', name: 'Principal' };
+            else if (user.toLowerCase() === 'teacher' && (pass === 'kkhm' || pass.toLowerCase() === 'kkhm')) window.currentUser = { role: 'mentor', name: 'Faculty Mentor', id: 'teacher', teacherCode: 'teacher' };
             else if ((user === 'mentor1' && pass === 'mentor1') || (user === 'mentor2' && pass === 'mentor2')) window.currentUser = { role: 'mentor', name: 'Class Mentor', id: user, teacherCode: user };
             else if (user === 'leader' && pass === 'leader') window.currentUser = { role: 'leader', name: 'College Leader' };
             else { 
