@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KKHM College Fee Payment</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" href="https://placehold.co/100x100/064e3b/ffffff?text=KKHM">
+</head>
+<body class="bg-slate-100 flex items-center justify-center min-h-screen p-4 font-sans">
+    <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden border border-slate-200">
+        <div class="bg-[#022c22] p-6 text-white text-center">
+            <div class="w-12 h-12 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center mx-auto mb-2 text-2xl border border-emerald-500/30">
+                <i class="fas fa-university"></i>
+            </div>
+            <h2 class="text-lg font-black uppercase tracking-wide">KKHM ISLAMIC & ARTS COLLEGE</h2>
+            <p class="text-xs text-emerald-300 font-medium">Markaz Campus, Athavanad • Online Fee Payment</p>
+            <div class="mt-4 bg-emerald-950/70 p-4 rounded-2xl border border-emerald-600/30">
+                <span class="text-xs text-emerald-300 uppercase tracking-widest block font-bold">Total Fee Amount</span>
+                <span class="text-4xl font-black text-white" id="displayAmt">₹0</span>
+            </div>
+        </div>
+
+        <div class="p-6 space-y-4">
+            <p class="text-xs font-bold text-slate-500 uppercase tracking-wider text-center flex items-center justify-center gap-1.5">
+                <i class="fas fa-bolt text-amber-500"></i>
+                <span>Choose UPI Payment App</span>
+            </p>
+
+            <div class="grid grid-cols-2 gap-3">
+                <button type="button" onclick="pay('gpay')" class="p-4 rounded-2xl border-2 border-emerald-100 hover:border-emerald-600 hover:bg-emerald-50 flex flex-col items-center justify-center gap-2 font-bold text-slate-800 transition shadow-sm cursor-pointer active:scale-95">
+                    <i class="fab fa-google-pay text-3xl text-blue-600"></i>
+                    <span class="text-xs font-black">Google Pay</span>
+                </button>
+                <button type="button" onclick="pay('phonepe')" class="p-4 rounded-2xl border-2 border-purple-100 hover:border-purple-600 hover:bg-purple-50 flex flex-col items-center justify-center gap-2 font-bold text-slate-800 transition shadow-sm cursor-pointer active:scale-95">
+                    <i class="fas fa-mobile-alt text-2xl text-purple-600"></i>
+                    <span class="text-xs font-black">PhonePe</span>
+                </button>
+                <button type="button" onclick="pay('paytm')" class="p-4 rounded-2xl border-2 border-sky-100 hover:border-sky-600 hover:bg-sky-50 flex flex-col items-center justify-center gap-2 font-bold text-slate-800 transition shadow-sm cursor-pointer active:scale-95">
+                    <i class="fas fa-wallet text-2xl text-sky-600"></i>
+                    <span class="text-xs font-black">Paytm</span>
+                </button>
+                <button type="button" onclick="pay('any')" class="p-4 rounded-2xl border-2 border-emerald-100 hover:border-emerald-600 hover:bg-emerald-50 flex flex-col items-center justify-center gap-2 font-bold text-slate-800 transition shadow-sm cursor-pointer active:scale-95">
+                    <i class="fas fa-university text-2xl text-emerald-700"></i>
+                    <span class="text-xs font-black">Any UPI App</span>
+                </button>
+            </div>
+
+            <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 text-center space-y-1.5">
+                <p class="text-xs font-bold text-slate-500 uppercase">College UPI ID</p>
+                <p class="font-mono text-xs sm:text-sm font-bold text-emerald-800 select-all break-all" id="displayUpi">-</p>
+                <button type="button" onclick="copyUpi()" class="mt-1 text-xs bg-emerald-100 text-emerald-800 px-3 py-1 rounded-lg font-bold hover:bg-emerald-200 transition cursor-pointer">
+                    <i class="fas fa-copy mr-1"></i> Copy UPI ID
+                </button>
+            </div>
+        </div>
+
+        <div class="p-4 bg-slate-50 border-t border-slate-200 text-center">
+            <a href="index.html" class="text-xs text-slate-600 font-bold hover:text-emerald-800 transition">
+                <i class="fas fa-arrow-left mr-1"></i> Return to KKHM ERP
+            </a>
+        </div>
+    </div>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const amt = parseFloat(params.get('amt') || '0').toFixed(2);
+        const upi = params.get('upi') || 'markazkkhmaunitofmalappuramdistkerala.17805908@habbank';
+        const name = encodeURIComponent(params.get('pn') || 'KKHM ISLAMIC and ARTS COLLEGE');
+        const note = encodeURIComponent('KKHM College Fee');
+
+        document.getElementById('displayAmt').innerText = '₹' + Math.round(parseFloat(amt));
+        document.getElementById('displayUpi').innerText = upi;
+
+        function copyUpi() {
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(upi).then(() => alert('UPI ID Copied!'));
+            } else {
+                prompt('Copy UPI ID:', upi);
+            }
+        }
+
+        function pay(app) {
+            const base = `pa=${upi}&pn=${name}&am=${amt}&cu=INR&tn=${note}`;
+            let url = `intent://pay?${base}#Intent;scheme=upi;end`;
+            if (app === 'gpay') {
+                url = `intent://pay?${base}#Intent;scheme=upi;package=com.google.android.apps.nbu.paisa.user;end`;
+            } else if (app === 'phonepe') {
+                url = `intent://pay?${base}#Intent;scheme=upi;package=com.phonepe.app;end`;
+            } else if (app === 'paytm') {
+                url = `intent://pay?${base}#Intent;scheme=upi;package=net.one97.paytm;end`;
+            }
+
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+            if (isIOS) {
+                window.location.href = `upi://pay?${base}`;
+            } else {
+                window.location.href = url;
+            }
+        }
+
+        const autoApp = params.get('app');
+        if (autoApp) {
+            setTimeout(() => pay(autoApp), 300);
+        }
+    </script>
+</body>
+</html>
