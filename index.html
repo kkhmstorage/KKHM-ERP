@@ -7925,10 +7925,16 @@
 
             // Dispatch intent to trigger the installed UPI application with pre-filled amount
             try {
-                const a = document.createElement('a');
-                a.href = targetUrl;
-                document.body.appendChild(a);
-                a.click();
+                // പുതിയ സുരക്ഷിതമായ കോഡ് (പഴയ ആപ്പുകളിൽ എറർ വരാതിരിക്കാൻ):
+try {
+    const iframe = document.createElement('iframe');
+    iframe.style.display = 'none';
+    iframe.src = targetUrl;
+    document.body.appendChild(iframe);
+    setTimeout(() => { try { document.body.removeChild(iframe); } catch(e){} }, 2000);
+} catch (err) {
+    console.warn(err);
+}
                 setTimeout(() => {
                     try { document.body.removeChild(a); } catch(e){}
                 }, 1000);
