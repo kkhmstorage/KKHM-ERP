@@ -455,13 +455,126 @@
                 </div>
 
                 <div class="space-y-2 pt-2">
-                    <a id="dueAlertUpiBtn" href="#" class="w-full bg-[#064e3b] hover:bg-emerald-900 text-white font-bold py-3.5 px-4 rounded-xl shadow-lg transition flex items-center justify-center gap-2 text-sm text-center">
-                        <i class="fas fa-bolt text-amber-400"></i> Pay Now via UPI (GPay / PhonePe)
-                    </a>
+                    <button type="button" id="dueAlertUpiBtn" onclick="window.closeFeeDueAlert(); window.openPaymentOptions();" class="w-full bg-[#064e3b] hover:bg-emerald-900 text-white font-bold py-3.5 px-4 rounded-xl shadow-lg transition flex items-center justify-center gap-2 text-sm text-center cursor-pointer">
+                        <i class="fas fa-bolt text-amber-400"></i> Pay Now (UPI / QR / Bank)
+                    </button>
                     <button type="button" onclick="window.closeFeeDueAlert()" class="w-full bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-2.5 rounded-xl text-xs transition">
                         I will pay soon / Remind Later
                     </button>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Interactive Fee Payment Hub Modal (Safe for Web & Android WebViews) -->
+    <div id="payFeeModal" class="fixed inset-0 bg-black/75 z-50 hidden items-center justify-center p-4 backdrop-blur-sm" onclick="if(event.target === this) window.closePaymentOptions();">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden flex flex-col border border-slate-200 animate-in fade-in zoom-in duration-200">
+            <!-- Header -->
+            <div class="bg-[#022c22] p-5 text-white flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-emerald-500/30 flex items-center justify-center text-emerald-400 text-xl">
+                        <i class="fas fa-wallet"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-black text-lg">Fee Payment Options</h3>
+                        <p class="text-xs text-emerald-300 font-medium">KKHM Islamic & Arts College</p>
+                    </div>
+                </div>
+                <button type="button" onclick="window.closePaymentOptions()" class="text-white/80 hover:text-white text-2xl font-bold cursor-pointer">&times;</button>
+            </div>
+
+            <div class="p-5 space-y-4 bg-slate-50 max-h-[80vh] overflow-y-auto">
+                <!-- Due Amount Card -->
+                <div class="bg-gradient-to-r from-emerald-800 to-[#022c22] text-white p-4 rounded-2xl shadow-sm text-center">
+                    <span class="text-xs text-emerald-300 uppercase font-bold tracking-wider">Fee Amount to Pay</span>
+                    <div class="text-3xl font-black mt-1" id="payModalAmount">₹0</div>
+                </div>
+
+                <!-- Option 1: Direct UPI App Launch -->
+                <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-2.5">
+                    <h4 class="font-bold text-slate-800 text-xs uppercase tracking-wide flex items-center gap-2">
+                        <i class="fas fa-bolt text-amber-500"></i>
+                        <span>Pay directly with UPI Apps</span>
+                    </h4>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button type="button" onclick="window.launchUpiApp('com.google.android.apps.nbu.paisa.user')" class="flex items-center justify-center gap-2 p-2.5 rounded-xl border border-slate-200 hover:border-emerald-500 hover:bg-emerald-50/50 text-xs font-bold text-slate-700 transition cursor-pointer">
+                            <i class="fab fa-google-pay text-lg text-blue-600"></i> Google Pay
+                        </button>
+                        <button type="button" onclick="window.launchUpiApp('com.phonepe.app')" class="flex items-center justify-center gap-2 p-2.5 rounded-xl border border-slate-200 hover:border-purple-500 hover:bg-purple-50/50 text-xs font-bold text-slate-700 transition cursor-pointer">
+                            <i class="fas fa-mobile-alt text-lg text-purple-600"></i> PhonePe
+                        </button>
+                        <button type="button" onclick="window.launchUpiApp('net.one97.paytm')" class="flex items-center justify-center gap-2 p-2.5 rounded-xl border border-slate-200 hover:border-sky-500 hover:bg-sky-50/50 text-xs font-bold text-slate-700 transition cursor-pointer">
+                            <i class="fas fa-wallet text-lg text-sky-600"></i> Paytm
+                        </button>
+                        <button type="button" onclick="window.launchUpiApp('')" class="flex items-center justify-center gap-2 p-2.5 rounded-xl border border-slate-200 hover:border-emerald-500 hover:bg-emerald-50/50 text-xs font-bold text-slate-700 transition cursor-pointer">
+                            <i class="fas fa-university text-lg text-emerald-600"></i> Any UPI App
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Option 2: Copy UPI ID (Most reliable in Android WebViews) -->
+                <div class="bg-white p-4 rounded-2xl border border-emerald-200 shadow-sm space-y-2">
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs font-bold text-slate-700 uppercase flex items-center gap-1.5">
+                            <i class="fas fa-qrcode text-emerald-600"></i> College UPI ID:
+                        </span>
+                        <span class="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full">Easy & Direct</span>
+                    </div>
+                    <div class="flex items-center justify-between p-2.5 bg-emerald-50 rounded-xl border border-emerald-200">
+                        <b class="font-mono text-emerald-900 text-sm truncate select-all" id="payModalUpiId">-</b>
+                        <button type="button" onclick="window.copyToClipboard(document.getElementById('payModalUpiId').innerText, 'UPI ID Copied!')" class="bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition flex items-center gap-1 shrink-0 cursor-pointer shadow-xs">
+                            <i class="fas fa-copy"></i> Copy
+                        </button>
+                    </div>
+                    <p class="text-[11px] text-slate-500 leading-relaxed">
+                        💡 <b>നിർദ്ദേശം:</b> ഈ UPI ID കോപ്പി ചെയ്ത് നിങ്ങളുടെ ഫോണിലെ <b>GPay, PhonePe അല്ലെങ്കിൽ Paytm</b> തുറന്ന് "Pay to UPI ID" എന്നതിൽ പേസ്റ്റ് ചെയ്തും ഫീസ് അടയ്ക്കാവുന്നതാണ്.
+                    </p>
+                </div>
+
+                <!-- Option 3: Scan QR Code -->
+                <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm text-center space-y-2">
+                    <h4 class="font-bold text-slate-800 text-xs uppercase tracking-wide">Scan QR Code</h4>
+                    <img id="payModalQrImg" src="" class="w-40 h-40 object-contain mx-auto border-2 border-slate-200 rounded-xl p-1 bg-white shadow-2xs">
+                    <div class="pt-1">
+                        <a id="payModalQrDownload" href="#" download="KKHM_Payment_QR.png" class="inline-flex items-center gap-1.5 text-xs text-indigo-700 hover:text-indigo-900 font-bold bg-indigo-50 hover:bg-indigo-100 px-3 py-1.5 rounded-lg border border-indigo-200 transition">
+                            <i class="fas fa-download"></i> Save QR to Gallery
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Option 4: Bank Account Details -->
+                <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm text-xs space-y-2 text-slate-700">
+                    <div class="flex justify-between items-center border-b pb-1.5">
+                        <span class="font-bold text-slate-800 uppercase flex items-center gap-1.5">
+                            <i class="fas fa-university text-indigo-600"></i> Bank Transfer (NEFT/IMPS)
+                        </span>
+                        <button type="button" onclick="window.copyBankDetails()" class="text-[11px] text-indigo-600 font-bold hover:underline cursor-pointer flex items-center gap-1">
+                            <i class="fas fa-copy"></i> Copy All
+                        </button>
+                    </div>
+                    <div class="flex justify-between"><span class="text-slate-400">Bank Name:</span> <b id="payModalBank">-</b></div>
+                    <div class="flex justify-between"><span class="text-slate-400">Account Name:</span> <b id="payModalAccName">-</b></div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-slate-400">Account No:</span>
+                        <span class="flex items-center gap-1.5">
+                            <b class="font-mono text-indigo-700 text-sm" id="payModalAccNo">-</b>
+                            <button type="button" onclick="window.copyToClipboard(document.getElementById('payModalAccNo').innerText, 'Account No Copied!')" class="text-[10px] bg-indigo-50 text-indigo-700 border border-indigo-200 px-1.5 py-0.5 rounded cursor-pointer"><i class="fas fa-copy"></i></button>
+                        </span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-slate-400">IFSC Code:</span>
+                        <span class="flex items-center gap-1.5">
+                            <b class="font-mono text-slate-800" id="payModalIfsc">-</b>
+                            <button type="button" onclick="window.copyToClipboard(document.getElementById('payModalIfsc').innerText, 'IFSC Copied!')" class="text-[10px] bg-slate-100 text-slate-700 border border-slate-300 px-1.5 py-0.5 rounded cursor-pointer"><i class="fas fa-copy"></i></button>
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-3 bg-white border-t border-slate-200 text-center">
+                <button type="button" onclick="window.closePaymentOptions()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 rounded-xl text-xs transition cursor-pointer">
+                    Close
+                </button>
             </div>
         </div>
     </div>
@@ -7620,11 +7733,11 @@
             document.getElementById('dueAlertUpi').innerText = db.settings.upi || '-';
 
             const upiBtn = document.getElementById('dueAlertUpiBtn');
-            if (db.settings.upi && fin.currentDue > 0) {
-                upiBtn.href = `upi://pay?pa=${db.settings.upi}&pn=${encodeURIComponent(db.settings.accName)}&am=${fin.currentDue}&cu=INR`;
-                upiBtn.style.display = 'flex';
+            if (fin.currentDue > 0) {
+                window.currentPayingAmount = fin.currentDue;
+                if (upiBtn) upiBtn.style.display = 'flex';
             } else {
-                upiBtn.style.display = 'none';
+                if (upiBtn) upiBtn.style.display = 'none';
             }
 
             const alertModal = document.getElementById('feeDueAlertModal');
@@ -7636,6 +7749,138 @@
             const alertModal = document.getElementById('feeDueAlertModal');
             alertModal.classList.add('hidden');
             alertModal.classList.remove('flex');
+        };
+
+        // Clipboard Helpers
+        window.copyToClipboard = function(text, successMsg) {
+            if (!text) return;
+            const cleanText = String(text).trim();
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(cleanText).then(() => {
+                    if (window.showToast) window.showToast(successMsg || "Copied to clipboard!", "success");
+                }).catch(() => {
+                    window.fallbackCopyText(cleanText, successMsg);
+                });
+            } else {
+                window.fallbackCopyText(cleanText, successMsg);
+            }
+        };
+
+        window.fallbackCopyText = function(text, successMsg) {
+            try {
+                const textArea = document.createElement("textarea");
+                textArea.value = text;
+                textArea.style.position = "fixed";
+                textArea.style.left = "-999999px";
+                textArea.style.top = "-999999px";
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+                const successful = document.execCommand('copy');
+                document.body.removeChild(textArea);
+                if (successful) {
+                    if (window.showToast) window.showToast(successMsg || "Copied to clipboard!", "success");
+                } else {
+                    prompt("Copy text:", text);
+                }
+            } catch (err) {
+                prompt("Copy text:", text);
+            }
+        };
+
+        window.copyBankDetails = function() {
+            const text = `KKHM Islamic & Arts College\n` +
+                `Bank Name: ${db.settings.bankName}\n` +
+                `Account Name: ${db.settings.accName}\n` +
+                `Account No: ${db.settings.accNo}\n` +
+                `IFSC Code: ${db.settings.ifsc}\n` +
+                `UPI ID: ${db.settings.upi}`;
+            window.copyToClipboard(text, "All Bank & UPI Details Copied!");
+        };
+
+        // Payment Hub Modal Handlers
+        window.openPaymentOptions = function(amount) {
+            if (amount !== undefined && amount !== null && amount > 0) {
+                window.currentPayingAmount = amount;
+            } else if (!window.currentPayingAmount) {
+                if (window.currentUser && window.currentUser.role === 'parent') {
+                    const std = (db.students || []).find(s => String(s.admNo).trim() === String(window.currentUser.admNo).trim());
+                    if (std && window.getStudentFinancials) {
+                        const fin = window.getStudentFinancials(std);
+                        window.currentPayingAmount = fin.currentDue || 0;
+                    }
+                }
+            }
+
+            const amt = window.currentPayingAmount || 0;
+            const amtEl = document.getElementById('payModalAmount');
+            if (amtEl) amtEl.innerText = '₹' + amt;
+
+            const upiEl = document.getElementById('payModalUpiId');
+            if (upiEl) upiEl.innerText = db.settings.upi || '-';
+
+            const qrImg = document.getElementById('payModalQrImg');
+            const qrDl = document.getElementById('payModalQrDownload');
+            if (qrImg) qrImg.src = db.settings.qrCodeUrl || '';
+            if (qrDl && db.settings.qrCodeUrl) qrDl.href = db.settings.qrCodeUrl;
+
+            const bankEl = document.getElementById('payModalBank');
+            if (bankEl) bankEl.innerText = db.settings.bankName || '-';
+
+            const accNameEl = document.getElementById('payModalAccName');
+            if (accNameEl) accNameEl.innerText = db.settings.accName || '-';
+
+            const accNoEl = document.getElementById('payModalAccNo');
+            if (accNoEl) accNoEl.innerText = db.settings.accNo || '-';
+
+            const ifscEl = document.getElementById('payModalIfsc');
+            if (ifscEl) ifscEl.innerText = db.settings.ifsc || '-';
+
+            const modal = document.getElementById('payFeeModal');
+            if (modal) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            }
+        };
+
+        window.closePaymentOptions = function() {
+            const modal = document.getElementById('payFeeModal');
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
+        };
+
+        window.launchUpiApp = function(appPackage) {
+            const upi = db.settings.upi;
+            if (!upi) {
+                if (window.showToast) window.showToast("UPI ID not configured in College Settings", "error");
+                return;
+            }
+            const name = encodeURIComponent(db.settings.accName || 'KKHM College');
+            const amt = window.currentPayingAmount || 0;
+            const note = encodeURIComponent('KKHM College Fee');
+
+            // Copy UPI ID to clipboard as immediate safeguard
+            window.copyToClipboard(upi, `UPI ID (${upi}) copied! Opening UPI app...`);
+
+            let uri = `upi://pay?pa=${upi}&pn=${name}&am=${amt}&cu=INR&tn=${note}`;
+            if (appPackage) {
+                uri = `intent://pay?pa=${upi}&pn=${name}&am=${amt}&cu=INR&tn=${note}#Intent;scheme=upi;package=${appPackage};end`;
+            }
+
+            // Safe dispatch via hidden iframe to protect Android WebViews from ERR_UNKNOWN_URL_SCHEME
+            try {
+                const frame = document.createElement('iframe');
+                frame.style.display = 'none';
+                frame.src = uri;
+                document.body.appendChild(frame);
+                setTimeout(() => {
+                    try { document.body.removeChild(frame); } catch(e){}
+                }, 3000);
+            } catch (err) {
+                console.warn("Iframe dispatch error:", err);
+            }
         };
 
         window.setParentTab = function(t) { window.parentTab = t; window.renderApp(); };
@@ -7694,7 +7939,57 @@
                         </li>
                     </ul>
                 </div>
-                <div class="bg-white rounded-2xl border p-8 flex flex-col md:flex-row gap-8 items-center shadow-sm mb-6"><div class="flex-1 space-y-3 text-sm"><h4 class="font-black text-xl mb-6"><i class="fas fa-university text-indigo-600 mr-2"></i>Bank Details for Payment</h4><p class="flex border-b pb-2"><span class="text-slate-500 w-32 font-bold uppercase text-xs">Bank Name</span><b class="text-base">${db.settings.bankName}</b></p><p class="flex border-b pb-2"><span class="text-slate-500 w-32 font-bold uppercase text-xs">Account Name</span><b class="text-base">${db.settings.accName}</b></p><p class="flex border-b pb-2"><span class="text-slate-500 w-32 font-bold uppercase text-xs">Account No</span><b class="text-indigo-600 font-mono text-lg">${db.settings.accNo}</b></p><p class="flex border-b pb-2"><span class="text-slate-500 w-32 font-bold uppercase text-xs">IFSC Code</span><b class="font-mono text-base">${db.settings.ifsc}</b></p><p class="flex pt-2"><span class="text-slate-500 w-32 font-bold uppercase text-xs">UPI ID</span><b class="text-emerald-600 font-mono text-base">${db.settings.upi}</b></p></div><div class="text-center bg-slate-50 p-6 rounded-2xl border shadow-inner flex flex-col items-center justify-center"><img src="${db.settings.qrCodeUrl}" class="w-48 h-48 object-contain mb-3 mx-auto border-4 border-white rounded-xl shadow"><p class="text-sm font-bold text-slate-600 mb-2">Scan & Pay via UPI</p>${fin.currentDue > 0 && db.settings.upi ? `<a href="upi://pay?pa=${db.settings.upi}&pn=${encodeURIComponent(db.settings.accName)}&am=${fin.currentDue}&cu=INR" class="w-full bg-[#064e3b] hover:bg-emerald-900 text-white font-bold py-3 px-4 rounded-xl shadow-md transition flex items-center justify-center gap-2 mt-2"><i class="fas fa-bolt text-amber-400"></i> Pay ₹${fin.currentDue} Now (UPI App)</a>` : ''}</div></div>
+                <div class="bg-white rounded-2xl border p-6 sm:p-8 flex flex-col md:flex-row gap-6 sm:gap-8 items-center shadow-sm mb-6">
+                    <div class="flex-1 space-y-3 text-sm w-full">
+                        <div class="flex items-center justify-between border-b pb-3 mb-3">
+                            <h4 class="font-black text-xl text-slate-800 flex items-center gap-2">
+                                <i class="fas fa-university text-indigo-600"></i>
+                                <span>Bank Details for Payment</span>
+                            </h4>
+                            <button type="button" onclick="window.copyBankDetails()" class="text-xs bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 px-3 py-1.5 rounded-lg font-bold transition flex items-center gap-1 cursor-pointer shadow-2xs">
+                                <i class="fas fa-copy"></i> Copy All
+                            </button>
+                        </div>
+                        <p class="flex justify-between border-b pb-2"><span class="text-slate-500 w-32 font-bold uppercase text-xs">Bank Name</span><b class="text-base text-slate-800">${db.settings.bankName}</b></p>
+                        <p class="flex justify-between border-b pb-2"><span class="text-slate-500 w-32 font-bold uppercase text-xs">Account Name</span><b class="text-base text-slate-800">${db.settings.accName}</b></p>
+                        <p class="flex justify-between items-center border-b pb-2">
+                            <span class="text-slate-500 w-32 font-bold uppercase text-xs">Account No</span>
+                            <span class="flex items-center gap-2">
+                                <b class="text-indigo-600 font-mono text-lg select-all">${db.settings.accNo}</b>
+                                <button type="button" onclick="window.copyToClipboard('${db.settings.accNo}', 'Account No Copied!')" class="text-xs bg-indigo-50 hover:bg-indigo-100 text-indigo-700 px-2 py-1 rounded font-bold border border-indigo-200 cursor-pointer" title="Copy Account No">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                            </span>
+                        </p>
+                        <p class="flex justify-between items-center border-b pb-2">
+                            <span class="text-slate-500 w-32 font-bold uppercase text-xs">IFSC Code</span>
+                            <span class="flex items-center gap-2">
+                                <b class="font-mono text-base text-slate-800 select-all">${db.settings.ifsc}</b>
+                                <button type="button" onclick="window.copyToClipboard('${db.settings.ifsc}', 'IFSC Code Copied!')" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-2 py-1 rounded font-bold border border-slate-300 cursor-pointer" title="Copy IFSC">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                            </span>
+                        </p>
+                        <p class="flex justify-between items-center pt-2">
+                            <span class="text-slate-500 w-32 font-bold uppercase text-xs">UPI ID</span>
+                            <span class="flex items-center gap-2">
+                                <b class="text-emerald-700 font-mono text-base select-all">${db.settings.upi}</b>
+                                <button type="button" onclick="window.copyToClipboard('${db.settings.upi}', 'UPI ID Copied!')" class="text-xs bg-emerald-50 hover:bg-emerald-100 text-emerald-800 px-2.5 py-1 rounded font-bold border border-emerald-300 cursor-pointer flex items-center gap-1 shadow-2xs" title="Copy UPI ID">
+                                    <i class="fas fa-copy"></i> Copy
+                                </button>
+                            </span>
+                        </p>
+                    </div>
+                    <div class="text-center bg-slate-50 p-6 rounded-2xl border shadow-inner flex flex-col items-center justify-center shrink-0 w-full md:w-auto">
+                        <img src="${db.settings.qrCodeUrl}" class="w-44 h-44 object-contain mb-3 mx-auto border-4 border-white rounded-xl shadow">
+                        <p class="text-sm font-bold text-slate-600 mb-2">Scan & Pay via UPI</p>
+                        ${fin.currentDue > 0 ? `
+                            <button type="button" onclick="window.openPaymentOptions(${fin.currentDue})" class="w-full bg-[#064e3b] hover:bg-emerald-900 text-white font-bold py-3.5 px-4 rounded-xl shadow-md transition flex items-center justify-center gap-2 mt-2 cursor-pointer">
+                                <i class="fas fa-bolt text-amber-400"></i> Pay ₹${fin.currentDue} Now (UPI / QR / Bank)
+                            </button>
+                        ` : ''}
+                    </div>
+                </div>
                 ${fin.currentDue > 0 ? `<div class="bg-rose-50 text-rose-800 p-4 rounded-xl text-center border border-rose-200 font-bold mb-6"><i class="fas fa-exclamation-circle mr-2"></i> You have an outstanding due of ₹${fin.currentDue}. Please pay using the bank details above.</div>` : `<div class="bg-emerald-50 text-emerald-800 p-4 rounded-xl text-center border border-emerald-200 font-bold mb-6"><i class="fas fa-check-circle mr-2 text-emerald-500"></i> All current dues cleared!</div>`}
                 <div class="bg-white border rounded-2xl p-6 shadow-sm">
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b pb-3 mb-4 gap-2">
