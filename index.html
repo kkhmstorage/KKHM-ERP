@@ -496,18 +496,18 @@
                         <i class="fas fa-bolt text-amber-500"></i>
                         <span>Pay directly with UPI Apps</span>
                     </h4>
-                    <div class="grid grid-cols-2 gap-2">
-                        <button type="button" onclick="window.launchUpiApp('com.google.android.apps.nbu.paisa.user')" class="flex items-center justify-center gap-2 p-2.5 rounded-xl border border-slate-200 hover:border-emerald-500 hover:bg-emerald-50/50 text-xs font-bold text-slate-700 transition cursor-pointer">
-                            <i class="fab fa-google-pay text-lg text-blue-600"></i> Google Pay
+                    <div class="grid grid-cols-2 gap-2.5">
+                        <button type="button" onclick="window.launchUpiApp('gpay')" class="flex items-center justify-center gap-2 p-3 rounded-xl border-2 border-emerald-100 hover:border-emerald-500 hover:bg-emerald-50 text-xs font-bold text-slate-800 transition cursor-pointer shadow-2xs">
+                            <i class="fab fa-google-pay text-2xl text-blue-600"></i> Google Pay
                         </button>
-                        <button type="button" onclick="window.launchUpiApp('com.phonepe.app')" class="flex items-center justify-center gap-2 p-2.5 rounded-xl border border-slate-200 hover:border-purple-500 hover:bg-purple-50/50 text-xs font-bold text-slate-700 transition cursor-pointer">
-                            <i class="fas fa-mobile-alt text-lg text-purple-600"></i> PhonePe
+                        <button type="button" onclick="window.launchUpiApp('phonepe')" class="flex items-center justify-center gap-2 p-3 rounded-xl border-2 border-purple-100 hover:border-purple-500 hover:bg-purple-50 text-xs font-bold text-slate-800 transition cursor-pointer shadow-2xs">
+                            <i class="fas fa-mobile-alt text-xl text-purple-600"></i> PhonePe
                         </button>
-                        <button type="button" onclick="window.launchUpiApp('net.one97.paytm')" class="flex items-center justify-center gap-2 p-2.5 rounded-xl border border-slate-200 hover:border-sky-500 hover:bg-sky-50/50 text-xs font-bold text-slate-700 transition cursor-pointer">
-                            <i class="fas fa-wallet text-lg text-sky-600"></i> Paytm
+                        <button type="button" onclick="window.launchUpiApp('paytm')" class="flex items-center justify-center gap-2 p-3 rounded-xl border-2 border-sky-100 hover:border-sky-500 hover:bg-sky-50 text-xs font-bold text-slate-800 transition cursor-pointer shadow-2xs">
+                            <i class="fas fa-wallet text-xl text-sky-600"></i> Paytm
                         </button>
-                        <button type="button" onclick="window.launchUpiApp('')" class="flex items-center justify-center gap-2 p-2.5 rounded-xl border border-slate-200 hover:border-emerald-500 hover:bg-emerald-50/50 text-xs font-bold text-slate-700 transition cursor-pointer">
-                            <i class="fas fa-university text-lg text-emerald-600"></i> Any UPI App
+                        <button type="button" onclick="window.launchUpiApp('any')" class="flex items-center justify-center gap-2 p-3 rounded-xl border-2 border-emerald-100 hover:border-emerald-500 hover:bg-emerald-50 text-xs font-bold text-slate-800 transition cursor-pointer shadow-2xs">
+                            <i class="fas fa-university text-xl text-emerald-700"></i> Any UPI App
                         </button>
                     </div>
                 </div>
@@ -7851,35 +7851,73 @@
             }
         };
 
-        window.launchUpiApp = function(appPackage) {
-            const upi = db.settings.upi;
+        window.launchUpiApp = function(appType) {
+            const upi = (db.settings.upi || '').trim();
             if (!upi) {
                 if (window.showToast) window.showToast("UPI ID not configured in College Settings", "error");
                 return;
             }
-            const name = encodeURIComponent(db.settings.accName || 'KKHM College');
-            const amt = window.currentPayingAmount || 0;
+
+            // Clean payee name (replace '&' with 'and' to prevent broken query parameters in naive UPI parsers)
+            const rawName = (db.settings.accName || 'KKHM College').replace(/&/g, 'and').trim();
+            const encodedName = encodeURIComponent(rawName);
+
+            // Format amount as valid decimal number e.g. "8000.00"
+            const rawAmt = window.currentPayingAmount || 0;
+            const numAmt = parseFloat(rawAmt) || 0;
+            const amt = numAmt.toFixed(2);
             const note = encodeURIComponent('KKHM College Fee');
 
-            // Copy UPI ID to clipboard as immediate safeguard
-            window.copyToClipboard(upi, `UPI ID (${upi}) copied! Opening UPI app...`);
+            // 1. Copy UPI ID immediately as safety guarantee
+            window.copyToClipboard(upi, `UPI ID (${upi}) copied! Opening payment app...`);
 
-            let uri = `upi://pay?pa=${upi}&pn=${name}&am=${amt}&cu=INR&tn=${note}`;
-            if (appPackage) {
-                uri = `intent://pay?pa=${upi}&pn=${name}&am=${amt}&cu=INR&tn=${note}#Intent;scheme=upi;package=${appPackage};end`;
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+            const baseParams = `pa=${upi}&pn=${encodedName}&am=${amt}&cu=INR&tn=${note}`;
+
+            let targetUrl = '';
+            let appLabel = 'UPI App';
+
+            if (isIOS) {
+                // iOS only supports standard upi:// scheme
+                targetUrl = `upi://pay?${baseParams}`;
+                appLabel = 'UPI App';
+            } else {
+                // Android intent URIs targeting specific apps with pre-filled amount
+                if (appType === 'gpay' || appType === 'com.google.android.apps.nbu.paisa.user') {
+                    targetUrl = `intent://pay?${baseParams}#Intent;scheme=upi;package=com.google.android.apps.nbu.paisa.user;end`;
+                    appLabel = 'Google Pay';
+                } else if (appType === 'phonepe' || appType === 'com.phonepe.app') {
+                    targetUrl = `intent://pay?${baseParams}#Intent;scheme=upi;package=com.phonepe.app;end`;
+                    appLabel = 'PhonePe';
+                } else if (appType === 'paytm' || appType === 'net.one97.paytm') {
+                    targetUrl = `intent://pay?${baseParams}#Intent;scheme=upi;package=net.one97.paytm;end`;
+                    appLabel = 'Paytm';
+                } else {
+                    targetUrl = `intent://pay?${baseParams}#Intent;scheme=upi;end`;
+                    appLabel = 'UPI App';
+                }
             }
 
-            // Safe dispatch via hidden iframe to protect Android WebViews from ERR_UNKNOWN_URL_SCHEME
+            if (window.showToast) {
+                window.showToast(`Opening ${appLabel} with ₹${Math.round(numAmt)}...`, "info");
+            }
+
+            // Direct top-level navigation to trigger Android Intent with pre-filled amount
             try {
-                const frame = document.createElement('iframe');
-                frame.style.display = 'none';
-                frame.src = uri;
-                document.body.appendChild(frame);
-                setTimeout(() => {
-                    try { document.body.removeChild(frame); } catch(e){}
-                }, 3000);
+                window.location.href = targetUrl;
             } catch (err) {
-                console.warn("Iframe dispatch error:", err);
+                console.warn("Direct navigation error, fallback to anchor click:", err);
+                try {
+                    const a = document.createElement('a');
+                    a.href = targetUrl;
+                    document.body.appendChild(a);
+                    a.click();
+                    setTimeout(() => {
+                        try { document.body.removeChild(a); } catch(e){}
+                    }, 1000);
+                } catch(e2) {
+                    window.location.href = `upi://pay?${baseParams}`;
+                }
             }
         };
 
