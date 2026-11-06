@@ -1,0 +1,8 @@
+[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "app.netlify.celadon_profiterole_9f7633.twa",
+    "sha256_cert_fingerprints": ["17:A9:D5:C4:CB:91:A3:21:07:13:44:A4:72:80:F6:C9:AA:7F:1C:A8:18:FD:11:D8:EE:76:27:BE:9D:77:1C:F4"]
+  }
+}]
