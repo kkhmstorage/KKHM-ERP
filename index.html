@@ -711,7 +711,7 @@
     </div>
 
     <!-- Fee Payment Receipt Voucher Modal -->
-    <div id="feeReceiptModal" class="fixed inset-0 bg-black/70 z-50 hidden items-center justify-center p-4 backdrop-blur-sm">
+    <div id="feeReceiptModal" class="fixed inset-0 bg-black/70 z-50 hidden items-center justify-center p-4 backdrop-blur-sm" onclick="if(event.target === this) window.closeReceiptModal();">
         <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden flex flex-col border border-slate-200">
             <div class="bg-[#022c22] p-5 text-white flex justify-between items-center">
                 <div class="flex items-center gap-3">
@@ -721,7 +721,7 @@
                         <p class="text-xs text-emerald-300 font-medium">Official Fee Receipt</p>
                     </div>
                 </div>
-                <button type="button" onclick="document.getElementById('feeReceiptModal').classList.add('hidden'); document.getElementById('feeReceiptModal').classList.remove('flex');" class="text-white/80 hover:text-white text-2xl font-bold">&times;</button>
+                <button type="button" onclick="window.closeReceiptModal()" class="text-white/80 hover:text-white text-2xl font-bold cursor-pointer">&times;</button>
             </div>
             
             <div id="receiptPrintArea" class="p-6 bg-slate-50 space-y-4">
@@ -765,6 +765,9 @@
                         <i class="fas fa-image"></i> Save Photo (PNG)
                     </button>
                 </div>
+                <button type="button" onclick="window.closeReceiptModal()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2 px-3 rounded-xl text-xs transition flex items-center justify-center gap-1.5 cursor-pointer">
+                    <i class="fas fa-times text-slate-400"></i> Close
+                </button>
             </div>
         </div>
     </div>
@@ -3049,8 +3052,11 @@
                                 ${fin.remainingYearly === 0 ? `<button onclick="window.printNoDue('${std.admNo}')" class="flex-1 bg-emerald-50 text-emerald-700 border text-xs font-bold py-2.5 rounded-lg transition"><i class="fas fa-certificate mr-1"></i> No Due</button>` : ''}
                             </div>
                             <div class="border-t pt-3">
-                                <h5 class="text-xs font-bold text-slate-500 mb-2">Payment History</h5>
-                                <div class="max-h-24 overflow-y-auto space-y-1 pr-1">${(std.feeHistory || []).slice().reverse().map(f => `<div class="text-[11px] flex justify-between border-b pb-1 border-slate-100"><span><b>${f.month}</b> <span class="text-slate-400">(${f.date})</span></span><span class="text-emerald-600 font-bold">₹${f.amount}</span></div>`).join('') || '<p class="text-[10px] text-slate-400">No records found.</p>'}</div>
+                                <div class="flex items-center justify-between mb-2">
+                                    <h5 class="text-xs font-bold text-slate-500">Payment History</h5>
+                                    <span class="text-[10px] text-emerald-600 font-semibold"><i class="fas fa-mouse-pointer mr-0.5"></i>Click for receipt</span>
+                                </div>
+                                <div class="max-h-40 overflow-y-auto space-y-1.5 pr-1">${(std.feeHistory || []).map((f, origIdx) => ({ f, origIdx })).reverse().map(({ f, origIdx }) => `<div onclick="window.viewFeeReceipt('${std.admNo}', ${origIdx})" class="text-[11px] flex justify-between items-center p-2 rounded-lg border border-slate-100 hover:border-emerald-300 hover:bg-emerald-50/80 cursor-pointer transition group shadow-2xs" title="Click to view payment receipt voucher"><span class="flex items-center gap-1.5 truncate pr-2"><i class="fas fa-receipt text-slate-400 group-hover:text-emerald-600 transition text-[10px]"></i><b class="text-slate-800 group-hover:text-emerald-950">${f.month}</b> <span class="text-slate-400 text-[10px]">(${f.date})</span></span><div class="flex items-center gap-1.5 shrink-0"><span class="text-emerald-600 font-black">₹${f.amount}</span><span class="text-[9px] bg-emerald-100 group-hover:bg-emerald-600 text-emerald-800 group-hover:text-white px-1.5 py-0.5 rounded font-bold transition flex items-center gap-0.5"><i class="fas fa-eye text-[8px]"></i>Receipt</span></div></div>`).join('') || '<p class="text-[10px] text-slate-400 py-1">No payment records found.</p>'}</div>
                             </div>
                         </div>` : ''}
 
@@ -4093,18 +4099,80 @@
         }
 
         window.displayReceiptModal = function(data) {
-            document.getElementById('rcpNo').innerText = data.receiptNo;
-            document.getElementById('rcpDate').innerText = data.date;
-            document.getElementById('rcpName').innerText = data.name;
-            document.getElementById('rcpAdm').innerText = data.admNo;
-            document.getElementById('rcpClass').innerText = data.class;
-            document.getElementById('rcpMonth').innerText = data.month;
-            document.getElementById('rcpAmount').innerText = '₹' + data.amount;
-            document.getElementById('rcpBalance').innerText = '₹' + data.balance;
+            window.currentReceiptData = data;
+            const setField = (id, val) => {
+                const el = document.getElementById(id);
+                if (el) el.innerText = (val !== undefined && val !== null) ? val : '-';
+            };
+            setField('rcpNo', data.receiptNo);
+            setField('rcpDate', data.date);
+            setField('rcpName', data.name);
+            setField('rcpAdm', data.admNo);
+            setField('rcpClass', data.class);
+            setField('rcpMonth', data.month);
+            setField('rcpAmount', '₹' + (data.amount !== undefined ? data.amount : 0));
+            setField('rcpBalance', '₹' + (data.balance !== undefined ? data.balance : 0));
             
             const rModal = document.getElementById('feeReceiptModal');
-            rModal.classList.remove('hidden');
-            rModal.classList.add('flex');
+            if (rModal) {
+                rModal.classList.remove('hidden');
+                rModal.classList.add('flex');
+            }
+        };
+
+        window.closeReceiptModal = function() {
+            const rModal = document.getElementById('feeReceiptModal');
+            if (rModal) {
+                rModal.classList.add('hidden');
+                rModal.classList.remove('flex');
+            }
+        };
+
+        window.viewFeeReceipt = function(admNo, idxOrNo) {
+            const std = (db.students || []).find(s => String(s.admNo).trim() === String(admNo).trim());
+            if (!std) {
+                if (window.showToast) window.showToast("Student not found", "error");
+                return;
+            }
+            if (!std.feeHistory || std.feeHistory.length === 0) {
+                if (window.showToast) window.showToast("No payment history records found", "warning");
+                return;
+            }
+
+            let f = null;
+            if (typeof idxOrNo === 'number' || (typeof idxOrNo === 'string' && /^\d+$/.test(idxOrNo))) {
+                f = std.feeHistory[parseInt(idxOrNo, 10)];
+            }
+            if (!f && typeof idxOrNo === 'string') {
+                f = std.feeHistory.find(item => item.receiptNo === idxOrNo);
+            }
+            if (!f) {
+                f = std.feeHistory[std.feeHistory.length - 1];
+            }
+            if (!f) return;
+
+            const fin = window.getStudentFinancials ? window.getStudentFinancials(std) : { currentDue: 0 };
+            let rcpNo = f.receiptNo;
+            if (!rcpNo) {
+                const dateClean = f.date ? String(f.date).replace(/\D/g, '') : '0000';
+                rcpNo = 'KKHM-' + String(std.admNo).slice(-4) + '-' + dateClean.slice(-4);
+            }
+
+            const displayDate = f.dateTime || f.date || 'Payment Recorded';
+            const receiptData = {
+                receiptNo: rcpNo,
+                date: displayDate,
+                name: std.name,
+                admNo: std.admNo,
+                class: std.class,
+                month: f.month || 'Fee Payment',
+                amount: f.amount || 0,
+                balance: (fin && fin.currentDue !== undefined) ? fin.currentDue : 0,
+                phone: std.phone || '',
+                academicYear: f.academicYear || (window.getCurrentAcademicYear ? window.getCurrentAcademicYear() : '2026-2027')
+            };
+
+            window.displayReceiptModal(receiptData);
         };
 
         // RECEIPT IMAGE GENERATION & SHARING
@@ -7628,7 +7696,45 @@
                 </div>
                 <div class="bg-white rounded-2xl border p-8 flex flex-col md:flex-row gap-8 items-center shadow-sm mb-6"><div class="flex-1 space-y-3 text-sm"><h4 class="font-black text-xl mb-6"><i class="fas fa-university text-indigo-600 mr-2"></i>Bank Details for Payment</h4><p class="flex border-b pb-2"><span class="text-slate-500 w-32 font-bold uppercase text-xs">Bank Name</span><b class="text-base">${db.settings.bankName}</b></p><p class="flex border-b pb-2"><span class="text-slate-500 w-32 font-bold uppercase text-xs">Account Name</span><b class="text-base">${db.settings.accName}</b></p><p class="flex border-b pb-2"><span class="text-slate-500 w-32 font-bold uppercase text-xs">Account No</span><b class="text-indigo-600 font-mono text-lg">${db.settings.accNo}</b></p><p class="flex border-b pb-2"><span class="text-slate-500 w-32 font-bold uppercase text-xs">IFSC Code</span><b class="font-mono text-base">${db.settings.ifsc}</b></p><p class="flex pt-2"><span class="text-slate-500 w-32 font-bold uppercase text-xs">UPI ID</span><b class="text-emerald-600 font-mono text-base">${db.settings.upi}</b></p></div><div class="text-center bg-slate-50 p-6 rounded-2xl border shadow-inner flex flex-col items-center justify-center"><img src="${db.settings.qrCodeUrl}" class="w-48 h-48 object-contain mb-3 mx-auto border-4 border-white rounded-xl shadow"><p class="text-sm font-bold text-slate-600 mb-2">Scan & Pay via UPI</p>${fin.currentDue > 0 && db.settings.upi ? `<a href="upi://pay?pa=${db.settings.upi}&pn=${encodeURIComponent(db.settings.accName)}&am=${fin.currentDue}&cu=INR" class="w-full bg-[#064e3b] hover:bg-emerald-900 text-white font-bold py-3 px-4 rounded-xl shadow-md transition flex items-center justify-center gap-2 mt-2"><i class="fas fa-bolt text-amber-400"></i> Pay ₹${fin.currentDue} Now (UPI App)</a>` : ''}</div></div>
                 ${fin.currentDue > 0 ? `<div class="bg-rose-50 text-rose-800 p-4 rounded-xl text-center border border-rose-200 font-bold mb-6"><i class="fas fa-exclamation-circle mr-2"></i> You have an outstanding due of ₹${fin.currentDue}. Please pay using the bank details above.</div>` : `<div class="bg-emerald-50 text-emerald-800 p-4 rounded-xl text-center border border-emerald-200 font-bold mb-6"><i class="fas fa-check-circle mr-2 text-emerald-500"></i> All current dues cleared!</div>`}
-                <div class="bg-white border rounded-2xl p-6 shadow-sm"><h4 class="font-bold text-slate-800 mb-4 border-b pb-2"><i class="fas fa-history text-indigo-500 mr-2"></i>Payment History</h4><div class="space-y-2">${(std.feeHistory || []).slice().reverse().map(f => `<div class="flex justify-between items-center p-3 bg-slate-50 rounded-lg border"><div><p class="font-bold text-slate-700">Fee for ${f.month}</p><p class="text-xs text-slate-500">Paid on: ${f.date}</p></div><div class="text-lg font-black text-emerald-600">₹${f.amount}</div></div>`).join('') || '<p class="text-sm text-slate-500">No payment records found.</p>'}</div></div>
+                <div class="bg-white border rounded-2xl p-6 shadow-sm">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b pb-3 mb-4 gap-2">
+                        <h4 class="font-bold text-slate-800 flex items-center gap-2">
+                            <i class="fas fa-history text-indigo-500"></i>
+                            <span>Payment History</span>
+                        </h4>
+                        <span class="text-xs text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-lg font-medium">
+                            <i class="fas fa-mouse-pointer mr-1 text-[10px]"></i> Click any payment to view & download official receipt
+                        </span>
+                    </div>
+                    <div class="space-y-2.5">${(std.feeHistory || []).map((f, origIdx) => ({ f, origIdx })).reverse().map(({ f, origIdx }) => `
+                        <div onclick="window.viewFeeReceipt('${std.admNo}', ${origIdx})" class="flex justify-between items-center p-3.5 bg-slate-50 hover:bg-emerald-50/80 rounded-xl border border-slate-200 hover:border-emerald-300 transition-all cursor-pointer group shadow-2xs" title="Click to view & download official payment receipt voucher">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-xl bg-white border border-slate-200 group-hover:border-emerald-300 group-hover:bg-emerald-100/50 flex items-center justify-center text-slate-400 group-hover:text-emerald-700 transition shadow-inner shrink-0">
+                                    <i class="fas fa-receipt text-base"></i>
+                                </div>
+                                <div>
+                                    <div class="flex items-center gap-2 flex-wrap">
+                                        <p class="font-bold text-slate-800 group-hover:text-emerald-950 text-sm sm:text-base">Fee for ${f.month}</p>
+                                        <span class="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full border border-emerald-200">Paid</span>
+                                    </div>
+                                    <p class="text-xs text-slate-500 mt-0.5">
+                                        <span>Paid on: <b>${f.date}</b></span>
+                                        ${f.receiptNo ? `<span class="hidden sm:inline font-mono ml-2 text-slate-400">• No: ${f.receiptNo}</span>` : ''}
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-3 shrink-0">
+                                <div class="text-right">
+                                    <div class="text-base sm:text-xl font-black text-emerald-600">₹${f.amount}</div>
+                                </div>
+                                <button type="button" class="bg-white group-hover:bg-emerald-600 text-slate-600 group-hover:text-white border border-slate-200 group-hover:border-emerald-600 px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 shadow-2xs cursor-pointer">
+                                    <i class="fas fa-file-invoice text-xs"></i>
+                                    <span>Receipt</span>
+                                </button>
+                            </div>
+                        </div>
+                    `).join('') || '<p class="text-sm text-slate-400 text-center py-6">No payment records found.</p>'}</div>
+                </div>
             `;
         }
 
