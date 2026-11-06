@@ -74,19 +74,30 @@
             }).catch(function() {});
         }
 
-        // Register Service Worker for PWA
+        // Register Service Worker for PWA with automatic fresh update handling
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', function() {
                 navigator.serviceWorker.register('/sw.js', { scope: '/' })
                     .then(function(registration) {
                         console.log('KKHM SW registered:', registration.scope);
+                        // Trigger immediate check for new versions on load
+                        registration.update();
                         setInterval(function() {
                             registration.update();
-                        }, 30 * 60 * 1000);
+                        }, 15 * 60 * 1000);
                     })
                     .catch(function(err) {
                         console.log('KKHM SW registration failed:', err);
                     });
+            });
+
+            // Automatically reload active page when new cache version takes over
+            let refreshing = false;
+            navigator.serviceWorker.addEventListener('controllerchange', function() {
+                if (!refreshing) {
+                    refreshing = true;
+                    window.location.reload();
+                }
             });
         }
     </script>
@@ -509,6 +520,12 @@
                         <button type="button" onclick="window.launchUpiApp('any')" class="flex items-center justify-center gap-2 p-3 rounded-xl border-2 border-emerald-100 hover:border-emerald-500 hover:bg-emerald-50 text-xs font-bold text-slate-800 transition cursor-pointer shadow-2xs">
                             <i class="fas fa-university text-xl text-emerald-700"></i> Any UPI App
                         </button>
+                    </div>
+                    <div id="payModalWebViewNotice" class="hidden pt-1"></div>
+                    <div class="text-center pt-1 border-t border-slate-100">
+                        <a href="https://kkhmstorage.github.io/KKHM-ERP/" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 text-[11px] text-indigo-700 hover:text-indigo-900 font-bold hover:underline">
+                            <i class="fab fa-chrome text-xs text-amber-500"></i> Open in Chrome Browser (for 1-click GPay auto-open) <i class="fas fa-external-link-alt text-[9px] opacity-70"></i>
+                        </a>
                     </div>
                 </div>
 
@@ -7869,8 +7886,10 @@
             const note = encodeURIComponent('KKHM College Fee');
 
             // 1. Copy UPI ID immediately as safety guarantee
-            window.copyToClipboard(upi, `UPI ID (${upi}) copied! Opening payment app...`);
+            window.copyToClipboard(upi, `UPI ID (${upi}) copied!`);
 
+            // Detect whether running inside an Android WebView APK wrapper
+            const isWebView = /wv|WebView/.test(navigator.userAgent) || (!window.chrome && /Android/.test(navigator.userAgent));
             const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
             const baseParams = `pa=${upi}&pn=${encodedName}&am=${amt}&cu=INR&tn=${note}`;
 
@@ -7878,18 +7897,16 @@
             let appLabel = 'UPI App';
 
             if (isIOS) {
-                // iOS only supports standard upi:// scheme
                 targetUrl = `upi://pay?${baseParams}`;
                 appLabel = 'UPI App';
             } else {
-                // Android intent URIs targeting specific apps with pre-filled amount
-                if (appType === 'gpay' || appType === 'com.google.android.apps.nbu.paisa.user') {
+                if (appType === 'gpay') {
                     targetUrl = `intent://pay?${baseParams}#Intent;scheme=upi;package=com.google.android.apps.nbu.paisa.user;end`;
                     appLabel = 'Google Pay';
-                } else if (appType === 'phonepe' || appType === 'com.phonepe.app') {
+                } else if (appType === 'phonepe') {
                     targetUrl = `intent://pay?${baseParams}#Intent;scheme=upi;package=com.phonepe.app;end`;
                     appLabel = 'PhonePe';
-                } else if (appType === 'paytm' || appType === 'net.one97.paytm') {
+                } else if (appType === 'paytm') {
                     targetUrl = `intent://pay?${baseParams}#Intent;scheme=upi;package=net.one97.paytm;end`;
                     appLabel = 'Paytm';
                 } else {
@@ -7898,24 +7915,35 @@
                 }
             }
 
-            if (window.showToast) {
-                window.showToast(`Opening ${appLabel} with ₹${Math.round(numAmt)}...`, "info");
-            }
-
-            // Direct top-level navigation to trigger Android Intent with pre-filled amount
-            try {
-                window.location.href = targetUrl;
-            } catch (err) {
-                console.warn("Direct navigation error, fallback to anchor click:", err);
+            if (isWebView) {
+                // In Android WebView APKs, window.location = 'intent:' triggers net::ERR_UNKNOWN_URL_SCHEME
+                // which produces the "Connection Required: Unable to connect" offline error dialog.
+                // To protect users, we do NOT crash the page. We provide instant clear guidance and copied UPI ID:
+                if (window.showToast) {
+                    window.showToast(`UPI ID copied! Open ${appLabel} and paste to pay ₹${Math.round(numAmt)}`, "success");
+                }
+                const noticeEl = document.getElementById('payModalWebViewNotice');
+                if (noticeEl) {
+                    noticeEl.classList.remove('hidden');
+                    noticeEl.innerHTML = `
+                        <div class="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-950 text-xs space-y-1.5 animate-in fade-in">
+                            <p class="font-bold flex items-center gap-1.5 text-emerald-800">
+                                <i class="fas fa-check-circle text-emerald-600"></i> ${appLabel}-ലേക്ക് പണമടയ്ക്കാൻ:
+                            </p>
+                            <p>1. കോളേജ് UPI ID (<b>${upi}</b>) ഇപ്പോൾ കോപ്പിയായിട്ടുണ്ട്.</p>
+                            <p>2. നിങ്ങളുടെ ഫോണിലെ <b>${appLabel}</b> തുറന്ന് <b>"Pay UPI ID"</b> എന്നതിൽ പേസ്റ്റ് ചെയ്ത് <b>₹${Math.round(numAmt)}</b> അടയ്ക്കുക.</p>
+                        </div>
+                    `;
+                }
+            } else {
+                // In standard mobile Chrome / Safari browser:
+                if (window.showToast) {
+                    window.showToast(`Opening ${appLabel} with ₹${Math.round(numAmt)}...`, "info");
+                }
                 try {
-                    const a = document.createElement('a');
-                    a.href = targetUrl;
-                    document.body.appendChild(a);
-                    a.click();
-                    setTimeout(() => {
-                        try { document.body.removeChild(a); } catch(e){}
-                    }, 1000);
-                } catch(e2) {
+                    window.location.href = targetUrl;
+                } catch (err) {
+                    console.warn("Direct navigation error:", err);
                     window.location.href = `upi://pay?${baseParams}`;
                 }
             }
