@@ -3322,7 +3322,7 @@
             else if (currentFilter === 'discontinued') displayedStudents = discontinuedStudents;
 
             return `
-                <div class="space-y-4 pb-12">
+                <div class="space-y-4 pb-16 w-full">
                     <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                         <div>
                             <h2 class="text-2xl font-extrabold text-slate-800 flex items-center gap-2">
@@ -3345,6 +3345,144 @@
 
                     <!-- Directory Sub-filter Tabs -->
                     <div class="flex flex-wrap items-center gap-2 border-b border-slate-200 pb-2">
+                        <button onclick="window.setDirectoryFilter('active')" class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${currentFilter === 'active' ? 'bg-[#022c22] text-white shadow' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}">
+                            <i class="fas fa-user-check text-emerald-400"></i> Active Students
+                            <span class="px-1.5 py-0.5 rounded-full text-[10px] font-black ${currentFilter === 'active' ? 'bg-emerald-600 text-white' : 'bg-slate-200 text-slate-700'}">${activeStudents.length}</span>
+                        </button>
+                        <button onclick="window.setDirectoryFilter('discontinued')" class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${currentFilter === 'discontinued' ? 'bg-rose-900 text-white shadow' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}">
+                            <i class="fas fa-user-slash text-rose-400"></i> Discontinued
+                            <span class="px-1.5 py-0.5 rounded-full text-[10px] font-black ${currentFilter === 'discontinued' ? 'bg-rose-600 text-white' : 'bg-rose-100 text-rose-700'}">${discontinuedStudents.length}</span>
+                        </button>
+                        <button onclick="window.setDirectoryFilter('all')" class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${currentFilter === 'all' ? 'bg-slate-800 text-white shadow' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}">
+                            <i class="fas fa-users text-indigo-400"></i> All Records
+                            <span class="px-1.5 py-0.5 rounded-full text-[10px] font-black ${currentFilter === 'all' ? 'bg-slate-600 text-white' : 'bg-slate-200 text-slate-700'}">${db.students.length}</span>
+                        </button>
+                    </div>
+
+                    ${isAdmin ? `
+                    <div class="bg-gradient-to-r from-emerald-900 to-[#022c22] rounded-2xl p-4 md:p-5 shadow-lg text-white">
+                        <div class="flex flex-col md:flex-row items-start md:items-center gap-4">
+                            <div class="flex-shrink-0 w-12 h-12 bg-emerald-500/20 rounded-xl flex items-center justify-center text-emerald-400 text-2xl"><i class="fas fa-database"></i></div>
+                            <div class="flex-1 min-w-0">
+                                <h3 class="font-extrabold text-base text-emerald-100 mb-1">📋 Bulk Student Data Update</h3>
+                                <p class="text-xs text-emerald-300 leading-relaxed"><b class="text-white">1.</b> Download Excel/CSV &nbsp;→&nbsp; <b class="text-white">2.</b> Edit in Excel &nbsp;→&nbsp; <b class="text-white">3.</b> Save and Upload</p>
+                            </div>
+                            <div class="flex flex-row gap-2 w-full md:w-auto flex-shrink-0">
+                                <button onclick="window.downloadCurrentStudentsCSV()" class="flex items-center justify-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-white font-extrabold px-4 py-2.5 rounded-xl text-sm transition-all shadow-md cursor-pointer active:scale-95 whitespace-nowrap"><i class="fas fa-file-download"></i> Download</button>
+                                <button onclick="document.getElementById('bulkUploadModal').classList.remove('hidden'); document.getElementById('bulkUploadModal').classList.add('flex'); if(window.updateCSVModalUI) window.updateCSVModalUI();" class="flex items-center justify-center gap-2 bg-white/15 hover:bg-white/25 text-white font-extrabold px-4 py-2.5 rounded-xl text-sm transition-all border border-white/30 cursor-pointer active:scale-95 whitespace-nowrap"><i class="fas fa-cloud-upload-alt"></i> Upload</button>
+                            </div>
+                        </div>
+                    </div>` : ''}
+
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden w-full">
+                        <div class="overflow-x-auto w-full p-0">
+                            ${currentFilter === 'discontinued' ? `
+                                <table class="w-full text-left text-sm whitespace-nowrap">
+                                    <thead class="text-xs text-rose-800 uppercase bg-rose-50/95 sticky top-0 z-10 border-b border-rose-100 shadow-sm">
+                                        <tr>
+                                            <th class="p-4">Adm No</th>
+                                            <th class="p-4">Student Name & Class</th>
+                                            <th class="p-4">Discontinued Date</th>
+                                            <th class="p-4">Reason & Details</th>
+                                            <th class="p-4">TC & Clearance</th>
+                                            <th class="p-4 text-center">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-slate-100">
+                                        ${discontinuedStudents.length > 0 ? discontinuedStudents.map(s => {
+                                            const d = s.discontinued || {};
+                                            return `
+                                            <tr class="hover:bg-rose-50/40 transition">
+                                                <td class="p-4 font-mono font-bold text-slate-600">${s.admNo}</td>
+                                                <td class="p-4">
+                                                    <div class="font-bold text-slate-800">${s.name}</div>
+                                                    <div class="text-xs text-slate-400 font-mono mt-0.5">Class: ${s.class}</div>
+                                                </td>
+                                                <td class="p-4">
+                                                    <span class="font-bold text-rose-700 font-mono text-xs bg-rose-50 px-2 py-1 rounded border border-rose-200">${d.date || 'N/A'}</span>
+                                                </td>
+                                                <td class="p-4 max-w-xs">
+                                                    <div class="font-bold text-xs text-slate-800">${d.reason || 'Discontinued'}</div>
+                                                    ${d.reasonDetail ? `<div class="text-[11px] text-slate-500 italic mt-0.5 truncate" title="${d.reasonDetail}">${d.reasonDetail}</div>` : ''}
+                                                </td>
+                                                <td class="p-4">
+                                                    <div class="flex flex-col gap-1 text-[11px]">
+                                                        <div class="flex items-center gap-1">
+                                                            <span class="font-bold ${d.feeStatus === 'Pending Dues Recorded' ? 'text-rose-600' : 'text-emerald-700'}">Fee: ${d.feeStatus || 'Cleared'}</span>
+                                                        </div>
+                                                        ${d.tcNo ? `<span class="text-indigo-700 font-mono text-[10px] bg-indigo-50 px-1.5 py-0.5 rounded border border-indigo-200 inline-block w-fit">TC: ${d.tcNo}</span>` : ''}
+                                                    </div>
+                                                </td>
+                                                <td class="p-4 text-center">
+                                                    <div class="inline-flex items-center gap-1.5">
+                                                        <button onclick="window.openStudentDirectly('${s.admNo}', '${s.class}')" class="text-indigo-600 hover:bg-indigo-50 border border-indigo-200 px-2.5 py-1.5 rounded-lg text-xs font-bold transition">Profile</button>
+                                                        ${isAdmin ? `
+                                                            <button onclick="window.openDiscontinueModal('${s.admNo}')" class="text-amber-700 hover:bg-amber-100 bg-amber-50 border border-amber-200 px-2.5 py-1.5 rounded-lg text-xs font-bold transition" title="Edit Discontinuation Details"><i class="fas fa-edit mr-1"></i>Edit</button>
+                                                            <button onclick="window.reactivateStudent('${s.admNo}')" class="text-emerald-700 hover:bg-emerald-100 bg-emerald-50 border border-emerald-300 px-2.5 py-1.5 rounded-lg text-xs font-bold transition" title="Reactivate back to active status"><i class="fas fa-user-plus mr-1"></i>Reactivate</button>
+                                                            <button onclick="window.deleteStudent('${s.admNo}')" class="text-rose-500 hover:bg-rose-50 border border-rose-200 px-2.5 py-1.5 rounded-lg text-xs font-bold transition">Delete</button>
+                                                        ` : ''}
+                                                    </div>
+                                                </td>
+                                            </tr>`;
+                                        }).join('') : `
+                                            <tr>
+                                                <td colspan="6" class="p-8 text-center text-slate-400 font-bold">
+                                                    No discontinued students found.
+                                                </td>
+                                            </tr>
+                                        `}
+                                    </tbody>
+                                </table>
+                            ` : `
+                                <table class="w-full text-left text-sm whitespace-nowrap">
+                                    <thead class="text-xs text-slate-500 uppercase bg-slate-100/95 sticky top-0 z-10 shadow-sm border-b border-slate-200"><tr><th class="p-4">Adm No</th><th class="p-4">Name</th><th class="p-4">Class</th><th class="p-4">Status / Location</th><th class="p-4 text-center">Actions</th></tr></thead>
+                                    <tbody class="divide-y divide-slate-100">
+                                    ${displayedStudents.map(s => {
+                                        const isDisc = s.status === 'discontinued';
+                                        return `<tr class="hover:bg-slate-50 ${isDisc ? 'bg-rose-50/30' : ''}">
+                                            <td class="p-4 font-mono text-slate-500 font-bold">${s.admNo}</td>
+                                            <td class="p-4">
+                                                <div class="font-bold text-slate-800 flex items-center gap-1.5">
+                                                    <span>${s.name}</span>
+                                                    ${isDisc ? `<span class="bg-rose-100 text-rose-700 text-[10px] font-black px-1.5 py-0.5 rounded border border-rose-200">Discontinued</span>` : ''}
+                                                </div>
+                                            </td>
+                                            <td class="p-4 font-bold text-slate-700">${s.class}</td>
+                                            <td class="p-4">
+                                                ${isDisc ? `
+                                                    <span class="px-2 py-1 rounded-md text-xs font-bold bg-rose-100 text-rose-700 border border-rose-200 flex items-center gap-1 w-fit">
+                                                        <i class="fas fa-user-slash text-[11px]"></i> Discontinued (${s.discontinued?.date || 'Recorded'})
+                                                    </span>
+                                                ` : `
+                                                    <span class="px-2 py-1 rounded-md text-xs font-bold ${s.leaveStatus === 'In Campus' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}">${s.leaveStatus}</span>
+                                                `}
+                                            </td>
+                                            <td class="p-4 text-center">
+                                                ${isDisc ? `
+                                                    <button onclick="window.openStudentDirectly('${s.admNo}', '${s.class}')" class="text-indigo-600 hover:bg-indigo-50 border border-indigo-200 px-3 py-1.5 rounded-lg text-xs font-bold transition">Manage</button>
+                                                    ${isAdmin ? `
+                                                        <button onclick="window.openDiscontinueModal('${s.admNo}')" class="text-amber-700 hover:bg-amber-100 bg-amber-50 border border-amber-200 px-2.5 py-1.5 rounded-lg text-xs font-bold ml-1 transition" title="Edit Discontinuation Details"><i class="fas fa-edit mr-1"></i>Edit</button>
+                                                        <button onclick="window.reactivateStudent('${s.admNo}')" class="text-emerald-700 hover:bg-emerald-100 bg-emerald-50 border border-emerald-300 px-2.5 py-1.5 rounded-lg text-xs font-bold ml-1 transition" title="Reactivate Student"><i class="fas fa-user-plus mr-1"></i>Reactivate</button>
+                                                        <button onclick="window.deleteStudent('${s.admNo}')" class="text-rose-500 hover:bg-rose-50 border border-rose-200 px-2.5 py-1.5 rounded-lg text-xs font-bold ml-1 transition">Delete</button>
+                                                    ` : ''}
+                                                ` : `
+                                                    ${s.leaveStatus === 'On Leave' ? '<button onclick="window.markReturn(\'' + s.admNo + '\')" class="bg-emerald-100 text-emerald-700 border border-emerald-200 px-3 py-1.5 rounded-lg text-xs font-bold mr-1 transition hover:bg-emerald-200 cursor-pointer">Report IN</button>' : '<button onclick="window.markLeave(\'' + s.admNo + '\')" class="bg-amber-100 text-amber-700 border border-amber-200 px-3 py-1.5 rounded-lg text-xs font-bold mr-1 transition hover:bg-amber-200 cursor-pointer">Mark OUT</button>'}
+                                                    <button onclick="window.openStudentDirectly('${s.admNo}', '${s.class}')" class="text-indigo-600 hover:bg-indigo-50 border border-indigo-200 px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer">Manage</button>
+                                                    ${isAdmin ? `
+                                                        <button onclick="window.openDiscontinueModal('${s.admNo}')" class="text-rose-600 hover:bg-rose-50 border border-rose-200 px-2 py-1.5 rounded-lg text-xs font-bold ml-1 transition cursor-pointer" title="Record Discontinuation"><i class="fas fa-user-slash mr-1"></i>Discontinue</button>
+                                                        <button onclick="window.deleteStudent('${s.admNo}')" class="text-rose-500 hover:bg-rose-50 border border-rose-200 px-2.5 py-1.5 rounded-lg text-xs font-bold ml-1 transition cursor-pointer">Delete</button>
+                                                    ` : ''}
+                                                `}
+                                            </td>
+                                        </tr>`;
+                                    }).join('')}
+                                    </tbody>
+                                </table>
+                            `}
+                        </div>
+                    </div>
+                </div>`;
+        };
                         <button onclick="window.setDirectoryFilter('active')" class="px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${currentFilter === 'active' ? 'bg-[#022c22] text-white shadow' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}">
                             <i class="fas fa-user-check text-emerald-400"></i> Active Students
                             <span class="px-1.5 py-0.5 rounded-full text-[10px] font-black ${currentFilter === 'active' ? 'bg-emerald-600 text-white' : 'bg-slate-200 text-slate-700'}">${activeStudents.length}</span>
