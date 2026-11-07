@@ -104,42 +104,8 @@
 </head>
 <body class="text-slate-800 h-screen overflow-hidden flex flex-col relative">
 
-    <!-- Loaders & Overlays -->
-    <div id="dbLoader" class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#022c22] text-white transition-opacity duration-500">
-        <i class="fas fa-circle-notch fa-spin text-4xl text-emerald-400 mb-3"></i>
-        <p class="text-sm text-emerald-200 mt-2 font-bold animate-pulse px-4 text-center">Connecting to Secure Cloud Database...</p>
-        <button id="dbLoaderSkipBtn" onclick="window.dismissLoaderNow && window.dismissLoaderNow()" class="mt-5 text-xs text-emerald-300/80 hover:text-emerald-100 underline transition cursor-pointer">Click here if taking too long to connect</button>
-    </div>
-    <script>
-        // Automatic failsafe timer: Ensure database loader NEVER hangs indefinitely
-        (function() {
-            var failsafeTimer = setTimeout(function() {
-                var l = document.getElementById('dbLoader');
-                if (l && !l.classList.contains('hidden')) {
-                    console.warn('KKHM ERP: Failsafe timer reached. Revealing login screen.');
-                    l.classList.add('opacity-0', 'pointer-events-none');
-                    setTimeout(function() {
-                        l.classList.add('hidden');
-                        var login = document.getElementById('loginScreen');
-                        if (login) login.classList.remove('opacity-0', 'pointer-events-none');
-                    }, 500);
-                }
-            }, 12000);
-            window.__kkhmClearFailsafe = function() { clearTimeout(failsafeTimer); };
-            window.dismissLoaderNow = function() {
-                clearTimeout(failsafeTimer);
-                var l = document.getElementById('dbLoader');
-                if (l) {
-                    l.classList.add('opacity-0', 'pointer-events-none');
-                    setTimeout(function() {
-                        l.classList.add('hidden');
-                        var login = document.getElementById('loginScreen');
-                        if (login) login.classList.remove('opacity-0', 'pointer-events-none');
-                    }, 400);
-                }
-            };
-        })();
-    </script>
+    <!-- Loaders & Overlays (Non-blocking: instant 0-second opening) -->
+    <div id="dbLoader" class="hidden"></div>
 
     <div id="uploadOverlay" class="fixed inset-0 bg-slate-900/80 z-[110] hidden items-center justify-center flex-col backdrop-blur-sm transition-opacity">
         <i class="fas fa-cloud-upload-alt text-6xl text-emerald-400 mb-4 animate-bounce"></i>
@@ -149,8 +115,8 @@
 
     <video autoplay muted loop id="video-background"></video>
 
-    <!-- Login Screen -->
-    <div id="loginScreen" class="fixed inset-0 z-50 flex items-center justify-center bg-cover bg-center transition-opacity duration-300 opacity-0 pointer-events-none" style="background-image: url('bg.jpg');">
+    <!-- Login Screen (Instantly visible without any delay) -->
+    <div id="loginScreen" class="fixed inset-0 z-50 flex items-center justify-center bg-cover bg-center transition-opacity duration-300" style="background-image: url('bg.jpg');">
         <div class="absolute inset-0 bg-slate-900/30 backdrop-blur-sm"></div>
         <div class="relative glass-panel p-8 md:p-10 rounded-3xl shadow-2xl w-full max-w-md mx-4 transform transition-transform duration-500">
             <div class="text-center mb-8">
@@ -1382,7 +1348,7 @@
             logo: 'logo.png', bg: 'bg.jpg', isVideoBg: false, bankName: 'HDFC BANK', accName: 'MARKAZ KKHM A UNIT OF MALAPPURAM JILLA', accNo: '50200053913308', ifsc: 'HDFC0003031', upi: 'markazkkhmaunitofmal.62688869@hdfcbank', qrCodeUrl: 'https://placehold.co/200x200/ffffff/000000?text=SCAN+TO+PAY'
         };
 
-                // Initial in-memory database structure (never null)
+                // Initial in-memory database structure (instant 0ms initialization)
         let db = {
             settings: DEFAULT_SETTINGS,
             notices: [],
@@ -1394,7 +1360,29 @@
             dutySchedule: { weekly: {}, dateOverrides: {} }
         };
         window.currentUser = null; window.currentTab = ''; window.parentTab = 'fees';
-        let loaderDismissed = false;
+
+        function initBranding() {
+            try {
+                const loginScreen = document.getElementById('loginScreen');
+                const videoBg = document.getElementById('video-background');
+                if (db && db.settings) {
+                    if (db.settings.isVideoBg) {
+                        if (loginScreen) loginScreen.style.backgroundImage = 'none';
+                        if (videoBg) { videoBg.src = db.settings.bg; videoBg.style.display = 'block'; }
+                    } else {
+                        if (loginScreen) loginScreen.style.backgroundImage = `url('${db.settings.bg || 'bg.jpg'}')`;
+                        if (videoBg) { videoBg.style.display = 'none'; videoBg.src = ''; }
+                    }
+                    const lLogo = document.getElementById('loginLogo');
+                    if (lLogo) lLogo.src = db.settings.logo || 'logo.png';
+                    const hLogo = document.getElementById('headerLogo');
+                    if (hLogo) hLogo.src = db.settings.logo || 'logo.png';
+                    const hYearBadge = document.getElementById('headerAcademicYearBadge');
+                    if (hYearBadge) hYearBadge.innerText = db.settings.currentAcademicYear || '2026-2027';
+                }
+            } catch(e) {}
+        }
+        window.initBranding = initBranding;
 
         function decodeFirestoreValue(val) {
             if (val === undefined || val === null) return null;
@@ -1469,39 +1457,36 @@
             db.exams.forEach(ex => { if (ex.isPublished === undefined) ex.isPublished = false; });
         }
 
-        function dismissLoaderUI() {
-            if (loaderDismissed) return;
-            loaderDismissed = true;
-            if (window.__kkhmClearFailsafe) window.__kkhmClearFailsafe();
-            window.initBranding();
-            window.initPWA();
-            const loader = document.getElementById('dbLoader');
-            if (loader) {
-                loader.classList.add('opacity-0', 'pointer-events-none');
-                setTimeout(() => {
-                    loader.classList.add('hidden');
-                    if(localStorage.getItem('kkhm_erp_user')) {
-                        try {
-                            window.currentUser = JSON.parse(localStorage.getItem('kkhm_erp_user'));
-                            if (window.currentUser && window.currentUser.role === 'parent' && window.currentUser.data) {
-                                window.currentUser.className = window.currentUser.className || window.currentUser.data.class;
-                                window.currentUser.batch = window.currentUser.batch || window.currentUser.data.class;
-                            }
-                            document.getElementById('appContainer').classList.remove('hidden');
-                            window.setupNavigation();
-                            window.renderApp();
-                            return;
-                        } catch(e) {}
+        function checkAutoLogin() {
+            if (localStorage.getItem('kkhm_erp_user')) {
+                try {
+                    window.currentUser = JSON.parse(localStorage.getItem('kkhm_erp_user'));
+                    if (window.currentUser && window.currentUser.role === 'parent' && window.currentUser.data) {
+                        window.currentUser.className = window.currentUser.className || window.currentUser.data.class;
+                        window.currentUser.batch = window.currentUser.batch || window.currentUser.data.class;
                     }
-                    const login = document.getElementById('loginScreen');
-                    if (login) login.classList.remove('opacity-0', 'pointer-events-none');
-                }, 400);
+                    const loginScreen = document.getElementById('loginScreen');
+                    if (loginScreen) {
+                        loginScreen.classList.add('opacity-0', 'pointer-events-none', 'hidden');
+                    }
+                    const app = document.getElementById('appContainer');
+                    if (app) app.classList.remove('hidden');
+                    window.setupNavigation();
+                    window.renderApp();
+                    return true;
+                } catch(e) {}
             }
+            return false;
         }
 
-        // 1. SYSTEM INITIALIZATION & LOGIN
+        // 1. SYSTEM INITIALIZATION & LOGIN (Instant 0-second opening, background sync)
         async function loadDatabase() {
-            // Priority 1: Instant startup from browser localStorage cache (< 10ms)
+            initBranding();
+
+            // Check if already logged in from previous session
+            checkAutoLogin();
+
+            // Priority 1: Instant startup from browser localStorage cache (< 5ms)
             try {
                 const cachedData = localStorage.getItem('kkhm_erp_cached_database');
                 if (cachedData) {
@@ -1509,13 +1494,13 @@
                     if (parsed && parsed.students && parsed.students.length > 0) {
                         db = parsed;
                         normalizeDB();
-                        console.log('KKHM ERP: Instant load from browser local storage cache');
-                        dismissLoaderUI();
+                        initBranding();
+                        checkAutoLogin();
                     }
                 }
             } catch(e) {}
 
-            // Priority 2: Instant startup from bundled static seed file (< 50ms)
+            // Priority 2: Instant startup from bundled static seed file (< 30ms)
             if (!db || !db.students || db.students.length === 0) {
                 try {
                     const seedRes = await fetch('kkhm_db_seed.json');
@@ -1524,21 +1509,19 @@
                         if (seedData && seedData.students && seedData.students.length > 0) {
                             db = seedData;
                             normalizeDB();
-                            console.log('KKHM ERP: Instant load from bundled seed database');
-                            dismissLoaderUI();
+                            initBranding();
+                            checkAutoLogin();
                         }
                     }
                 } catch(e) {}
             }
 
-            // Priority 3: Fetch latest updates from Cloud (REST API first for instant response, SDK fallback)
+            // Priority 3: Non-blocking background sync with live Cloud Firestore
             try {
                 let cloudData = null;
                 try {
                     cloudData = await fetchFromFirestoreRest();
-                    console.log('KKHM ERP: Successfully synced with live Cloud Firestore (REST)');
                 } catch(restErr) {
-                    console.warn('KKHM ERP: REST sync error, falling back to Firestore SDK:', restErr);
                     const docSnap = await getDoc(dbRef);
                     if (docSnap && docSnap.exists()) {
                         cloudData = docSnap.data();
@@ -1548,6 +1531,7 @@
                 if (cloudData && cloudData.students && cloudData.students.length > 0) {
                     db = cloudData;
                     normalizeDB();
+                    initBranding();
                     try {
                         localStorage.setItem('kkhm_erp_cached_database', JSON.stringify(db));
                     } catch(e) {}
@@ -1556,19 +1540,12 @@
                     }
                 }
             } catch (cloudErr) {
-                console.warn('KKHM ERP: Cloud synchronization failed:', cloudErr);
+                console.warn('KKHM ERP: Background sync notice:', cloudErr);
             }
 
             normalizeDB();
-            dismissLoaderUI();
-        }
-
-        window.initBranding = function() {
-            const loginScreen = document.getElementById('loginScreen'); const videoBg = document.getElementById('video-background');
-            if (db.settings.isVideoBg) { loginScreen.style.backgroundImage = 'none'; videoBg.src = db.settings.bg; videoBg.style.display = 'block'; } else { loginScreen.style.backgroundImage = `url('${db.settings.bg}')`; videoBg.style.display = 'none'; videoBg.src = ''; }
-            document.getElementById('loginLogo').src = db.settings.logo; document.getElementById('headerLogo').src = db.settings.logo;
-            const hYearBadge = document.getElementById('headerAcademicYearBadge');
-            if (hYearBadge) hYearBadge.innerText = (db.settings && db.settings.currentAcademicYear) || '2026-2027';
+            initBranding();
+            if (window.initPWA) window.initPWA();
         }
 
         // ==========================================
