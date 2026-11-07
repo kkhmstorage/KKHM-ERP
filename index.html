@@ -1382,239 +1382,185 @@
             logo: 'logo.png', bg: 'bg.jpg', isVideoBg: false, bankName: 'HDFC BANK', accName: 'MARKAZ KKHM A UNIT OF MALAPPURAM JILLA', accNo: '50200053913308', ifsc: 'HDFC0003031', upi: 'markazkkhmaunitofmal.62688869@hdfcbank', qrCodeUrl: 'https://placehold.co/200x200/ffffff/000000?text=SCAN+TO+PAY'
         };
 
-        let db = null; window.currentUser = null; window.currentTab = ''; window.parentTab = 'fees';
+                // Initial in-memory database structure (never null)
+        let db = {
+            settings: DEFAULT_SETTINGS,
+            notices: [],
+            exams: [],
+            students: [],
+            teachers: [],
+            diary: [],
+            fines: [],
+            dutySchedule: { weekly: {}, dateOverrides: {} }
+        };
+        window.currentUser = null; window.currentTab = ''; window.parentTab = 'fees';
+        let loaderDismissed = false;
 
-        // 1. SYSTEM INITIALIZATION & LOGIN
-        async function loadDatabase() {
-            // 1. Instant Cache Initialization: load local cache if exists
-            try {
-                const cachedData = localStorage.getItem('kkhm_erp_cached_database');
-                if (cachedData) {
-                    db = JSON.parse(cachedData);
-                    console.log('KKHM ERP: Instant startup from local database cache');
-                }
-            } catch(e) {}
-
-            try {
-                // 2. Fetch from Cloud Firestore with a 5-second race timeout
-                const fetchPromise = getDoc(dbRef);
-                const timeoutPromise = new Promise((_, reject) => 
-                    setTimeout(() => reject(new Error('Cloud connection timeout')), 15000)
-                );
-                const docSnap = await Promise.race([fetchPromise, timeoutPromise]);
-
-                if (docSnap && docSnap.exists()) {
-                    db = docSnap.data();
-                    try {
-                        localStorage.setItem('kkhm_erp_cached_database', JSON.stringify(db));
-                    } catch(e) {}
-                } else if (!db) { 
-                    db = { settings: DEFAULT_SETTINGS, notices: [], exams: [], students: [], teachers: [], diary: [], fines: [] }; 
-                    await setDoc(dbRef, db); 
-                }
-            } catch (err) {
-                console.warn('KKHM ERP: Cloud fetch error or timeout, utilizing local/default db:', err);
-                if (!db) {
-                    try {
-                        const cachedFallback = localStorage.getItem('kkhm_erp_cached_database');
-                        if (cachedFallback) db = JSON.parse(cachedFallback);
-                    } catch(e) {}
-                }
-                if (!db) {
-                    db = { settings: DEFAULT_SETTINGS, notices: [], exams: [], students: [], teachers: [], diary: [], fines: [] };
-                }
+        function decodeFirestoreValue(val) {
+            if (val === undefined || val === null) return null;
+            if ('stringValue' in val) return val.stringValue;
+            if ('integerValue' in val) return parseInt(val.integerValue, 10);
+            if ('doubleValue' in val) return parseFloat(val.doubleValue);
+            if ('booleanValue' in val) return val.booleanValue;
+            if ('nullValue' in val) return null;
+            if ('arrayValue' in val) {
+                return (val.arrayValue.values || []).map(decodeFirestoreValue);
             }
+            if ('mapValue' in val) {
+                const obj = {};
+                const fields = val.mapValue.fields || {};
+                for (const k in fields) {
+                    obj[k] = decodeFirestoreValue(fields[k]);
+                }
+                return obj;
+            }
+            return val;
+        }
 
+        async function fetchFromFirestoreRest() {
+            const url = `https://firestore.googleapis.com/v1/projects/${firebaseConfig.projectId}/databases/(default)/documents/erp_system/database?key=${firebaseConfig.apiKey}`;
+            const res = await fetch(url);
+            if (!res.ok) throw new Error('Firestore REST HTTP status ' + res.status);
+            const data = await res.json();
+            const decoded = {};
+            const fields = data.fields || {};
+            for (const k in fields) {
+                decoded[k] = decodeFirestoreValue(fields[k]);
+            }
+            return decoded;
+        }
+
+        function normalizeDB() {
+            if (!db) db = {};
+            if (!db.settings) db.settings = DEFAULT_SETTINGS;
+            if (!db.students) db.students = [];
+            if (!db.teachers) db.teachers = [];
+            if (!db.exams) db.exams = [];
+            if (!db.notices) db.notices = [];
+            if (!db.diary) db.diary = [];
+            if (!db.fines) db.fines = [];
+            if (!db.dutySchedule) db.dutySchedule = { weekly: {}, dateOverrides: {} };
+            if (!db.dutySchedule.weekly) db.dutySchedule.weekly = {};
+            if (!db.dutySchedule.dateOverrides) db.dutySchedule.dateOverrides = {};
+            if (!db.settings.currentAcademicYear) db.settings.currentAcademicYear = '2026-2027';
+            if (!db.settings.academicYears) db.settings.academicYears = ['2025-2026', '2026-2027'];
+            if (!db.settings.classFees) {
+                db.settings.classFees = {
+                    'Plus One CS + Wafy': { yearlyFee: 48000, monthlyFee: 4000, dueDay: 25 },
+                    'Plus Two CS + Wafy': { yearlyFee: 48000, monthlyFee: 4000, dueDay: 25 },
+                    'ALIYA-1': { yearlyFee: 48000, monthlyFee: 4000, dueDay: 25 },
+                    'ALIYA-2': { yearlyFee: 48000, monthlyFee: 4000, dueDay: 25 },
+                    'ALIYA-3': { yearlyFee: 48000, monthlyFee: 4000, dueDay: 25 },
+                    'ALIYA-4': { yearlyFee: 48000, monthlyFee: 4000, dueDay: 25 },
+                    'PG-1': { yearlyFee: 48000, monthlyFee: 4000, dueDay: 25 },
+                    'PG-2': { yearlyFee: 48000, monthlyFee: 4000, dueDay: 25 }
+                };
+            }
+            db.students.forEach(s => {
+                if(!s.leaveHistory) s.leaveHistory = [];
+                if(!s.disciplineRecords) s.disciplineRecords = [];
+                if(!s.achievements) s.achievements = [];
+                if(!s.examMarks) s.examMarks = {};
+                if(!s.status) s.status = 'active';
+                if(!s.discontinuationHistory) s.discontinuationHistory = [];
+                if(!s.academicHistory) s.academicHistory = {};
+                if(s.previousArrears === undefined || s.previousArrears === null) s.previousArrears = 0;
+            });
+            db.exams.forEach(ex => { if (ex.isPublished === undefined) ex.isPublished = false; });
+        }
+
+        function dismissLoaderUI() {
+            if (loaderDismissed) return;
+            loaderDismissed = true;
             if (window.__kkhmClearFailsafe) window.__kkhmClearFailsafe();
-                
-                // Ensure Academic Year & Class Fees exist
-                if(!db.dutySchedule) {
-                    db.dutySchedule = { weekly: {}, dateOverrides: {} };
-                }
-                if(!db.dutySchedule.weekly) db.dutySchedule.weekly = {};
-                if(!db.dutySchedule.dateOverrides) db.dutySchedule.dateOverrides = {};
-
-                if(!db.settings.currentAcademicYear) db.settings.currentAcademicYear = "2026-2027";
-                if(!db.settings.academicYears) db.settings.academicYears = ["2025-2026", "2026-2027"];
-                if(!db.settings.classFees) {
-                    db.settings.classFees = {
-                        "Plus One CS + Wafy": { yearlyFee: 48000, monthlyFee: 4000, dueDay: 25 },
-                        "Plus Two CS + Wafy": { yearlyFee: 48000, monthlyFee: 4000, dueDay: 25 },
-                        "ALIYA-1": { yearlyFee: 48000, monthlyFee: 4000, dueDay: 25 },
-                        "ALIYA-2": { yearlyFee: 48000, monthlyFee: 4000, dueDay: 25 },
-                        "ALIYA-3": { yearlyFee: 48000, monthlyFee: 4000, dueDay: 25 },
-                        "ALIYA-4": { yearlyFee: 48000, monthlyFee: 4000, dueDay: 25 },
-                        "PG-1": { yearlyFee: 48000, monthlyFee: 4000, dueDay: 25 },
-                        "PG-2": { yearlyFee: 48000, monthlyFee: 4000, dueDay: 25 }
-                    };
-                }
-
-                db.students.forEach(s => {
-                    if(!s.leaveHistory) s.leaveHistory = []; if(!s.disciplineRecords) s.disciplineRecords = [];
-                    if(!s.achievements) s.achievements = []; if(!s.examMarks) s.examMarks = {};
-                    if(!s.status) s.status = 'active';
-                    if(!s.discontinuationHistory) s.discontinuationHistory = [];
-                    if(!s.academicHistory) s.academicHistory = {};
-                    if(s.previousArrears === undefined || s.previousArrears === null) s.previousArrears = 0;
-                });
-                db.exams.forEach(ex => { if (ex.isPublished === undefined) ex.isPublished = false; });
-                
-                window.initBranding();
-                window.initPWA();
-                document.getElementById('dbLoader').classList.add('opacity-0', 'pointer-events-none');
-                
-                setTimeout(() => { 
-                    document.getElementById('dbLoader').classList.add('hidden'); 
-                    if(localStorage.getItem('kkhm_erp_user')) { 
-                        try { 
-                            window.currentUser = JSON.parse(localStorage.getItem('kkhm_erp_user')); 
+            window.initBranding();
+            window.initPWA();
+            const loader = document.getElementById('dbLoader');
+            if (loader) {
+                loader.classList.add('opacity-0', 'pointer-events-none');
+                setTimeout(() => {
+                    loader.classList.add('hidden');
+                    if(localStorage.getItem('kkhm_erp_user')) {
+                        try {
+                            window.currentUser = JSON.parse(localStorage.getItem('kkhm_erp_user'));
                             if (window.currentUser && window.currentUser.role === 'parent' && window.currentUser.data) {
                                 window.currentUser.className = window.currentUser.className || window.currentUser.data.class;
                                 window.currentUser.batch = window.currentUser.batch || window.currentUser.data.class;
                             }
-                            document.getElementById('appContainer').classList.remove('hidden'); 
-                            window.setupNavigation(); 
-                            window.renderApp(); 
-                            return; 
-                        } catch(e) { } 
+                            document.getElementById('appContainer').classList.remove('hidden');
+                            window.setupNavigation();
+                            window.renderApp();
+                            return;
+                        } catch(e) {}
                     }
-                    document.getElementById('loginScreen').classList.remove('opacity-0', 'pointer-events-none');
-                }, 500);
-            } catch (error) {
-                document.getElementById('dbLoader').innerHTML = `<i class="fas fa-exclamation-triangle text-5xl text-rose-500 mb-6"></i><h2 class="text-2xl font-black text-white text-center px-4">Cloud Connection Failed</h2><p class="text-sm text-rose-200 mt-4 text-center max-w-md px-4 leading-relaxed">Please check your internet connection.</p>`;
+                    const login = document.getElementById('loginScreen');
+                    if (login) login.classList.remove('opacity-0', 'pointer-events-none');
+                }, 400);
             }
         }
 
-        // PWA, BADGING & SYSTEM NOTIFICATIONS
-        window.initPWA = function() {
-            if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.getRegistration().then(reg => {
-                    if (reg) {
-                        try { reg.update(); } catch(e) {}
-                        reg.onupdatefound = () => {
-                            const installingWorker = reg.installing;
-                            if (installingWorker) {
-                                installingWorker.onstatechange = () => {
-                                    if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                                        window.showToast("App updated! Refreshing...", "success");
-                                        setTimeout(() => window.location.reload(), 1200);
-                                    }
-                                };
-                            }
-                        };
-                    }
-                }).catch(err => {
-                    console.warn('KKHM Service Worker check error:', err);
-                });
-            }
-        };
-
-        window.updateAppBadge = function(count) {
+        // 1. SYSTEM INITIALIZATION & LOGIN
+        async function loadDatabase() {
+            // Priority 1: Instant startup from browser localStorage cache (< 10ms)
             try {
-                if ('setAppBadge' in navigator) {
-                    if (count > 0) navigator.setAppBadge(count).catch(() => {});
-                    else navigator.clearAppBadge().catch(() => {});
-                }
-                if (navigator.serviceWorker && navigator.serviceWorker.controller) {
-                    navigator.serviceWorker.controller.postMessage({
-                        action: count > 0 ? 'setBadge' : 'clearBadge',
-                        count: count
-                    });
-                }
-            } catch(e) {
-                console.warn("Badge API error:", e);
-            }
-        };
-
-        window.requestNotificationPermission = async function() {
-            if (!('Notification' in window)) {
-                window.showToast("Notifications not supported in this browser.", "error");
-                return false;
-            }
-            try {
-                const permission = await Notification.requestPermission();
-                if (permission === 'granted') {
-                    window.showToast("Notifications Enabled!");
-                    window.showDeviceNotification("KKHM ERP Notifications Enabled", {
-                        body: "You will now receive fee due alerts and official college announcements.",
-                        tag: 'kkhm-welcome'
-                    });
-                    return true;
-                } else {
-                    window.showToast("Notification permission not granted.", "error");
-                    return false;
-                }
-            } catch(e) {
-                console.warn("Notification permission error:", e);
-                return false;
-            }
-        };
-
-        window.showDeviceNotification = function(title, options = {}) {
-            if (!('Notification' in window) || Notification.permission !== 'granted') return;
-            const defaultOptions = {
-                icon: '/icon-192.png',
-                badge: '/icon-192.png',
-                vibrate: [200, 100, 200],
-                ...options
-            };
-            try {
-                if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-                    navigator.serviceWorker.ready.then(reg => {
-                        reg.showNotification(title, defaultOptions);
-                    }).catch(() => {
-                        const notif = new Notification(title, defaultOptions);
-                        if (defaultOptions.data && (defaultOptions.data.startsWith('http://') || defaultOptions.data.startsWith('https://'))) {
-                            notif.onclick = function(e) { e.preventDefault(); window.open(defaultOptions.data, '_blank'); };
-                        }
-                    });
-                } else {
-                    const notif = new Notification(title, defaultOptions);
-                    if (defaultOptions.data && (defaultOptions.data.startsWith('http://') || defaultOptions.data.startsWith('https://'))) {
-                        notif.onclick = function(e) { e.preventDefault(); window.open(defaultOptions.data, '_blank'); };
+                const cachedData = localStorage.getItem('kkhm_erp_cached_database');
+                if (cachedData) {
+                    const parsed = JSON.parse(cachedData);
+                    if (parsed && parsed.students && parsed.students.length > 0) {
+                        db = parsed;
+                        normalizeDB();
+                        console.log('KKHM ERP: Instant load from browser local storage cache');
+                        dismissLoaderUI();
                     }
                 }
-            } catch(e) {
-                console.warn("Show notification error:", e);
-            }
-        };
-
-        window.handleBellClick = function() {
-            if (window.currentUser && window.currentUser.role === 'parent') {
-                const std = db.students.find(s => String(s.admNo).trim() === String(window.currentUser.data.admNo).trim());
-                const fin = std ? window.getStudentFinancials(std) : null;
-                const latestNotice = db.notices && db.notices.length > 0 ? db.notices[db.notices.length - 1] : null;
-                const hasNewNotice = latestNotice && std && std.lastReadNoticeId !== latestNotice.id;
-
-                if (fin && fin.currentDue > 0) {
-                    window.openFeeDueAlert(std, fin);
-                } else if (hasNewNotice || (db.notices && db.notices.length > 0)) {
-                    window.setParentTab('notices');
-                } else {
-                    window.showToast("All fees are cleared! No pending alerts.", "success");
-                }
-            } else {
-                if (window.switchTab) {
-                    window.switchTab('notices');
-                } else {
-                    let defCount = 0;
-                    db.students.forEach(s => { const f = window.getStudentFinancials(s); if(f.currentDue > 0) defCount++; });
-                    alert(`🔔 Institutional Notification Summary:\n• Students with fee dues: ${defCount}\n• Published notices: ${db.notices.length}`);
-                }
-            }
-        };
-
-        window.saveDB = function() {
-            try {
-                localStorage.setItem('kkhm_erp_cached_database', JSON.stringify(db));
             } catch(e) {}
-            setDoc(dbRef, db).catch(e => window.showToast("Failed to sync with Cloud!", "error"));
-        }
-        window.showToast = function(msg, type = 'success') {
-            const toast = document.getElementById('toast'); document.getElementById('toastMsg').innerText = msg;
-            toast.className = `fixed bottom-6 right-6 transform translate-y-0 opacity-100 transition-all duration-300 z-50 flex items-center gap-3 px-6 py-4 rounded-xl shadow-2xl font-bold text-sm text-white ${type === 'error' ? 'bg-rose-600' : 'bg-emerald-600'}`;
-            document.getElementById('toastIcon').className = type === 'error' ? 'fas fa-exclamation-triangle text-lg' : 'fas fa-check-circle text-lg';
-            setTimeout(() => { toast.classList.replace('translate-y-0', 'translate-y-20'); toast.classList.replace('opacity-100', 'opacity-0'); }, 3000);
+
+            // Priority 2: Instant startup from bundled static seed file (< 50ms)
+            if (!db || !db.students || db.students.length === 0) {
+                try {
+                    const seedRes = await fetch('kkhm_db_seed.json');
+                    if (seedRes.ok) {
+                        const seedData = await seedRes.json();
+                        if (seedData && seedData.students && seedData.students.length > 0) {
+                            db = seedData;
+                            normalizeDB();
+                            console.log('KKHM ERP: Instant load from bundled seed database');
+                            dismissLoaderUI();
+                        }
+                    }
+                } catch(e) {}
+            }
+
+            // Priority 3: Fetch latest updates from Cloud (REST API first for instant response, SDK fallback)
+            try {
+                let cloudData = null;
+                try {
+                    cloudData = await fetchFromFirestoreRest();
+                    console.log('KKHM ERP: Successfully synced with live Cloud Firestore (REST)');
+                } catch(restErr) {
+                    console.warn('KKHM ERP: REST sync error, falling back to Firestore SDK:', restErr);
+                    const docSnap = await getDoc(dbRef);
+                    if (docSnap && docSnap.exists()) {
+                        cloudData = docSnap.data();
+                    }
+                }
+
+                if (cloudData && cloudData.students && cloudData.students.length > 0) {
+                    db = cloudData;
+                    normalizeDB();
+                    try {
+                        localStorage.setItem('kkhm_erp_cached_database', JSON.stringify(db));
+                    } catch(e) {}
+                    if (window.currentUser) {
+                        window.renderApp();
+                    }
+                }
+            } catch (cloudErr) {
+                console.warn('KKHM ERP: Cloud synchronization failed:', cloudErr);
+            }
+
+            normalizeDB();
+            dismissLoaderUI();
         }
 
         window.initBranding = function() {
@@ -2374,24 +2320,43 @@
         };
 
         window.handleLogin = function(e) {
-            e.preventDefault(); const user = document.getElementById('username').value.trim(); const pass = document.getElementById('password').value.trim();
-            const err = document.getElementById('loginError'); err.classList.add('hidden');
-            if (user === 'admin' && pass === 'admin') window.currentUser = { role: 'admin', name: 'System Administrator' };
-            else if (user === 'admin1' && pass === 'admin1') window.currentUser = { role: 'admin1', name: 'Principal' };
-            else if (user.toLowerCase() === 'teacher' && (pass === 'kkhm' || pass.toLowerCase() === 'kkhm')) window.currentUser = { role: 'mentor', name: 'Faculty Mentor', id: 'teacher', teacherCode: 'teacher' };
-            else if ((user === 'mentor1' && pass === 'mentor1') || (user === 'mentor2' && pass === 'mentor2')) window.currentUser = { role: 'mentor', name: 'Class Mentor', id: user, teacherCode: user };
-            else if (user === 'leader' && pass === 'leader') window.currentUser = { role: 'leader', name: 'College Leader' };
-            else { 
-                const std = db.students && db.students.find(s => String(s.admNo).trim() === String(user).trim() && s.password === pass); 
+            e.preventDefault();
+            const user = document.getElementById('username').value.trim();
+            const pass = document.getElementById('password').value.trim();
+            const err = document.getElementById('loginError');
+            if (err) err.classList.add('hidden');
+
+            // Fallback: If db or students is not yet populated, try reloading from cache
+            if (!db || !db.students || db.students.length === 0) {
+                try {
+                    const c = localStorage.getItem('kkhm_erp_cached_database');
+                    if (c) { db = JSON.parse(c); normalizeDB(); }
+                } catch(ex) {}
+            }
+
+            if (user === 'admin' && pass === 'admin') {
+                window.currentUser = { role: 'admin', name: 'System Administrator' };
+            } else if (user === 'admin1' && pass === 'admin1') {
+                window.currentUser = { role: 'admin1', name: 'Principal' };
+            } else if (user.toLowerCase() === 'teacher' && (pass === 'kkhm' || pass.toLowerCase() === 'kkhm')) {
+                window.currentUser = { role: 'mentor', name: 'Faculty Mentor', id: 'teacher', teacherCode: 'teacher' };
+            } else if ((user === 'mentor1' && pass === 'mentor1') || (user === 'mentor2' && pass === 'mentor2')) {
+                window.currentUser = { role: 'mentor', name: 'Class Mentor', id: user, teacherCode: user };
+            } else if (user === 'leader' && pass === 'leader') {
+                window.currentUser = { role: 'leader', name: 'College Leader' };
+            } else {
+                const stdList = (db && db.students) || [];
+                const std = stdList.find(s => String(s.admNo).trim() === String(user).trim() && String(s.password).trim() === String(pass).trim());
                 if (std) {
-                    window.currentUser = { role: 'parent', name: std.name, className: std.class, batch: std.class, data: std }; 
+                    window.currentUser = { role: 'parent', name: std.name, className: std.class, batch: std.class, data: std };
                 } else {
-                    const tch = (db.teachers || []).find(t => 
+                    const tchList = (db && db.teachers) || [];
+                    const tch = tchList.find(t => 
                         (String(t.id).trim().toLowerCase() === String(user).trim().toLowerCase() || 
                          String(t.phone).trim() === String(user).trim() ||
                          (t.shortName && String(t.shortName).trim().toLowerCase() === String(user).trim().toLowerCase()) ||
                          (t.teacherCode && String(t.teacherCode).trim().toLowerCase() === String(user).trim().toLowerCase())) &&
-                        (t.password ? t.password === pass : (pass === 'teacher' || pass === t.phone || pass === '123456'))
+                        (t.password ? String(t.password).trim() === String(pass).trim() : (pass === 'teacher' || pass === t.phone || pass === '123456'))
                     );
                     if (tch) {
                         window.currentUser = { 

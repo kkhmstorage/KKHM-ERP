@@ -1,4 +1,4 @@
-const CACHE_NAME = 'kkhm-erp-cache-v28';
+const CACHE_NAME = 'kkhm-erp-cache-v29';
 const urlsToCache = [
   './',
   './index.html',
@@ -6,6 +6,7 @@ const urlsToCache = [
   './manifest.json',
   './bg.jpg',
   './logo.png',
+  './kkhm_db_seed.json',
   './icon-192.png',
   './icon-512.png'
 ];
