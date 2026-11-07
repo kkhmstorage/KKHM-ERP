@@ -1,11 +1,14 @@
-const CACHE_NAME = 'kkhm-erp-cache-v27';
+const CACHE_NAME = 'kkhm-erp-cache-v30';
 const urlsToCache = [
-  '/',
-  '/index.html',
-  '/pay.html',
-  '/manifest.json',
-  '/icon-192.png',
-  '/icon-512.png'
+  './',
+  './index.html',
+  './pay.html',
+  './manifest.json',
+  './bg.jpg',
+  './logo.png',
+  './kkhm_db_seed.json',
+  './icon-192.png',
+  './icon-512.png'
 ];
 
 // 1. Install Event: Cache essential shell files safely
@@ -64,7 +67,7 @@ self.addEventListener('fetch', event => {
         .catch(async () => {
           const cached = await caches.match(req);
           if (cached) return cached;
-          return (await caches.match('/index.html')) || (await caches.match('/'));
+          return (await caches.match('./index.html')) || (await caches.match('./')) || (await caches.match('/index.html')) || (await caches.match('/'));
         })
     );
     return;
