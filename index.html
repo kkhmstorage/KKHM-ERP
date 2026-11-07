@@ -193,7 +193,7 @@
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl overflow-hidden flex flex-col max-h-[90vh]">
             <div class="bg-amber-500 p-4 flex justify-between items-center text-white">
                 <h3 class="font-bold text-lg"><i class="fas fa-clipboard-list mr-2"></i>Students On Leave</h3>
-                <button onclick="document.getElementById('leaveListModal').classList.add('hidden'); document.getElementById('leaveListModal').classList.remove('flex');" class="hover:text-amber-100 text-xl"><i class="fas fa-times"></i></button>
+                <button onclick="window.closeLeaveListModal()" class="hover:text-amber-100 text-xl cursor-pointer"><i class="fas fa-times"></i></button>
             </div>
             <div class="overflow-y-auto p-0">
                 <table class="w-full text-left text-sm whitespace-nowrap">
@@ -1693,6 +1693,67 @@
             if (window.initPWA) window.initPWA();
         }
 
+        window.saveDB = function() {
+            try {
+                localStorage.setItem('kkhm_erp_cached_database', JSON.stringify(db));
+            } catch(e) {}
+            if (typeof setDoc !== 'undefined' && dbRef) {
+                setDoc(dbRef, db).catch(e => {
+                    console.error("Firestore sync error:", e);
+                    window.showToast("Failed to sync with Cloud!", "error");
+                });
+            }
+        };
+
+        window.showToast = function(msg, type = 'success') {
+            const toast = document.getElementById('toast');
+            const msgEl = document.getElementById('toastMsg');
+            const iconEl = document.getElementById('toastIcon');
+            if (!toast || !msgEl) return;
+            msgEl.innerText = msg;
+            toast.className = `fixed bottom-6 right-6 transform translate-y-0 opacity-100 transition-all duration-300 z-50 flex items-center gap-3 px-6 py-4 rounded-xl shadow-2xl font-bold text-sm text-white ${type === 'error' ? 'bg-rose-600' : (type === 'info' ? 'bg-indigo-600' : 'bg-emerald-600')}`;
+            if (iconEl) {
+                iconEl.className = type === 'error' ? 'fas fa-exclamation-triangle text-lg' : (type === 'info' ? 'fas fa-info-circle text-lg' : 'fas fa-check-circle text-lg');
+            }
+            if (window._toastTimeout) clearTimeout(window._toastTimeout);
+            window._toastTimeout = setTimeout(() => {
+                toast.classList.replace('translate-y-0', 'translate-y-20');
+                toast.classList.replace('opacity-100', 'opacity-0');
+            }, 3000);
+        };
+
+        window.initPWA = function() {
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.getRegistration().then(reg => {
+                    if (reg) {
+                        try { reg.update(); } catch(e) {}
+                        reg.onupdatefound = () => {
+                            const installingWorker = reg.installing;
+                            if (installingWorker) {
+                                installingWorker.onstatechange = () => {
+                                    if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                        window.showToast("App updated! Refreshing...", "success");
+                                        setTimeout(() => window.location.reload(), 1200);
+                                    }
+                                };
+                            }
+                        };
+                    }
+                }).catch(err => {
+                    console.warn('KKHM Service Worker check error:', err);
+                });
+            }
+        };
+
+        window.updateAppBadge = function(count) {
+            try {
+                if ('setAppBadge' in navigator) {
+                    if (count > 0) navigator.setAppBadge(count);
+                    else navigator.clearAppBadge();
+                }
+            } catch(e) {}
+        };
+
         // ==========================================
         // ACADEMIC TIMETABLE & AUDIT INTEGRATION
         // ==========================================
@@ -2900,11 +2961,7 @@
                 }
             });
             
-            let leaveHtml = activeStudents.filter(s => s.leaveStatus === 'On Leave').map(s => { 
-                const activeLeave = (s.leaveHistory || []).find(l => !l.dateIn) || {}; 
-                return `<tr class="hover:bg-slate-50"><td class="p-4 font-bold text-slate-800">${s.name} <br><span class="text-xs font-mono text-slate-400">${s.admNo}</span></td><td class="p-4">${s.class}</td><td class="p-4 font-mono font-bold text-rose-500">${activeLeave.dateOut || 'N/A'}</td><td class="p-4 whitespace-normal max-w-xs text-slate-600">${activeLeave.reason || 'N/A'}</td><td class="p-4 text-center"><button onclick="window.markReturn('${s.admNo}')" class="bg-emerald-100 text-emerald-700 border border-emerald-200 px-3 py-1.5 rounded-lg text-xs font-bold transition hover:bg-emerald-200 cursor-pointer"><i class="fas fa-sign-in-alt mr-1"></i> Report IN</button></td></tr>` 
-            }).join('') || '<tr><td colspan="5" class="p-8 text-center text-slate-500 font-bold">No active students are currently on leave.</td></tr>';
-            document.getElementById('leaveListTableBody').innerHTML = leaveHtml;
+            window.renderLeaveListModalTable();
             
             // Build Quick Navigation Shortcuts for Current Role
             let shortcuts = [];
@@ -3015,7 +3072,7 @@
                         <div class="bg-white p-5 sm:p-6 rounded-2xl shadow-sm border border-slate-200 border-t-4 border-t-amber-500 relative">
                             <p class="text-slate-500 text-xs font-bold uppercase mb-1">Currently on Leave</p>
                             <p class="text-3xl sm:text-4xl font-black text-amber-600">${onLeave}</p>
-                            <button onclick="document.getElementById('leaveListModal').classList.remove('hidden'); document.getElementById('leaveListModal').classList.add('flex');" class="mt-2 bg-amber-100 hover:bg-amber-200 text-amber-800 px-2.5 py-1 rounded-lg text-xs font-bold transition shadow-sm flex items-center gap-1 cursor-pointer">View Leave List <i class="fas fa-list"></i></button>
+                            <button onclick="window.openLeaveListModal()" class="mt-2 bg-amber-100 hover:bg-amber-200 text-amber-800 px-2.5 py-1 rounded-lg text-xs font-bold transition shadow-sm flex items-center gap-1 cursor-pointer">View Leave List <i class="fas fa-list"></i></button>
                         </div>
                         <div class="bg-white p-5 sm:p-6 rounded-2xl shadow-sm border border-slate-200 border-t-4 border-t-rose-500 relative">
                             <p class="text-slate-500 text-xs font-bold uppercase mb-1">Discontinued</p>
@@ -3417,9 +3474,51 @@
             `;
         }
 
-        // LEAVE MANAGEMENT FIXES
+        // LEAVE MANAGEMENT & MODAL CONTROLLERS
+        window.renderLeaveListModalTable = function() {
+            const tableBody = document.getElementById('leaveListTableBody');
+            if (!tableBody) return;
+            const activeStudents = (db.students || []).filter(s => s.status !== 'discontinued');
+            const onLeave = activeStudents.filter(s => s.leaveStatus === 'On Leave');
+            if (onLeave.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="5" class="p-8 text-center text-slate-500 font-bold">No active students are currently on leave.</td></tr>';
+                return;
+            }
+            tableBody.innerHTML = onLeave.map(s => {
+                const activeLeave = (s.leaveHistory || []).slice().reverse().find(l => !l.dateIn) || (s.leaveHistory && s.leaveHistory[s.leaveHistory.length - 1]) || {};
+                return `<tr class="hover:bg-slate-50 border-b border-slate-100">
+                    <td class="p-4 font-bold text-slate-800">${s.name} <br><span class="text-xs font-mono text-slate-400 font-normal">Adm: ${s.admNo}</span></td>
+                    <td class="p-4 font-medium text-slate-600">${s.class || '-'}</td>
+                    <td class="p-4 font-mono font-bold text-rose-500">${activeLeave.dateOut || 'N/A'}</td>
+                    <td class="p-4 whitespace-normal max-w-xs text-slate-600">${activeLeave.reason || 'N/A'}</td>
+                    <td class="p-4 text-center">
+                        <button type="button" onclick="window.markReturn('${s.admNo}')" class="bg-emerald-100 hover:bg-emerald-200 active:scale-95 text-emerald-800 border border-emerald-300 px-3.5 py-1.5 rounded-lg text-xs font-bold transition shadow-sm inline-flex items-center gap-1.5 cursor-pointer">
+                            <i class="fas fa-sign-in-alt"></i> Report IN
+                        </button>
+                    </td>
+                </tr>`;
+            }).join('');
+        };
+
+        window.openLeaveListModal = function() {
+            window.renderLeaveListModalTable();
+            const modal = document.getElementById('leaveListModal');
+            if (modal) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            }
+        };
+
+        window.closeLeaveListModal = function() {
+            const modal = document.getElementById('leaveListModal');
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
+        };
+
         window.markLeave = function(admNo) { 
-            const std = db.students.find(s => String(s.admNo).trim() === String(admNo).trim()); 
+            const std = (db.students || []).find(s => String(s.admNo).trim() === String(admNo).trim()); 
             if(std && std.status === 'discontinued') {
                 alert("Cannot mark leave: Student has discontinued studies. (പഠനം നിർത്തിയ വിദ്യാർത്ഥിക്ക് ലീവ് രേഖപ്പെടുത്താൻ കഴിയില്ല)");
                 return;
@@ -3431,7 +3530,8 @@
                     if(!std.leaveHistory) std.leaveHistory = []; 
                     std.leaveHistory.push({ dateOut: new Date().toISOString().split('T')[0], reason: reason, dateIn: null }); 
                     window.saveDB(); 
-                    window.showToast('Leave marked'); 
+                    window.showToast(`Leave marked for ${std.name}`); 
+                    window.renderLeaveListModalTable();
                     if(window.currentTab === 'search') window.searchStudent(admNo); 
                     else window.renderApp(); 
                 }
@@ -3439,7 +3539,7 @@
         };
 
         window.markReturn = function(admNo) { 
-            const std = db.students.find(s => String(s.admNo).trim() === String(admNo).trim()); 
+            const std = (db.students || []).find(s => String(s.admNo).trim() === String(admNo).trim()); 
             if(std && std.status === 'discontinued') {
                 alert("Cannot record return: Student has discontinued studies. (പഠനം നിർത്തിയ വിദ്യാർത്ഥിയുടെ റിട്ടേൺ രേഖപ്പെടുത്താൻ കഴിയില്ല)");
                 return;
@@ -3447,12 +3547,21 @@
             if(std) {
                 std.leaveStatus = 'In Campus'; 
                 if(!std.leaveHistory) std.leaveHistory = []; 
-                const lastLeave = std.leaveHistory[std.leaveHistory.length - 1]; 
-                if(lastLeave && !lastLeave.dateIn) { 
-                    lastLeave.dateIn = new Date().toISOString().split('T')[0]; 
-                } 
+                const today = new Date().toISOString().split('T')[0]; 
+                let closedAny = false;
+                std.leaveHistory.forEach(l => {
+                    if (!l.dateIn) {
+                        l.dateIn = today;
+                        closedAny = true;
+                    }
+                });
+                if (!closedAny && std.leaveHistory.length > 0) {
+                    const lastLeave = std.leaveHistory[std.leaveHistory.length - 1];
+                    if (!lastLeave.dateIn) lastLeave.dateIn = today;
+                }
                 window.saveDB(); 
-                window.showToast('Return recorded'); 
+                window.showToast(`Return recorded for ${std.name} (${std.admNo})`, 'success'); 
+                window.renderLeaveListModalTable();
                 if(window.currentTab === 'search') window.searchStudent(admNo); 
                 else window.renderApp(); 
             }
@@ -3468,7 +3577,12 @@
                     count++; 
                 } 
             }); 
-            if(count > 0) { window.saveDB(); window.showToast(count + " students marked on Monthly Leave"); window.renderApp(); } 
+            if(count > 0) { 
+                window.saveDB(); 
+                window.showToast(count + " students marked on Monthly Leave"); 
+                window.renderLeaveListModalTable();
+                window.renderApp(); 
+            } 
         };
 
         window.renderDirectory = function() {
