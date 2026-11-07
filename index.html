@@ -1325,7 +1325,123 @@
         </div>
     </div>
 
-    <!-- FULL JAVASCRIPT LOGIC -->
+    <!-- Change User Password Modal (Admin) -->
+    <div id="editUserPasswordModal" class="fixed inset-0 bg-black/60 z-50 hidden items-center justify-center p-3 sm:p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden flex flex-col border border-slate-200 animate-in fade-in zoom-in duration-200">
+            <div class="bg-gradient-to-r from-indigo-700 via-indigo-800 to-slate-900 p-4 text-white flex justify-between items-center">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center text-amber-300 font-bold"><i class="fas fa-key"></i></div>
+                    <div>
+                        <h3 class="font-black text-sm sm:text-base">Change User Password</h3>
+                        <p class="text-[11px] text-indigo-200">പാസ്‌വേഡ് മാറ്റുക / അപ്ഡേറ്റ് ചെയ്യുക</p>
+                    </div>
+                </div>
+                <button type="button" onclick="window.closeEditUserPasswordModal()" class="text-white/80 hover:text-white text-xl font-bold cursor-pointer">&times;</button>
+            </div>
+            <form onsubmit="window.saveUserPasswordChange(event)" class="p-5 space-y-4 bg-slate-50">
+                <input type="hidden" id="editPassUserType">
+                <input type="hidden" id="editPassUserId">
+                
+                <div class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm flex items-center gap-3">
+                    <div id="editPassUserAvatar" class="w-12 h-12 rounded-xl bg-indigo-50 border border-indigo-200 flex items-center justify-center text-indigo-700 font-black text-lg overflow-hidden flex-shrink-0">
+                        U
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <h4 id="editPassUserName" class="font-black text-sm text-slate-800 truncate">User Name</h4>
+                        <div class="flex items-center gap-2 mt-0.5 flex-wrap">
+                            <span id="editPassUserRoleBadge" class="text-[10px] font-black px-2 py-0.5 rounded-md bg-indigo-100 text-indigo-800 uppercase">Role</span>
+                            <span class="text-xs text-slate-500 font-mono">Login ID: <b id="editPassUserLoginId" class="text-slate-800 font-bold">-</b></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1">Current Password (നിലവിലെ പാസ്‌വേഡ്)</label>
+                    <div class="relative">
+                        <input type="text" id="editPassCurrentVal" readonly class="w-full bg-slate-100 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm font-mono text-slate-600 cursor-default">
+                        <button type="button" onclick="window.copyTextToClipboard(document.getElementById('editPassCurrentVal').value, 'Current password copied!')" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-indigo-600 text-xs p-1 cursor-pointer" title="Copy Current Password">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="flex justify-between items-center mb-1">
+                        <label class="block text-xs font-bold text-slate-700">New Password (പുതിയ പാസ്‌വേഡ്) <span class="text-rose-500">*</span></label>
+                        <button type="button" onclick="window.generateRandomPassword()" class="text-[11px] font-bold text-indigo-600 hover:text-indigo-800 flex items-center gap-1 cursor-pointer">
+                            <i class="fas fa-magic"></i> Auto Generate
+                        </button>
+                    </div>
+                    <div class="relative">
+                        <input type="text" id="editPassNewVal" required placeholder="Enter new password" class="w-full bg-white border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 rounded-xl px-3.5 py-2.5 text-sm font-mono font-bold text-slate-900 outline-none shadow-sm">
+                        <button type="button" onclick="window.copyTextToClipboard(document.getElementById('editPassNewVal').value, 'Password copied!')" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-indigo-600 text-xs p-1 cursor-pointer" title="Copy New Password">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
+                    <div class="flex gap-1.5 mt-2 flex-wrap items-center">
+                        <span class="text-[10px] text-slate-400 font-semibold">Quick Presets:</span>
+                        <button type="button" onclick="document.getElementById('editPassNewVal').value='pass'" class="text-[10px] bg-slate-200 hover:bg-slate-300 text-slate-700 px-2 py-0.5 rounded font-mono font-bold cursor-pointer">pass</button>
+                        <button type="button" onclick="document.getElementById('editPassNewVal').value='123456'" class="text-[10px] bg-slate-200 hover:bg-slate-300 text-slate-700 px-2 py-0.5 rounded font-mono font-bold cursor-pointer">123456</button>
+                        <button type="button" onclick="document.getElementById('editPassNewVal').value='kkhm'" class="text-[10px] bg-slate-200 hover:bg-slate-300 text-slate-700 px-2 py-0.5 rounded font-mono font-bold cursor-pointer">kkhm</button>
+                        <button type="button" onclick="document.getElementById('editPassNewVal').value='admin123'" class="text-[10px] bg-slate-200 hover:bg-slate-300 text-slate-700 px-2 py-0.5 rounded font-mono font-bold cursor-pointer">admin123</button>
+                    </div>
+                </div>
+
+                <div class="flex gap-2.5 pt-2">
+                    <button type="button" onclick="window.closeEditUserPasswordModal()" class="flex-1 bg-slate-200 hover:bg-slate-300 text-slate-700 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition cursor-pointer">Cancel</button>
+                    <button type="submit" class="flex-1 bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white py-2.5 rounded-xl text-xs sm:text-sm font-bold shadow-md transition flex items-center justify-center gap-2 cursor-pointer">
+                        <i class="fas fa-save"></i> Save Password
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Staff Account Modal (Admin) -->
+    <div id="addStaffModal" class="fixed inset-0 bg-black/60 z-50 hidden items-center justify-center p-3 sm:p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden flex flex-col border border-slate-200 animate-in fade-in zoom-in duration-200">
+            <div class="bg-gradient-to-r from-emerald-800 via-teal-900 to-slate-900 p-4 text-white flex justify-between items-center">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center text-amber-300 font-bold"><i class="fas fa-user-plus"></i></div>
+                    <div>
+                        <h3 class="font-black text-sm sm:text-base">Add Staff / Mentor Account</h3>
+                        <p class="text-[11px] text-emerald-200">പുതിയ സ്റ്റാഫ് / മെന്റർ ലോഗിൻ ചേർക്കുക</p>
+                    </div>
+                </div>
+                <button type="button" onclick="window.closeAddStaffModal()" class="text-white/80 hover:text-white text-xl font-bold cursor-pointer">&times;</button>
+            </div>
+            <form onsubmit="window.saveNewStaffAccount(event)" class="p-5 space-y-3.5 bg-slate-50">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Full Name / Designation <span class="text-rose-500">*</span></label>
+                    <input type="text" id="newStaffName" required placeholder="e.g. Office Superintendent, HOD Urdu..." class="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm font-bold text-slate-800 outline-none focus:ring-2 focus:ring-emerald-500 shadow-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Login Username <span class="text-rose-500">*</span></label>
+                    <input type="text" id="newStaffUsername" required placeholder="e.g. office, hod_urdu, mentor3" class="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm font-mono font-bold text-slate-800 outline-none focus:ring-2 focus:ring-emerald-500 shadow-sm">
+                    <p class="text-[10px] text-slate-400 mt-1">Single word / lowercase without spaces recommended</p>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Role / Permissions <span class="text-rose-500">*</span></label>
+                    <select id="newStaffRole" required class="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm font-bold text-slate-800 outline-none focus:ring-2 focus:ring-emerald-500 shadow-sm cursor-pointer">
+                        <option value="mentor">Faculty Mentor (Attendance, Profile, Fines, Directory)</option>
+                        <option value="admin1">Principal (Institutional Administration)</option>
+                        <option value="admin">Administrator (Full System Control)</option>
+                        <option value="leader">College Leader (Attendance, Profile, Directory, Exams)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Password <span class="text-rose-500">*</span></label>
+                    <input type="text" id="newStaffPassword" required placeholder="e.g. staff123" class="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm font-mono font-bold text-slate-800 outline-none focus:ring-2 focus:ring-emerald-500 shadow-sm">
+                </div>
+                <div class="flex gap-2.5 pt-2">
+                    <button type="button" onclick="window.closeAddStaffModal()" class="flex-1 bg-slate-200 hover:bg-slate-300 text-slate-700 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition cursor-pointer">Cancel</button>
+                    <button type="submit" class="flex-1 bg-emerald-700 hover:bg-emerald-800 active:scale-95 text-white py-2.5 rounded-xl text-xs sm:text-sm font-bold shadow-md transition flex items-center justify-center gap-2 cursor-pointer">
+                        <i class="fas fa-check-circle"></i> Create Account
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
@@ -1387,6 +1503,31 @@
                     };
                 }
 
+                // Ensure default staff accounts exist in settings for dynamic authentication & management
+                const defaultStaff = [
+                    { id: 'admin', username: 'admin', name: 'System Administrator', role: 'admin', password: 'admin', category: 'Administrator' },
+                    { id: 'admin1', username: 'admin1', name: 'Principal', role: 'admin1', password: 'admin1', category: 'Principal' },
+                    { id: 'teacher', username: 'teacher', name: 'Faculty Mentor (Common)', role: 'mentor', password: 'kkhm', category: 'Faculty Mentor' },
+                    { id: 'mentor1', username: 'mentor1', name: 'Class Mentor 1', role: 'mentor', password: 'mentor1', category: 'Class Mentor' },
+                    { id: 'mentor2', username: 'mentor2', name: 'Class Mentor 2', role: 'mentor', password: 'mentor2', category: 'Class Mentor' },
+                    { id: 'leader', username: 'leader', name: 'College Leader', role: 'leader', password: 'leader', category: 'College Leader' }
+                ];
+                if (!db.settings.staffAccounts || !Array.isArray(db.settings.staffAccounts)) {
+                    db.settings.staffAccounts = defaultStaff;
+                } else {
+                    defaultStaff.forEach(def => {
+                        const existing = db.settings.staffAccounts.find(s => s.id === def.id || (s.username && s.username.toLowerCase() === def.username.toLowerCase()));
+                        if (!existing) {
+                            db.settings.staffAccounts.push(def);
+                        } else {
+                            if (!existing.role) existing.role = def.role;
+                            if (!existing.name) existing.name = def.name;
+                            if (!existing.category) existing.category = def.category;
+                            if (!existing.password) existing.password = def.password;
+                        }
+                    });
+                }
+
                 db.students.forEach(s => {
                     if(!s.leaveHistory) s.leaveHistory = []; if(!s.disciplineRecords) s.disciplineRecords = [];
                     if(!s.achievements) s.achievements = []; if(!s.examMarks) s.examMarks = {};
@@ -1394,6 +1535,10 @@
                     if(!s.discontinuationHistory) s.discontinuationHistory = [];
                     if(!s.academicHistory) s.academicHistory = {};
                     if(s.previousArrears === undefined || s.previousArrears === null) s.previousArrears = 0;
+                    if(!s.password) s.password = 'pass';
+                });
+                db.teachers.forEach(t => {
+                    if(!t.password) t.password = t.phone || '123456';
                 });
                 db.exams.forEach(ex => { if (ex.isPublished === undefined) ex.isPublished = false; });
                 
@@ -2314,24 +2459,45 @@
         };
 
         window.handleLogin = function(e) {
-            e.preventDefault(); const user = document.getElementById('username').value.trim(); const pass = document.getElementById('password').value.trim();
-            const err = document.getElementById('loginError'); err.classList.add('hidden');
-            if (user === 'admin' && pass === 'admin') window.currentUser = { role: 'admin', name: 'System Administrator' };
-            else if (user === 'admin1' && pass === 'admin1') window.currentUser = { role: 'admin1', name: 'Principal' };
-            else if (user.toLowerCase() === 'teacher' && (pass === 'kkhm' || pass.toLowerCase() === 'kkhm')) window.currentUser = { role: 'mentor', name: 'Faculty Mentor', id: 'teacher', teacherCode: 'teacher' };
-            else if ((user === 'mentor1' && pass === 'mentor1') || (user === 'mentor2' && pass === 'mentor2')) window.currentUser = { role: 'mentor', name: 'Class Mentor', id: user, teacherCode: user };
-            else if (user === 'leader' && pass === 'leader') window.currentUser = { role: 'leader', name: 'College Leader' };
-            else { 
-                const std = db.students && db.students.find(s => String(s.admNo).trim() === String(user).trim() && s.password === pass); 
+            e.preventDefault(); 
+            const user = document.getElementById('username').value.trim(); 
+            const pass = document.getElementById('password').value.trim();
+            const err = document.getElementById('loginError'); 
+            err.classList.add('hidden');
+
+            const staffList = (db && db.settings && Array.isArray(db.settings.staffAccounts)) ? db.settings.staffAccounts : [
+                { id: 'admin', username: 'admin', name: 'System Administrator', role: 'admin', password: 'admin' },
+                { id: 'admin1', username: 'admin1', name: 'Principal', role: 'admin1', password: 'admin1' },
+                { id: 'teacher', username: 'teacher', name: 'Faculty Mentor', role: 'mentor', password: 'kkhm' },
+                { id: 'mentor1', username: 'mentor1', name: 'Class Mentor 1', role: 'mentor', password: 'mentor1' },
+                { id: 'mentor2', username: 'mentor2', name: 'Class Mentor 2', role: 'mentor', password: 'mentor2' },
+                { id: 'leader', username: 'leader', name: 'College Leader', role: 'leader', password: 'leader' }
+            ];
+
+            const matchedStaff = staffList.find(s => 
+                (String(s.username || s.id).toLowerCase() === user.toLowerCase()) && 
+                String(s.password) === pass
+            );
+
+            if (matchedStaff) {
+                window.currentUser = { 
+                    role: matchedStaff.role, 
+                    name: matchedStaff.name, 
+                    id: matchedStaff.id, 
+                    teacherCode: matchedStaff.id,
+                    isStaffAccount: true
+                };
+            } else { 
+                const std = db && db.students && db.students.find(s => String(s.admNo).trim() === String(user).trim() && (s.password ? String(s.password) === pass : pass === 'pass')); 
                 if (std) {
                     window.currentUser = { role: 'parent', name: std.name, className: std.class, batch: std.class, data: std }; 
                 } else {
-                    const tch = (db.teachers || []).find(t => 
+                    const tch = (db && db.teachers || []).find(t => 
                         (String(t.id).trim().toLowerCase() === String(user).trim().toLowerCase() || 
                          String(t.phone).trim() === String(user).trim() ||
                          (t.shortName && String(t.shortName).trim().toLowerCase() === String(user).trim().toLowerCase()) ||
                          (t.teacherCode && String(t.teacherCode).trim().toLowerCase() === String(user).trim().toLowerCase())) &&
-                        (t.password ? t.password === pass : (pass === 'teacher' || pass === t.phone || pass === '123456'))
+                        (t.password ? String(t.password) === pass : (pass === 'teacher' || pass === String(t.phone) || pass === '123456'))
                     );
                     if (tch) {
                         window.currentUser = { 
@@ -2393,6 +2559,7 @@
                     { id: 'achieve', icon: 'fa-trophy', label: 'Achievements' }, 
                     { id: 'diary', icon: 'fa-book-open', label: 'Daily Diary' }, 
                     { id: 'notices', icon: 'fa-bullhorn', label: 'Notice Board' }, 
+                    { id: 'users', icon: 'fa-user-shield', label: 'Users & Passwords' },
                     { id: 'settings', icon: 'fa-cog', label: 'Settings' } 
                 ];
             } else if (role === 'admin1') {
@@ -2502,6 +2669,7 @@
             else if (window.currentTab === 'achieve') html = window.renderGlobalAchievements(); 
             else if (window.currentTab === 'diary') html = window.renderDiaryUI(); 
             else if (window.currentTab === 'notices') html = window.renderAdminNotices(); 
+            else if (window.currentTab === 'users') html = window.renderUserManager();
             else if (window.currentTab === 'settings') html = window.renderSettings(); 
             else if (window.currentTab === 'parent_portal') html = window.renderParentPortal();
             content.innerHTML = html;
@@ -7020,6 +7188,21 @@
                     <div class="border p-4 rounded-lg bg-white"><label class="text-xs font-bold text-slate-500 block mb-2">LOGIN SCREEN BACKGROUND</label><div class="flex items-center gap-4 mb-3"><label class="flex items-center gap-2 text-sm"><input type="radio" name="bgType" value="image" ${!db.settings.isVideoBg ? 'checked' : ''} onchange="document.getElementById('bgUploadInput').accept='image/*'"> Image</label><label class="flex items-center gap-2 text-sm"><input type="radio" name="bgType" value="video" ${db.settings.isVideoBg ? 'checked' : ''} onchange="document.getElementById('bgUploadInput').accept='video/mp4,video/webm'"> Video</label></div><div class="flex gap-2"><input id="sBg" value="${db.settings.bg}" class="flex-1 border p-3 rounded-lg bg-white text-sm"><label class="bg-slate-800 text-white px-4 py-3 rounded-lg font-bold cursor-pointer hover:bg-slate-900 transition text-sm">Upload to Drive <input type="file" id="bgUploadInput" accept="${db.settings.isVideoBg ? 'video/mp4,video/webm' : 'image/*'}" class="hidden" onchange="window.encodeFile(this, 'sBg')"></label></div></div>
                 </div></div>
                 
+                <!-- Users & Passwords Management Quick Access Card -->
+                <div class="bg-gradient-to-r from-[#022c22] via-[#064e3b] to-slate-900 rounded-xl p-5 text-white flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 shadow-md border border-emerald-500/30">
+                    <div>
+                        <h3 class="text-base font-extrabold flex items-center gap-2">
+                            <i class="fas fa-user-shield text-amber-400 text-lg"></i> User & Password Management (യൂസർ & പാസ്‌വേഡ് മാനേജർ)
+                        </h3>
+                        <p class="text-xs text-emerald-200 mt-1 max-w-xl leading-relaxed">
+                            അഡ്മിൻ, പ്രിൻസിപ്പൽ, അധ്യാപകർ, വിദ്യാർത്ഥികൾ എന്നിവരുടെ ലോഗിൻ വിവരങ്ങളും പാസ്‌വേഡുകളും ഒരിടത്ത് കാണാനും മാറ്റം വരുത്താനും ഇവിടെ സാധിക്കും.
+                        </p>
+                    </div>
+                    <button type="button" onclick="window.switchTab('users')" class="bg-amber-400 hover:bg-amber-300 active:scale-95 text-slate-950 font-black px-4 py-2.5 rounded-xl text-xs transition shadow-lg flex items-center gap-2 cursor-pointer whitespace-nowrap">
+                        <i class="fas fa-users-cog"></i> Open User Manager
+                    </button>
+                </div>
+
                 <!-- Academic Year Configuration Card -->
                 <div class="bg-white rounded-xl border shadow-sm overflow-hidden">
                     <div class="bg-[#022c22] p-4 text-white font-bold flex justify-between items-center">
@@ -8143,6 +8326,710 @@
                 </div>
             `;
             window.openPrintWindow(html, `NoDue_${std.admNo}`);
+        };
+
+        // ==========================================
+        // 12. USER & PASSWORD MANAGEMENT (ADMIN)
+        // ==========================================
+        window.copyTextToClipboard = function(text, msg) {
+            if (!text) return;
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(() => {
+                    window.showToast(msg || 'Copied to clipboard!', 'success');
+                }).catch(() => {
+                    window.fallbackCopyText(text, msg);
+                });
+            } else {
+                window.fallbackCopyText(text, msg);
+            }
+        };
+
+        window.fallbackCopyText = function(text, msg) {
+            const ta = document.createElement('textarea');
+            ta.value = text;
+            ta.style.position = 'fixed';
+            ta.style.opacity = '0';
+            document.body.appendChild(ta);
+            ta.select();
+            try {
+                document.execCommand('copy');
+                window.showToast(msg || 'Copied to clipboard!', 'success');
+            } catch(e) {
+                window.showToast('Failed to copy', 'error');
+            }
+            document.body.removeChild(ta);
+        };
+
+        window.userMgrState = {
+            tab: 'all',
+            search: '',
+            classFilter: 'all',
+            revealed: {}
+        };
+
+        window.toggleUserPassReveal = function(key) {
+            window.userMgrState.revealed[key] = !window.userMgrState.revealed[key];
+            const el = document.getElementById('pass_text_' + key);
+            const icon = document.getElementById('pass_icon_' + key);
+            if (el && icon) {
+                const pass = el.getAttribute('data-pass');
+                if (window.userMgrState.revealed[key]) {
+                    el.innerText = pass;
+                    el.className = 'px-2.5 py-1 rounded-lg border font-bold bg-amber-50 text-amber-900 border-amber-300';
+                    icon.className = 'fas fa-eye-slash text-amber-600';
+                } else {
+                    el.innerText = '••••••••';
+                    el.className = 'px-2.5 py-1 rounded-lg border font-bold bg-slate-100 text-slate-600 border-slate-200';
+                    icon.className = 'fas fa-eye text-slate-400';
+                }
+            }
+        };
+
+        window.switchUserManagerTab = function(tab) {
+            window.userMgrState.tab = tab;
+            window.renderApp();
+        };
+
+        window.refreshUserManagerTable = function() {
+            const tbody = document.getElementById('userManagerTableBody');
+            if (tbody) {
+                tbody.innerHTML = window.renderUserManagerRows();
+            }
+            const countBadge = document.getElementById('userManagerCountDisplay');
+            if (countBadge) {
+                const count = window.getUserManagerFilteredCount();
+                countBadge.innerText = count + ' Users';
+            }
+            const clearBtn = document.getElementById('userMgrSearchClearBtn');
+            if (clearBtn) {
+                if (window.userMgrState.search) clearBtn.classList.remove('hidden');
+                else clearBtn.classList.add('hidden');
+            }
+        };
+
+        window.getUserManagerData = function() {
+            const staffList = (db && db.settings && db.settings.staffAccounts) || [];
+            const teacherList = (db && db.teachers) || [];
+            const studentList = (db && db.students) || [];
+
+            const staffItems = staffList.map(s => ({
+                uniqueKey: 'staff_' + s.id,
+                type: 'staff',
+                id: s.id,
+                name: s.name,
+                username: s.username || s.id,
+                role: s.role,
+                category: s.category || s.role.toUpperCase(),
+                password: s.password || '',
+                className: '',
+                phone: '',
+                isCustom: !['admin', 'admin1', 'teacher', 'mentor1', 'mentor2', 'leader'].includes(s.id),
+                avatarIcon: s.role === 'admin' ? 'fa-user-shield text-purple-600 bg-purple-50' : (s.role === 'admin1' ? 'fa-user-tie text-blue-600 bg-blue-50' : 'fa-chalkboard-teacher text-emerald-600 bg-emerald-50')
+            }));
+
+            const teacherItems = teacherList.map(t => ({
+                uniqueKey: 'teacher_' + t.id,
+                type: 'teacher',
+                id: t.id,
+                name: t.name,
+                username: t.teacherCode || t.phone || t.id,
+                allUsernames: [t.id, t.phone, t.teacherCode, t.shortName].filter(Boolean).join(', '),
+                role: 'teacher',
+                category: 'Faculty / Teacher',
+                password: t.password || t.phone || '123456',
+                className: '',
+                subjects: t.subjects,
+                phone: t.phone,
+                photo: t.photo,
+                avatarIcon: 'fa-chalkboard-teacher text-teal-600 bg-teal-50'
+            }));
+
+            const studentItems = studentList.map(s => ({
+                uniqueKey: 'student_' + s.admNo,
+                type: 'student',
+                id: s.admNo,
+                admNo: s.admNo,
+                name: s.name,
+                username: s.admNo,
+                role: 'parent',
+                category: 'Student / Parent',
+                password: s.password || 'pass',
+                className: s.class,
+                phone: s.phone,
+                status: s.status,
+                photo: s.photo,
+                avatarIcon: 'fa-user-graduate text-indigo-600 bg-indigo-50'
+            }));
+
+            return { staffItems, teacherItems, studentItems };
+        };
+
+        window.getUserManagerFilteredItems = function() {
+            const { staffItems, teacherItems, studentItems } = window.getUserManagerData();
+            let list = [];
+            const tab = window.userMgrState.tab;
+
+            if (tab === 'staff') list = staffItems;
+            else if (tab === 'teachers') list = teacherItems;
+            else if (tab === 'students') list = studentItems;
+            else list = [...staffItems, ...teacherItems, ...studentItems];
+
+            if (window.userMgrState.classFilter && window.userMgrState.classFilter !== 'all') {
+                list = list.filter(item => item.type !== 'student' || item.className === window.userMgrState.classFilter);
+            }
+
+            if (window.userMgrState.search && window.userMgrState.search.trim()) {
+                const q = window.userMgrState.search.trim().toLowerCase();
+                list = list.filter(item => 
+                    (item.name && item.name.toLowerCase().includes(q)) ||
+                    (item.username && String(item.username).toLowerCase().includes(q)) ||
+                    (item.id && String(item.id).toLowerCase().includes(q)) ||
+                    (item.category && item.category.toLowerCase().includes(q)) ||
+                    (item.className && item.className.toLowerCase().includes(q)) ||
+                    (item.allUsernames && item.allUsernames.toLowerCase().includes(q)) ||
+                    (item.phone && String(item.phone).includes(q))
+                );
+            }
+
+            return list;
+        };
+
+        window.getUserManagerFilteredCount = function() {
+            return window.getUserManagerFilteredItems().length;
+        };
+
+        window.renderUserManagerRows = function() {
+            const list = window.getUserManagerFilteredItems();
+            if (list.length === 0) {
+                return `<tr><td colspan="5" class="py-12 text-center text-slate-400 font-bold bg-white"><i class="fas fa-search text-3xl mb-2 text-slate-300 block"></i> No users found matching your search.</td></tr>`;
+            }
+
+            return list.map(item => {
+                const isRev = !!window.userMgrState.revealed[item.uniqueKey];
+                let roleBadgeHtml = '';
+                if (item.role === 'admin') {
+                    roleBadgeHtml = `<span class="bg-purple-100 text-purple-800 border border-purple-200 px-2.5 py-0.5 rounded-lg text-[11px] font-black tracking-wide">ADMIN</span>`;
+                } else if (item.role === 'admin1') {
+                    roleBadgeHtml = `<span class="bg-blue-100 text-blue-800 border border-blue-200 px-2.5 py-0.5 rounded-lg text-[11px] font-black tracking-wide">PRINCIPAL</span>`;
+                } else if (item.role === 'mentor') {
+                    roleBadgeHtml = `<span class="bg-emerald-100 text-emerald-800 border border-emerald-200 px-2.5 py-0.5 rounded-lg text-[11px] font-black tracking-wide">${item.category || 'MENTOR'}</span>`;
+                } else if (item.role === 'leader') {
+                    roleBadgeHtml = `<span class="bg-amber-100 text-amber-800 border border-amber-200 px-2.5 py-0.5 rounded-lg text-[11px] font-black tracking-wide">LEADER</span>`;
+                } else if (item.role === 'teacher') {
+                    roleBadgeHtml = `<span class="bg-teal-100 text-teal-800 border border-teal-200 px-2.5 py-0.5 rounded-lg text-[11px] font-black tracking-wide">FACULTY</span>`;
+                } else {
+                    roleBadgeHtml = `<span class="bg-indigo-100 text-indigo-800 border border-indigo-200 px-2.5 py-0.5 rounded-lg text-[11px] font-black tracking-wide">STUDENT</span>`;
+                }
+
+                let subInfo = '';
+                if (item.type === 'student') {
+                    subInfo = `<span class="text-slate-500 font-bold">Class:</span> <span class="text-indigo-900 font-black">${item.className}</span> ${item.status === 'discontinued' ? '<span class="text-rose-600 font-bold ml-1">(Discontinued)</span>' : ''}`;
+                } else if (item.type === 'teacher') {
+                    subInfo = `<span class="text-teal-700 font-bold">${item.subjects || 'Faculty'}</span> ${item.phone ? '• <a href="tel:'+item.phone+'" class="text-slate-500 hover:text-slate-700 underline font-mono">'+item.phone+'</a>' : ''}`;
+                } else {
+                    subInfo = `<span class="text-slate-500 font-medium">${item.category || 'Staff Account'}</span> ${item.isCustom ? '<span class="text-emerald-700 font-bold bg-emerald-50 px-1.5 py-0.5 rounded text-[10px] border border-emerald-200 ml-1">Custom</span>' : ''}`;
+                }
+
+                return `
+                    <tr class="hover:bg-slate-50/80 transition">
+                        <td class="p-3.5 sm:p-4">
+                            <div class="flex items-center gap-3">
+                                ${item.photo ? `
+                                    <div class="w-10 h-10 rounded-xl overflow-hidden border border-slate-200 shadow-sm flex-shrink-0">
+                                        <img src="${item.photo}" class="w-full h-full object-cover">
+                                    </div>
+                                ` : `
+                                    <div class="w-10 h-10 rounded-xl flex items-center justify-center font-black text-sm border shadow-sm flex-shrink-0 ${item.avatarIcon}">
+                                        ${item.name ? item.name.charAt(0).toUpperCase() : 'U'}
+                                    </div>
+                                `}
+                                <div class="min-w-0">
+                                    <div class="font-extrabold text-slate-800 truncate">${item.name}</div>
+                                    <div class="text-[11px] text-slate-400 mt-0.5 truncate">${subInfo}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="p-3.5 sm:p-4">
+                            ${roleBadgeHtml}
+                        </td>
+                        <td class="p-3.5 sm:p-4">
+                            <div class="flex items-center gap-1.5">
+                                <code class="font-mono font-bold text-xs bg-slate-100 text-slate-800 px-2.5 py-1 rounded-lg border border-slate-200 shadow-inner">${item.username}</code>
+                                <button type="button" onclick="window.copyTextToClipboard('${item.username}', 'Username copied!')" class="text-slate-400 hover:text-slate-800 p-1.5 rounded-lg hover:bg-slate-100 transition cursor-pointer" title="Copy Login ID">
+                                    <i class="fas fa-copy text-xs"></i>
+                                </button>
+                            </div>
+                            ${item.allUsernames && item.allUsernames !== item.username ? `
+                                <div class="text-[10px] text-slate-400 mt-0.5" title="Alternate login IDs: ${item.allUsernames}">Alt: ${item.allUsernames}</div>
+                            ` : ''}
+                        </td>
+                        <td class="p-3.5 sm:p-4">
+                            <div class="flex items-center gap-1.5 font-mono text-xs">
+                                <span id="pass_text_${item.uniqueKey}" data-pass="${item.password}" class="px-2.5 py-1 rounded-lg border font-bold ${isRev ? 'bg-amber-50 text-amber-900 border-amber-300' : 'bg-slate-100 text-slate-600 border-slate-200'}">
+                                    ${isRev ? item.password : '••••••••'}
+                                </span>
+                                <button type="button" onclick="window.toggleUserPassReveal('${item.uniqueKey}')" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-800 hover:bg-slate-100 transition cursor-pointer" title="Show / Hide Password">
+                                    <i id="pass_icon_${item.uniqueKey}" class="fas ${isRev ? 'fa-eye-slash text-amber-600' : 'fa-eye text-slate-400'}"></i>
+                                </button>
+                                <button type="button" onclick="window.copyTextToClipboard('${item.password}', 'Password copied!')" class="p-1.5 rounded-lg text-slate-400 hover:text-emerald-700 hover:bg-slate-100 transition cursor-pointer" title="Copy Password">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                            </div>
+                        </td>
+                        <td class="p-3.5 sm:p-4">
+                            <div class="flex items-center gap-1.5 flex-wrap">
+                                <button type="button" onclick="window.openEditPasswordModal('${item.type}', '${item.id}')" class="bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm transition flex items-center gap-1.5 cursor-pointer">
+                                    <i class="fas fa-key text-[10px]"></i> Change
+                                </button>
+                                <button type="button" onclick="window.resetUserPasswordToDefault('${item.type}', '${item.id}')" class="bg-slate-100 hover:bg-amber-50 text-slate-600 hover:text-amber-800 border border-slate-200 px-2 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer" title="Reset to Default Password">
+                                    <i class="fas fa-undo-alt text-xs"></i>
+                                </button>
+                                ${item.isCustom ? `
+                                    <button type="button" onclick="window.deleteCustomStaffAccount('${item.id}')" class="bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 px-2 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer" title="Delete Account">
+                                        <i class="fas fa-trash-alt text-xs"></i>
+                                    </button>
+                                ` : ''}
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        };
+
+        window.renderUserManager = function() {
+            if (!window.currentUser || window.currentUser.role !== 'admin') {
+                return `<div class="p-8 text-center text-rose-600 font-bold bg-white rounded-2xl border">Access restricted to System Administrator.</div>`;
+            }
+
+            const { staffItems, teacherItems, studentItems } = window.getUserManagerData();
+            const totalAccounts = staffItems.length + teacherItems.length + studentItems.length;
+            const currentTab = window.userMgrState.tab || 'all';
+
+            const classes = window.STANDARD_CLASSES || [];
+
+            return `
+                <div class="space-y-5 pb-12 max-w-7xl mx-auto">
+                    <!-- Top Page Header -->
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                        <div>
+                            <h2 class="text-2xl font-black text-slate-800 flex items-center gap-2.5">
+                                <i class="fas fa-user-shield text-emerald-600"></i>
+                                <span>Users & Password Management</span>
+                            </h2>
+                            <p class="text-xs text-slate-500 mt-1 leading-relaxed">
+                                അഡ്മിൻ, അധ്യാപകർ, വിദ്യാർത്ഥികൾ എന്നിവരുടെ ലോഗിൻ വിവരങ്ങളും പാസ്‌വേഡുകളും പരിശോധിക്കാനും നിയന്ത്രിക്കാനും ഇവിടെ സാധിക്കും.
+                            </p>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-2 w-full md:w-auto">
+                            <button type="button" onclick="window.exportCredentialsExcel()" class="bg-gradient-to-r from-teal-700 to-emerald-800 hover:from-teal-800 text-white font-bold px-4 py-2.5 rounded-xl text-xs sm:text-sm shadow transition flex items-center gap-2 cursor-pointer active:scale-95">
+                                <i class="fas fa-file-excel text-emerald-300"></i>
+                                <span>Export Credentials (.xlsx)</span>
+                            </button>
+                            <button type="button" onclick="window.openAddStaffModal()" class="bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 text-white font-bold px-4 py-2.5 rounded-xl text-xs sm:text-sm shadow transition flex items-center gap-2 cursor-pointer active:scale-95">
+                                <i class="fas fa-user-plus text-amber-300"></i>
+                                <span>+ Add Staff Account</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Statistics Cards -->
+                    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+                        <div onclick="window.switchUserManagerTab('all')" class="bg-white p-4 rounded-2xl border ${currentTab === 'all' ? 'border-emerald-500 ring-2 ring-emerald-500/20' : 'border-slate-200'} shadow-sm cursor-pointer hover:shadow transition">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-bold text-slate-500">Total Accounts</span>
+                                <div class="w-8 h-8 rounded-xl bg-slate-100 flex items-center justify-center text-slate-700 font-bold text-sm"><i class="fas fa-users"></i></div>
+                            </div>
+                            <div class="text-2xl font-black text-slate-800 mt-2">${totalAccounts}</div>
+                            <p class="text-[10px] text-slate-400 mt-0.5">All active portals</p>
+                        </div>
+
+                        <div onclick="window.switchUserManagerTab('staff')" class="bg-white p-4 rounded-2xl border ${currentTab === 'staff' ? 'border-purple-500 ring-2 ring-purple-500/20' : 'border-slate-200'} shadow-sm cursor-pointer hover:shadow transition">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-bold text-purple-700">Staff & Mentors</span>
+                                <div class="w-8 h-8 rounded-xl bg-purple-50 flex items-center justify-center text-purple-700 font-bold text-sm"><i class="fas fa-user-shield"></i></div>
+                            </div>
+                            <div class="text-2xl font-black text-purple-900 mt-2">${staffItems.length}</div>
+                            <p class="text-[10px] text-slate-400 mt-0.5">Admin, Principal & Mentors</p>
+                        </div>
+
+                        <div onclick="window.switchUserManagerTab('teachers')" class="bg-white p-4 rounded-2xl border ${currentTab === 'teachers' ? 'border-teal-500 ring-2 ring-teal-500/20' : 'border-slate-200'} shadow-sm cursor-pointer hover:shadow transition">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-bold text-teal-700">Faculty / Teachers</span>
+                                <div class="w-8 h-8 rounded-xl bg-teal-50 flex items-center justify-center text-teal-700 font-bold text-sm"><i class="fas fa-chalkboard-teacher"></i></div>
+                            </div>
+                            <div class="text-2xl font-black text-teal-900 mt-2">${teacherItems.length}</div>
+                            <p class="text-[10px] text-slate-400 mt-0.5">Academic teachers</p>
+                        </div>
+
+                        <div onclick="window.switchUserManagerTab('students')" class="bg-white p-4 rounded-2xl border ${currentTab === 'students' ? 'border-indigo-500 ring-2 ring-indigo-500/20' : 'border-slate-200'} shadow-sm cursor-pointer hover:shadow transition">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-bold text-indigo-700">Students / Parents</span>
+                                <div class="w-8 h-8 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-700 font-bold text-sm"><i class="fas fa-user-graduate"></i></div>
+                            </div>
+                            <div class="text-2xl font-black text-indigo-900 mt-2">${studentItems.length}</div>
+                            <p class="text-[10px] text-slate-400 mt-0.5">Admission portals</p>
+                        </div>
+                    </div>
+
+                    <!-- Category Tabs & Search Bar -->
+                    <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-3.5">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-slate-100 pb-3">
+                            <!-- Tabs -->
+                            <div class="flex flex-wrap items-center gap-1.5 sm:gap-2">
+                                <button type="button" onclick="window.switchUserManagerTab('all')" class="px-3.5 py-1.5 rounded-xl text-xs font-black transition cursor-pointer flex items-center gap-1.5 ${currentTab === 'all' ? 'bg-[#022c22] text-white shadow-md' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}">
+                                    <i class="fas fa-list"></i> All Users
+                                    <span class="text-[10px] px-1.5 py-0.2 rounded-full font-bold ${currentTab === 'all' ? 'bg-emerald-600 text-white' : 'bg-slate-200 text-slate-700'}">${totalAccounts}</span>
+                                </button>
+                                <button type="button" onclick="window.switchUserManagerTab('staff')" class="px-3.5 py-1.5 rounded-xl text-xs font-black transition cursor-pointer flex items-center gap-1.5 ${currentTab === 'staff' ? 'bg-purple-900 text-white shadow-md' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}">
+                                    <i class="fas fa-user-shield"></i> Staff & Mentors
+                                    <span class="text-[10px] px-1.5 py-0.2 rounded-full font-bold ${currentTab === 'staff' ? 'bg-purple-600 text-white' : 'bg-slate-200 text-slate-700'}">${staffItems.length}</span>
+                                </button>
+                                <button type="button" onclick="window.switchUserManagerTab('teachers')" class="px-3.5 py-1.5 rounded-xl text-xs font-black transition cursor-pointer flex items-center gap-1.5 ${currentTab === 'teachers' ? 'bg-teal-900 text-white shadow-md' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}">
+                                    <i class="fas fa-chalkboard-teacher"></i> Faculty
+                                    <span class="text-[10px] px-1.5 py-0.2 rounded-full font-bold ${currentTab === 'teachers' ? 'bg-teal-600 text-white' : 'bg-slate-200 text-slate-700'}">${teacherItems.length}</span>
+                                </button>
+                                <button type="button" onclick="window.switchUserManagerTab('students')" class="px-3.5 py-1.5 rounded-xl text-xs font-black transition cursor-pointer flex items-center gap-1.5 ${currentTab === 'students' ? 'bg-indigo-900 text-white shadow-md' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}">
+                                    <i class="fas fa-user-graduate"></i> Students
+                                    <span class="text-[10px] px-1.5 py-0.2 rounded-full font-bold ${currentTab === 'students' ? 'bg-indigo-600 text-white' : 'bg-slate-200 text-slate-700'}">${studentItems.length}</span>
+                                </button>
+                            </div>
+
+                            <span id="userManagerCountDisplay" class="text-xs font-bold text-slate-500 self-center">
+                                ${window.getUserManagerFilteredCount()} Users
+                            </span>
+                        </div>
+
+                        <!-- Live Filters & Search Input -->
+                        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
+                            <div class="relative flex-1">
+                                <i class="fas fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                                <input type="text" id="userMgrSearchInput" value="${window.userMgrState.search || ''}" oninput="window.userMgrState.search = this.value; window.refreshUserManagerTable();" placeholder="Search by name, login ID, admission no, class, or role..." class="w-full pl-9 pr-8 py-2 rounded-xl border border-slate-200 text-xs sm:text-sm bg-white outline-none focus:ring-2 focus:ring-emerald-500 shadow-sm font-medium">
+                                <button type="button" onclick="document.getElementById('userMgrSearchInput').value=''; window.userMgrState.search=''; window.refreshUserManagerTable();" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-300 hover:text-slate-600 text-xs p-1 ${window.userMgrState.search ? '' : 'hidden'}" id="userMgrSearchClearBtn">&times;</button>
+                            </div>
+
+                            ${(currentTab === 'all' || currentTab === 'students') ? `
+                                <select id="userMgrClassFilter" onchange="window.userMgrState.classFilter = this.value; window.refreshUserManagerTable();" class="border border-slate-200 rounded-xl px-3 py-2 text-xs sm:text-sm bg-white font-bold text-slate-700 outline-none shadow-sm cursor-pointer">
+                                    <option value="all" ${window.userMgrState.classFilter === 'all' ? 'selected' : ''}>All Classes</option>
+                                    ${classes.map(c => `<option value="${c}" ${window.userMgrState.classFilter === c ? 'selected' : ''}>${c}</option>`).join('')}
+                                </select>
+                            ` : ''}
+                        </div>
+                    </div>
+
+                    <!-- Users Table -->
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-xs sm:text-sm whitespace-nowrap">
+                                <thead class="text-xs text-slate-600 uppercase bg-slate-100/80 sticky top-0 border-b border-slate-200 font-extrabold tracking-wider">
+                                    <tr>
+                                        <th class="p-3.5 sm:p-4">User & Name</th>
+                                        <th class="p-3.5 sm:p-4">Role / Category</th>
+                                        <th class="p-3.5 sm:p-4">Login Username / ID</th>
+                                        <th class="p-3.5 sm:p-4">Password</th>
+                                        <th class="p-3.5 sm:p-4">Actions (പാസ്‌വേഡ് മാറ്റുക)</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="userManagerTableBody" class="divide-y divide-slate-100">
+                                    ${window.renderUserManagerRows()}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            `;
+        };
+
+        window.openEditPasswordModal = function(type, id) {
+            let userObj = null;
+            let currentPass = '';
+            let loginId = '';
+            let roleName = '';
+            let name = '';
+            let avatarHtml = '';
+
+            if (type === 'staff') {
+                userObj = (db.settings.staffAccounts || []).find(s => s.id === id);
+                if (userObj) {
+                    currentPass = userObj.password || '';
+                    loginId = userObj.username || userObj.id;
+                    roleName = (userObj.category || userObj.role).toUpperCase();
+                    name = userObj.name;
+                    avatarHtml = `<i class="fas fa-user-shield text-xl text-purple-700"></i>`;
+                }
+            } else if (type === 'teacher') {
+                userObj = (db.teachers || []).find(t => t.id === id);
+                if (userObj) {
+                    currentPass = userObj.password || userObj.phone || '123456';
+                    loginId = userObj.teacherCode || userObj.phone || userObj.id;
+                    roleName = 'FACULTY';
+                    name = userObj.name;
+                    avatarHtml = userObj.photo ? `<img src="${userObj.photo}" class="w-full h-full object-cover">` : `<i class="fas fa-chalkboard-teacher text-xl text-teal-700"></i>`;
+                }
+            } else if (type === 'student') {
+                userObj = (db.students || []).find(s => String(s.admNo).trim() === String(id).trim());
+                if (userObj) {
+                    currentPass = userObj.password || 'pass';
+                    loginId = userObj.admNo;
+                    roleName = 'STUDENT / PARENT';
+                    name = userObj.name + ` (${userObj.class})`;
+                    avatarHtml = userObj.photo ? `<img src="${userObj.photo}" class="w-full h-full object-cover">` : `<i class="fas fa-user-graduate text-xl text-indigo-700"></i>`;
+                }
+            }
+
+            if (!userObj) {
+                window.showToast('User not found!', 'error');
+                return;
+            }
+
+            document.getElementById('editPassUserType').value = type;
+            document.getElementById('editPassUserId').value = id;
+            document.getElementById('editPassUserName').innerText = name;
+            document.getElementById('editPassUserRoleBadge').innerText = roleName;
+            document.getElementById('editPassUserLoginId').innerText = loginId;
+            document.getElementById('editPassCurrentVal').value = currentPass;
+            document.getElementById('editPassNewVal').value = currentPass;
+            document.getElementById('editPassUserAvatar').innerHTML = avatarHtml;
+
+            const modal = document.getElementById('editUserPasswordModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            setTimeout(() => document.getElementById('editPassNewVal').focus(), 100);
+        };
+
+        window.closeEditUserPasswordModal = function() {
+            const modal = document.getElementById('editUserPasswordModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        };
+
+        window.generateRandomPassword = function() {
+            const words = ['kkhm', 'star', 'smart', 'gold', 'safe', 'book', 'edu', 'campus'];
+            const randWord = words[Math.floor(Math.random() * words.length)];
+            const randNum = Math.floor(1000 + Math.random() * 9000);
+            document.getElementById('editPassNewVal').value = randWord + '@' + randNum;
+        };
+
+        window.saveUserPasswordChange = function(e) {
+            e.preventDefault();
+            const type = document.getElementById('editPassUserType').value;
+            const id = document.getElementById('editPassUserId').value;
+            const newPass = document.getElementById('editPassNewVal').value.trim();
+
+            if (!newPass) {
+                window.showToast('Password cannot be empty!', 'error');
+                return;
+            }
+
+            let updatedName = '';
+
+            if (type === 'staff') {
+                db.settings.staffAccounts = db.settings.staffAccounts || [];
+                const staff = db.settings.staffAccounts.find(s => s.id === id);
+                if (staff) {
+                    staff.password = newPass;
+                    updatedName = staff.name;
+                    if (window.currentUser && window.currentUser.id === id) {
+                        window.currentUser.password = newPass;
+                    }
+                }
+            } else if (type === 'teacher') {
+                const teacher = (db.teachers || []).find(t => t.id === id);
+                if (teacher) {
+                    teacher.password = newPass;
+                    updatedName = teacher.name;
+                }
+            } else if (type === 'student') {
+                const student = (db.students || []).find(s => String(s.admNo).trim() === String(id).trim());
+                if (student) {
+                    student.password = newPass;
+                    updatedName = student.name;
+                }
+            }
+
+            window.saveDB();
+            window.closeEditUserPasswordModal();
+            window.showToast(`Password updated for ${updatedName || 'user'}!`, 'success');
+            window.renderApp();
+        };
+
+        window.resetUserPasswordToDefault = function(type, id) {
+            let defaultPass = 'pass';
+            let name = '';
+
+            if (type === 'staff') {
+                const defaults = {
+                    'admin': 'admin',
+                    'admin1': 'admin1',
+                    'teacher': 'kkhm',
+                    'mentor1': 'mentor1',
+                    'mentor2': 'mentor2',
+                    'leader': 'leader'
+                };
+                defaultPass = defaults[id] || '123456';
+                const staff = (db.settings.staffAccounts || []).find(s => s.id === id);
+                if (staff) {
+                    name = staff.name;
+                    if (confirm(`Reset password for "${name}" to default (${defaultPass})?`)) {
+                        staff.password = defaultPass;
+                        window.saveDB();
+                        window.showToast(`Password reset to default for ${name}!`, 'success');
+                        window.renderApp();
+                    }
+                }
+            } else if (type === 'teacher') {
+                const teacher = (db.teachers || []).find(t => t.id === id);
+                if (teacher) {
+                    name = teacher.name;
+                    defaultPass = teacher.phone || '123456';
+                    if (confirm(`Reset password for Faculty "${name}" to default (${defaultPass})?`)) {
+                        teacher.password = defaultPass;
+                        window.saveDB();
+                        window.showToast(`Password reset for ${name}!`, 'success');
+                        window.renderApp();
+                    }
+                }
+            } else if (type === 'student') {
+                const student = (db.students || []).find(s => String(s.admNo).trim() === String(id).trim());
+                if (student) {
+                    name = student.name;
+                    defaultPass = 'pass';
+                    if (confirm(`Reset password for student "${name}" (Adm: ${student.admNo}) to default ('pass')?`)) {
+                        student.password = 'pass';
+                        window.saveDB();
+                        window.showToast(`Password reset to 'pass' for ${name}!`, 'success');
+                        window.renderApp();
+                    }
+                }
+            }
+        };
+
+        window.openAddStaffModal = function() {
+            document.getElementById('newStaffName').value = '';
+            document.getElementById('newStaffUsername').value = '';
+            document.getElementById('newStaffPassword').value = '';
+            const modal = document.getElementById('addStaffModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            setTimeout(() => document.getElementById('newStaffName').focus(), 100);
+        };
+
+        window.closeAddStaffModal = function() {
+            const modal = document.getElementById('addStaffModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        };
+
+        window.saveNewStaffAccount = function(e) {
+            e.preventDefault();
+            const name = document.getElementById('newStaffName').value.trim();
+            const username = document.getElementById('newStaffUsername').value.trim().toLowerCase();
+            const role = document.getElementById('newStaffRole').value;
+            const password = document.getElementById('newStaffPassword').value.trim();
+
+            if (!name || !username || !password) {
+                window.showToast('Please fill all required fields!', 'error');
+                return;
+            }
+
+            db.settings.staffAccounts = db.settings.staffAccounts || [];
+            if (db.settings.staffAccounts.some(s => (s.username && s.username.toLowerCase() === username) || s.id.toLowerCase() === username)) {
+                window.showToast('Username already exists! Please choose another.', 'error');
+                return;
+            }
+
+            const roleLabels = {
+                admin: 'Administrator',
+                admin1: 'Principal',
+                mentor: 'Faculty Mentor',
+                leader: 'College Leader'
+            };
+
+            const newAcc = {
+                id: 'staff_' + Date.now(),
+                username: username,
+                name: name,
+                role: role,
+                category: roleLabels[role] || 'Staff',
+                password: password,
+                isCustom: true
+            };
+
+            db.settings.staffAccounts.push(newAcc);
+            window.saveDB();
+            window.closeAddStaffModal();
+            window.showToast(`Staff account created for ${name}!`, 'success');
+            window.renderApp();
+        };
+
+        window.deleteCustomStaffAccount = function(id) {
+            const staff = (db.settings.staffAccounts || []).find(s => s.id === id);
+            if (!staff) return;
+            if (confirm(`Are you sure you want to delete staff account "${staff.name}" (${staff.username})?`)) {
+                db.settings.staffAccounts = db.settings.staffAccounts.filter(s => s.id !== id);
+                window.saveDB();
+                window.showToast('Account deleted successfully!', 'success');
+                window.renderApp();
+            }
+        };
+
+        window.exportCredentialsExcel = function() {
+            try {
+                if (typeof XLSX === 'undefined') {
+                    window.showToast('Excel library loading... please try again.', 'error');
+                    return;
+                }
+                const wb = XLSX.utils.book_new();
+                const rows = [];
+                rows.push(['Sl No', 'Category / Role', 'Full Name', 'Class / Department', 'Login ID / Username', 'Current Password', 'Phone Number']);
+
+                let sl = 1;
+                // Staff
+                (db.settings.staffAccounts || []).forEach(s => {
+                    rows.push([
+                        sl++,
+                        s.category || (s.role ? s.role.toUpperCase() : 'STAFF'),
+                        s.name,
+                        'Staff & Administration',
+                        s.username || s.id,
+                        s.password || '',
+                        ''
+                    ]);
+                });
+
+                // Teachers
+                (db.teachers || []).forEach(t => {
+                    rows.push([
+                        sl++,
+                        'Faculty / Teacher',
+                        t.name,
+                        t.subjects || 'Academics',
+                        t.teacherCode || t.phone || t.id,
+                        t.password || t.phone || '123456',
+                        t.phone || ''
+                    ]);
+                });
+
+                // Students
+                (db.students || []).forEach(s => {
+                    rows.push([
+                        sl++,
+                        'Student / Parent',
+                        s.name,
+                        s.class,
+                        s.admNo,
+                        s.password || 'pass',
+                        s.phone || ''
+                    ]);
+                });
+
+                const ws = XLSX.utils.aoa_to_sheet(rows);
+                XLSX.utils.book_append_sheet(wb, ws, "KKHM_Credentials");
+                window._xlsxDownload(wb, "KKHM_ERP_User_Credentials_" + new Date().toISOString().split('T')[0] + ".xlsx");
+                window.showToast("Credentials Excel Exported!", "success");
+            } catch(e) {
+                console.error("Export error:", e);
+                window.showToast("Failed to export credentials Excel", "error");
+            }
         };
 
         // Start App
