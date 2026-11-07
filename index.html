@@ -7,7 +7,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="https://placehold.co/192x192/064e3b/ffffff?text=KKHM">
-    <link rel="manifest" href="/manifest.json">
+    <link rel="manifest" href="manifest.json">
     <title>KKHM Islamic & Arts College ERP</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -77,7 +77,7 @@
         // Register Service Worker for PWA with automatic fresh update handling
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', function() {
-                navigator.serviceWorker.register('/sw.js', { scope: '/' })
+                navigator.serviceWorker.register('./sw.js', { scope: './' })
                     .then(function(registration) {
                         console.log('KKHM SW registered:', registration.scope);
                         // Trigger immediate check for new versions on load
@@ -108,7 +108,38 @@
     <div id="dbLoader" class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#022c22] text-white transition-opacity duration-500">
         <i class="fas fa-circle-notch fa-spin text-4xl text-emerald-400 mb-3"></i>
         <p class="text-sm text-emerald-200 mt-2 font-bold animate-pulse px-4 text-center">Connecting to Secure Cloud Database...</p>
+        <button id="dbLoaderSkipBtn" onclick="window.dismissLoaderNow && window.dismissLoaderNow()" class="mt-5 text-xs text-emerald-300/80 hover:text-emerald-100 underline transition cursor-pointer">Click here if taking too long to connect</button>
     </div>
+    <script>
+        // Automatic failsafe timer: Ensure database loader NEVER hangs indefinitely
+        (function() {
+            var failsafeTimer = setTimeout(function() {
+                var l = document.getElementById('dbLoader');
+                if (l && !l.classList.contains('hidden')) {
+                    console.warn('KKHM ERP: Failsafe timer reached. Revealing login screen.');
+                    l.classList.add('opacity-0', 'pointer-events-none');
+                    setTimeout(function() {
+                        l.classList.add('hidden');
+                        var login = document.getElementById('loginScreen');
+                        if (login) login.classList.remove('opacity-0', 'pointer-events-none');
+                    }, 500);
+                }
+            }, 5000);
+            window.__kkhmClearFailsafe = function() { clearTimeout(failsafeTimer); };
+            window.dismissLoaderNow = function() {
+                clearTimeout(failsafeTimer);
+                var l = document.getElementById('dbLoader');
+                if (l) {
+                    l.classList.add('opacity-0', 'pointer-events-none');
+                    setTimeout(function() {
+                        l.classList.add('hidden');
+                        var login = document.getElementById('loginScreen');
+                        if (login) login.classList.remove('opacity-0', 'pointer-events-none');
+                    }, 400);
+                }
+            };
+        })();
+    </script>
 
     <div id="uploadOverlay" class="fixed inset-0 bg-slate-900/80 z-[110] hidden items-center justify-center flex-col backdrop-blur-sm transition-opacity">
         <i class="fas fa-cloud-upload-alt text-6xl text-emerald-400 mb-4 animate-bounce"></i>
@@ -1326,7 +1357,7 @@
     <!-- FULL JAVASCRIPT LOGIC -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, initializeFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // FIREBASE SETUP
         const firebaseConfig = {
@@ -1339,7 +1370,10 @@
             measurementId: "G-XX3ZS2EM2C"
         };
         const app = initializeApp(firebaseConfig);
-        const firestore = getFirestore(app);
+        // Using experimentalForceLongPolling to prevent Chrome WebChannel hanging
+        const firestore = initializeFirestore(app, {
+            experimentalForceLongPolling: true
+        });
         const dbRef = doc(firestore, "erp_system", "database");
 
         const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzCMjndPSmWknBig3XkP9aSkm5hRxpMqjgterH___SlQ285m5ok8POEn62b_ma4d9bj/exec";
@@ -1352,16 +1386,46 @@
 
         // 1. SYSTEM INITIALIZATION & LOGIN
         async function loadDatabase() {
+            // 1. Instant Cache Initialization: load local cache if exists
             try {
-                const docSnap = await getDoc(dbRef);
-                if (docSnap.exists()) {
+                const cachedData = localStorage.getItem('kkhm_erp_cached_database');
+                if (cachedData) {
+                    db = JSON.parse(cachedData);
+                    console.log('KKHM ERP: Instant startup from local database cache');
+                }
+            } catch(e) {}
+
+            try {
+                // 2. Fetch from Cloud Firestore with a 5-second race timeout
+                const fetchPromise = getDoc(dbRef);
+                const timeoutPromise = new Promise((_, reject) => 
+                    setTimeout(() => reject(new Error('Cloud connection timeout')), 5000)
+                );
+                const docSnap = await Promise.race([fetchPromise, timeoutPromise]);
+
+                if (docSnap && docSnap.exists()) {
                     db = docSnap.data();
-                    if(!db.exams) db.exams = []; if(!db.settings) db.settings = DEFAULT_SETTINGS; if(!db.students) db.students = []; if(!db.teachers) db.teachers = [];
-                    if(!db.diary) db.diary = []; if(!db.fines) db.fines = [];
-                } else { 
+                    try {
+                        localStorage.setItem('kkhm_erp_cached_database', JSON.stringify(db));
+                    } catch(e) {}
+                } else if (!db) { 
                     db = { settings: DEFAULT_SETTINGS, notices: [], exams: [], students: [], teachers: [], diary: [], fines: [] }; 
                     await setDoc(dbRef, db); 
                 }
+            } catch (err) {
+                console.warn('KKHM ERP: Cloud fetch error or timeout, utilizing local/default db:', err);
+                if (!db) {
+                    try {
+                        const cachedFallback = localStorage.getItem('kkhm_erp_cached_database');
+                        if (cachedFallback) db = JSON.parse(cachedFallback);
+                    } catch(e) {}
+                }
+                if (!db) {
+                    db = { settings: DEFAULT_SETTINGS, notices: [], exams: [], students: [], teachers: [], diary: [], fines: [] };
+                }
+            }
+
+            if (window.__kkhmClearFailsafe) window.__kkhmClearFailsafe();
                 
                 // Ensure Academic Year & Class Fees exist
                 if(!db.dutySchedule) {
@@ -1540,7 +1604,12 @@
             }
         };
 
-        window.saveDB = function() { setDoc(dbRef, db).catch(e => window.showToast("Failed to sync with Cloud!", "error")); }
+        window.saveDB = function() {
+            try {
+                localStorage.setItem('kkhm_erp_cached_database', JSON.stringify(db));
+            } catch(e) {}
+            setDoc(dbRef, db).catch(e => window.showToast("Failed to sync with Cloud!", "error"));
+        }
         window.showToast = function(msg, type = 'success') {
             const toast = document.getElementById('toast'); document.getElementById('toastMsg').innerText = msg;
             toast.className = `fixed bottom-6 right-6 transform translate-y-0 opacity-100 transition-all duration-300 z-50 flex items-center gap-3 px-6 py-4 rounded-xl shadow-2xl font-bold text-sm text-white ${type === 'error' ? 'bg-rose-600' : 'bg-emerald-600'}`;
