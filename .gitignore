@@ -1,3 +1,17 @@
+# System files
+.DS_Store
+Thumbs.db
+*.log
+
+# Editor directories
+.vscode/
+.idea/
+.netlify/
+
+# Local backups
+*.backup.*
+kkhm_database_backup_*.json
+
 # Student / database exports must never be committed (personal data)
 *.csv
 kkhm_db_seed.json
