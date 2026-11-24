@@ -1,14 +1,12 @@
-const CACHE_NAME = 'kkhm-erp-cache-v31';
+const CACHE_NAME = 'kkhm-erp-cache-v32';
 const urlsToCache = [
   './',
   './index.html',
-  './pay.html',
   './manifest.json',
   './bg.jpg',
   './logo.png',
-  './kkhm_db_seed.json',
-  './icon-192.png',
-  './icon-512.png'
+  './android/launchericon-192x192.png',
+  './android/launchericon-512x512.png'
 ];
 
 // 1. Install Event: Cache essential shell files safely

@@ -1645,32 +1645,22 @@
                 }
             } catch(e) {}
 
-            // Priority 2: Instant startup from bundled static seed file (< 30ms)
-            if (!db || !db.students || db.students.length === 0) {
-                try {
-                    const seedRes = await fetch('kkhm_db_seed.json');
-                    if (seedRes.ok) {
-                        const seedData = await seedRes.json();
-                        if (seedData && seedData.students && seedData.students.length > 0) {
-                            db = seedData;
-                            normalizeDB();
-                            initBranding();
-                            checkAutoLogin();
-                        }
-                    }
-                } catch(e) {}
-            }
+            // (The bundled kkhm_db_seed.json fallback was removed: it published personal
+            //  data in the public repo and could overwrite live cloud data with stale copies.)
 
-            // Priority 3: Non-blocking background sync with live Cloud Firestore
+            // Priority 2: Non-blocking background sync with live Cloud Firestore
             try {
                 let cloudData = null;
                 try {
                     cloudData = await fetchFromFirestoreRest();
+                    window.cloudSynced = true;
                 } catch(restErr) {
                     const docSnap = await getDoc(dbRef);
                     if (docSnap && docSnap.exists()) {
                         cloudData = docSnap.data();
                     }
+                    // A successful read (even of a not-yet-created document) means we know the cloud state.
+                    window.cloudSynced = true;
                 }
 
                 if (cloudData && cloudData.students && cloudData.students.length > 0) {
@@ -1693,16 +1683,46 @@
             if (window.initPWA) window.initPWA();
         }
 
+        // Firestore rejects any single document larger than 1 MiB (1,048,576 bytes).
+        const FIRESTORE_DOC_LIMIT = 1048576;
+        const FIRESTORE_DOC_WARN = 900000;
+        window.cloudSynced = false;
+
         window.saveDB = function() {
+            let json = '';
             try {
-                localStorage.setItem('kkhm_erp_cached_database', JSON.stringify(db));
+                json = JSON.stringify(db);
+                localStorage.setItem('kkhm_erp_cached_database', json);
             } catch(e) {}
+
+            // Never push to the cloud before the live copy has been loaded in this session:
+            // otherwise an old cached copy would overwrite everyone else's newer changes.
+            if (!window.cloudSynced) {
+                window.showToast("Saved on this device only. Cloud not loaded yet - check internet and reload before editing.", "error");
+                return;
+            }
+
+            const size = new Blob([json]).size;
+            if (size >= FIRESTORE_DOC_LIMIT) {
+                window.showToast(`Database is full (${Math.round(size/1024)} KB of 1024 KB). Remove large photos/images in Settings or Teachers, then try again.`, "error");
+                return;
+            }
+            if (size >= FIRESTORE_DOC_WARN) {
+                window.showToast(`Warning: database is ${Math.round(size/1024)} KB of the 1024 KB limit. Reduce photo sizes soon.`, "info");
+            }
+
             if (typeof setDoc !== 'undefined' && dbRef) {
                 setDoc(dbRef, db).catch(e => {
                     console.error("Firestore sync error:", e);
                     window.showToast("Failed to sync with Cloud!", "error");
                 });
             }
+        };
+
+        // Escape user-entered text before putting it into HTML (prevents script injection / XSS)
+        window.escHTML = function(v) {
+            if (v === undefined || v === null) return '';
+            return String(v).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
         };
 
         window.showToast = function(msg, type = 'success') {
@@ -3359,8 +3379,8 @@
                                                         <span class="text-slate-500 font-mono text-[10px] bg-slate-50 px-1.5 py-0.5 rounded border border-slate-100 font-semibold">${r.date}</span>
                                                         <span class="text-[10px] text-slate-400">by ${r.addedBy || 'Admin'}</span>
                                                     </div>
-                                                    <p class="font-bold text-slate-800 leading-snug break-words">${r.note}</p>
-                                                    ${r.remark ? `<p class="text-xs text-slate-500 mt-1 italic break-words">Remark: ${r.remark}</p>` : ''}
+                                                    <p class="font-bold text-slate-800 leading-snug break-words">${window.escHTML(r.note)}</p>
+                                                    ${r.remark ? `<p class="text-xs text-slate-500 mt-1 italic break-words">Remark: ${window.escHTML(r.remark)}</p>` : ''}
                                                 </div>
                                                 <button type="button" onclick="window.deleteRecord('${std.admNo}', 'discipline', '${r.date}', '${encodeURIComponent(r.note || '')}')" title="Delete Record" class="text-rose-400 hover:text-rose-600 hover:bg-rose-50 p-1.5 rounded-lg transition flex-shrink-0 cursor-pointer">
                                                     <i class="fas fa-trash-alt text-xs"></i>
@@ -3388,8 +3408,8 @@
                                                         <span class="text-slate-500 font-mono text-[10px] bg-slate-50 px-1.5 py-0.5 rounded border border-slate-100 font-semibold">${r.date}</span>
                                                         <span class="text-[10px] text-emerald-600 font-bold bg-emerald-50 px-1.5 py-0.5 rounded">by ${r.addedBy || 'Admin'}</span>
                                                     </div>
-                                                    <p class="font-bold text-slate-800 leading-snug break-words">${r.note}</p>
-                                                    ${r.remark ? `<p class="text-xs text-slate-500 mt-1 italic break-words">Remark: ${r.remark}</p>` : ''}
+                                                    <p class="font-bold text-slate-800 leading-snug break-words">${window.escHTML(r.note)}</p>
+                                                    ${r.remark ? `<p class="text-xs text-slate-500 mt-1 italic break-words">Remark: ${window.escHTML(r.remark)}</p>` : ''}
                                                 </div>
                                                 <button type="button" onclick="window.deleteRecord('${std.admNo}', 'achievement', '${r.date}', '${encodeURIComponent(r.note || '')}')" title="Delete Achievement" class="text-rose-400 hover:text-rose-600 hover:bg-rose-50 p-1.5 rounded-lg transition flex-shrink-0 cursor-pointer">
                                                     <i class="fas fa-trash-alt text-xs"></i>
@@ -3439,9 +3459,9 @@
                                                 <tr class="hover:bg-slate-50 transition">
                                                     <td class="p-3 font-mono text-slate-600 font-bold">${f.date}</td>
                                                     <td class="p-3">
-                                                        <span class="font-bold text-slate-800">${f.reason}</span>
+                                                        <span class="font-bold text-slate-800">${window.escHTML(f.reason)}</span>
                                                         <span class="text-[10px] text-slate-400 block">${f.category}</span>
-                                                        ${f.remarks ? `<span class="text-[10px] text-slate-500 italic block mt-0.5">Note: ${f.remarks}</span>` : ''}
+                                                        ${f.remarks ? `<span class="text-[10px] text-slate-500 italic block mt-0.5">Note: ${window.escHTML(f.remarks)}</span>` : ''}
                                                     </td>
                                                     <td class="p-3 font-mono font-black text-sm ${f.status === 'Pending' ? 'text-rose-600' : (f.status === 'Paid' ? 'text-emerald-600' : 'text-slate-400')}">₹${f.amount}</td>
                                                     <td class="p-3 text-slate-600">${f.addedBy || 'Staff'}</td>
@@ -3490,7 +3510,7 @@
                     <td class="p-4 font-bold text-slate-800">${s.name} <br><span class="text-xs font-mono text-slate-400 font-normal">Adm: ${s.admNo}</span></td>
                     <td class="p-4 font-medium text-slate-600">${s.class || '-'}</td>
                     <td class="p-4 font-mono font-bold text-rose-500">${activeLeave.dateOut || 'N/A'}</td>
-                    <td class="p-4 whitespace-normal max-w-xs text-slate-600">${activeLeave.reason || 'N/A'}</td>
+                    <td class="p-4 whitespace-normal max-w-xs text-slate-600">${window.escHTML(activeLeave.reason || 'N/A')}</td>
                     <td class="p-4 text-center">
                         <button type="button" onclick="window.markReturn('${s.admNo}')" class="bg-emerald-100 hover:bg-emerald-200 active:scale-95 text-emerald-800 border border-emerald-300 px-3.5 py-1.5 rounded-lg text-xs font-bold transition shadow-sm inline-flex items-center gap-1.5 cursor-pointer">
                             <i class="fas fa-sign-in-alt"></i> Report IN
@@ -3677,7 +3697,7 @@
                                                     <span class="font-bold text-rose-700 font-mono text-xs bg-rose-50 px-2 py-1 rounded border border-rose-200">${d.date || 'N/A'}</span>
                                                 </td>
                                                 <td class="p-4 max-w-xs">
-                                                    <div class="font-bold text-xs text-slate-800">${d.reason || 'Discontinued'}</div>
+                                                    <div class="font-bold text-xs text-slate-800">${window.escHTML(d.reason || 'Discontinued')}</div>
                                                     ${d.reasonDetail ? `<div class="text-[11px] text-slate-500 italic mt-0.5 truncate" title="${d.reasonDetail}">${d.reasonDetail}</div>` : ''}
                                                 </td>
                                                 <td class="p-4">
@@ -3977,7 +3997,7 @@
                     <td class="p-3.5 font-bold text-slate-700">${s.class}</td>
                     <td class="p-3.5 font-bold text-rose-700 font-mono text-xs">${d.date || 'N/A'}</td>
                     <td class="p-3.5">
-                        <div class="font-bold text-xs text-slate-800">${d.reason || 'N/A'}</div>
+                        <div class="font-bold text-xs text-slate-800">${window.escHTML(d.reason || 'N/A')}</div>
                         ${d.reasonDetail ? `<div class="text-[11px] text-slate-500 italic max-w-xs truncate" title="${d.reasonDetail}">${d.reasonDetail}</div>` : ''}
                     </td>
                     <td class="p-3.5">
@@ -5804,7 +5824,7 @@
             <button onclick="document.getElementById('addTeacherModal').classList.remove('hidden'); document.getElementById('addTeacherModal').classList.add('flex');" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl text-xs sm:text-sm font-bold shadow transition">+ Add Teacher</button>
         </div>
     ` : ''}
-</div><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">${db.teachers.map(t => `<div class="bg-white p-6 rounded-2xl border shadow-sm flex flex-col items-center text-center relative">${window.currentUser.role === 'admin' ? `<div class="absolute top-4 right-4 flex gap-2"><button onclick="window.openEditTeacher('${t.id}')" class="text-blue-500 hover:text-blue-700 bg-blue-50 p-2 rounded-lg transition" title="Edit Teacher"><i class="fas fa-edit"></i></button><button onclick="window.deleteTeacher('${t.id}')" class="text-rose-400 hover:text-rose-600 bg-rose-50 p-2 rounded-lg transition" title="Delete Teacher"><i class="fas fa-trash"></i></button></div>` : ''}<div class="w-20 h-20 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600 text-3xl font-black uppercase mb-4 shadow-inner overflow-hidden border-2 border-indigo-200 mt-2">${t.photo ? `<img src="${t.photo}" class="w-full h-full object-cover">` : t.name.charAt(0)}</div><h3 class="text-lg font-black text-slate-800">${t.name}</h3><p class="text-sm font-bold text-indigo-600 mt-1">${t.subjects}</p><p class="text-xs text-slate-500 mt-2 line-clamp-2">${t.details}</p><div class="flex flex-col gap-2 mt-4 w-full"><div class="flex gap-2 w-full"><a href="tel:${t.phone}" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 py-2 rounded-lg text-xs font-bold transition flex justify-center items-center gap-1"><i class="fas fa-phone"></i> Call</a><a href="https://wa.me/91${t.phone}" target="_blank" class="flex-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 py-2 rounded-lg text-xs font-bold transition flex justify-center items-center gap-1"><i class="fab fa-whatsapp"></i> WhatsApp</a></div><a href="https://kkhmstorage.github.io/WAFY-WAFIYYA-TIME-TABLE/?source=erp&role=teacher&id=${encodeURIComponent(t.teacherCode || t.shortName || t.id)}" target="_blank" rel="noopener noreferrer" class="w-full bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 py-1.5 rounded-lg text-xs font-bold transition flex justify-center items-center gap-1.5 shadow-sm cursor-pointer" title="Open Teacher Timetable in new tab"><i class="fas fa-calendar-alt text-indigo-500"></i> <span>View Timetable & Audit</span> <i class="fas fa-external-link-alt text-[9px] opacity-70"></i></a></div></div>`).join('') || '<p class="col-span-full text-center p-8 text-slate-500 bg-white rounded-xl border font-bold">No teachers added yet.</p>'}</div></div>`;
+</div><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">${db.teachers.map(t => `<div class="bg-white p-6 rounded-2xl border shadow-sm flex flex-col items-center text-center relative">${window.currentUser.role === 'admin' ? `<div class="absolute top-4 right-4 flex gap-2"><button onclick="window.openEditTeacher('${t.id}')" class="text-blue-500 hover:text-blue-700 bg-blue-50 p-2 rounded-lg transition" title="Edit Teacher"><i class="fas fa-edit"></i></button><button onclick="window.deleteTeacher('${t.id}')" class="text-rose-400 hover:text-rose-600 bg-rose-50 p-2 rounded-lg transition" title="Delete Teacher"><i class="fas fa-trash"></i></button></div>` : ''}<div class="w-20 h-20 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600 text-3xl font-black uppercase mb-4 shadow-inner overflow-hidden border-2 border-indigo-200 mt-2">${t.photo ? `<img src="${t.photo}" class="w-full h-full object-cover">` : t.name.charAt(0)}</div><h3 class="text-lg font-black text-slate-800">${t.name}</h3><p class="text-sm font-bold text-indigo-600 mt-1">${t.subjects}</p><p class="text-xs text-slate-500 mt-2 line-clamp-2">${window.escHTML(t.details)}</p><div class="flex flex-col gap-2 mt-4 w-full"><div class="flex gap-2 w-full"><a href="tel:${t.phone}" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 py-2 rounded-lg text-xs font-bold transition flex justify-center items-center gap-1"><i class="fas fa-phone"></i> Call</a><a href="https://wa.me/91${t.phone}" target="_blank" class="flex-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 py-2 rounded-lg text-xs font-bold transition flex justify-center items-center gap-1"><i class="fab fa-whatsapp"></i> WhatsApp</a></div><a href="https://kkhmstorage.github.io/WAFY-WAFIYYA-TIME-TABLE/?source=erp&role=teacher&id=${encodeURIComponent(t.teacherCode || t.shortName || t.id)}" target="_blank" rel="noopener noreferrer" class="w-full bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 py-1.5 rounded-lg text-xs font-bold transition flex justify-center items-center gap-1.5 shadow-sm cursor-pointer" title="Open Teacher Timetable in new tab"><i class="fas fa-calendar-alt text-indigo-500"></i> <span>View Timetable & Audit</span> <i class="fas fa-external-link-alt text-[9px] opacity-70"></i></a></div></div>`).join('') || '<p class="col-span-full text-center p-8 text-slate-500 bg-white rounded-xl border font-bold">No teachers added yet.</p>'}</div></div>`;
         }
         window.openEditTeacher = function(id) { const t = db.teachers.find(teacher => teacher.id === id); if(!t) return; document.getElementById('editTId').value = t.id; document.getElementById('editTName').value = t.name; document.getElementById('editTSubj').value = t.subjects; document.getElementById('editTPhone').value = t.phone; document.getElementById('editTDetails').value = t.details || ''; document.getElementById('editTOldPhoto').value = t.photo || ''; document.getElementById('editTeacherModal').classList.remove('hidden'); document.getElementById('editTeacherModal').classList.add('flex'); }
         window.saveEditTeacher = function(e) { e.preventDefault(); const id = document.getElementById('editTId').value; const name = document.getElementById('editTName').value.trim(); const subjects = document.getElementById('editTSubj').value.trim(); const phone = document.getElementById('editTPhone').value.trim(); const details = document.getElementById('editTDetails').value.trim(); const oldPhoto = document.getElementById('editTOldPhoto').value; const photoInput = document.getElementById('editTPhoto'); const teacher = db.teachers.find(t => t.id === id); if(!teacher) return; const updateDB = (photoUrl) => { teacher.name = name; teacher.subjects = subjects; teacher.phone = phone; teacher.details = details; teacher.photo = photoUrl; window.saveDB(); window.showToast('Teacher Updated Successfully!'); document.getElementById('editTeacherModal').classList.add('hidden'); document.getElementById('editTeacherModal').classList.remove('flex'); document.getElementById('editTForm').reset(); window.renderApp(); }; if(photoInput.files && photoInput.files[0]) { const reader = new FileReader(); reader.onload = async function(ev) { const driveUrl = await window.uploadToDrive(ev.target.result, photoInput.files[0].name); updateDB(driveUrl); }; reader.readAsDataURL(photoInput.files[0]); } else { updateDB(oldPhoto); } }
@@ -5844,8 +5864,8 @@
                             <div class="flex-1 min-w-0 pr-6">
                                 <h4 class="font-black text-slate-800 text-lg truncate">${a.name}</h4>
                                 <p class="text-xs font-bold text-slate-500">${a.class} • Adm: ${a.admNo} • <span class="font-mono text-emerald-700">${a.date}</span></p>
-                                <p class="text-sm mt-2 font-bold text-slate-800 leading-snug">${a.note}</p>
-                                ${a.remark ? `<p class="text-xs mt-1 text-slate-500 italic">Remark: ${a.remark}</p>` : ''}
+                                <p class="text-sm mt-2 font-bold text-slate-800 leading-snug">${window.escHTML(a.note)}</p>
+                                ${a.remark ? `<p class="text-xs mt-1 text-slate-500 italic">Remark: ${window.escHTML(a.remark)}</p>` : ''}
                                 <div class="mt-2.5 flex items-center gap-2">
                                     <span class="text-[10px] text-emerald-700 font-bold bg-emerald-50 border border-emerald-200/60 px-2 py-0.5 rounded-md">Added by: ${a.addedBy || 'Admin'}</span>
                                 </div>
@@ -5998,7 +6018,7 @@
                     <div class="bg-white p-5 rounded-2xl border-l-4 border-l-emerald-500 relative shadow-sm hover:shadow transition">
                         ${window.currentUser.role !== 'parent' ? `<button onclick="window.deleteNotice(${n.id})" class="absolute top-4 right-4 text-rose-400 hover:text-rose-600 transition" title="Delete Notice"><i class="fas fa-trash"></i></button>` : ''}
                         <span class="text-xs font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-md"><i class="fas fa-calendar-alt mr-1"></i> ${n.date}</span>
-                        <h4 class="font-extrabold text-lg mt-2.5 text-slate-800">${n.title}</h4>
+                        <h4 class="font-extrabold text-lg mt-2.5 text-slate-800">${window.escHTML(n.title)}</h4>
                         <div class="text-slate-600 text-sm mt-2 whitespace-pre-wrap leading-relaxed">${window.renderNoticeContent(n.content, n.link || n.targetUrl)}</div>
                     </div>`).join('') || '<p class="text-center p-8 bg-white rounded-xl border text-slate-400 font-bold">No announcements published yet.</p>'}
                 </div>
@@ -6356,7 +6376,7 @@
                             <!-- Card Body Content -->
                             <div class="p-5 sm:p-6 space-y-3">
                                 <h4 class="text-lg sm:text-xl font-black text-slate-800 tracking-tight leading-snug">
-                                    ${entry.title}
+                                    ${window.escHTML(entry.title)}
                                 </h4>
                                 <div class="text-slate-600 text-sm sm:text-base leading-relaxed whitespace-pre-wrap font-normal">
                                     ${window.renderNoticeContent(entry.content, '')}
@@ -6615,10 +6635,10 @@
                             ${e.isImportant ? '<br><span style="color: #b45309; font-weight: bold; font-size: 11px;">⭐ IMPORTANT</span>' : ''}
                         </td>
                         <td style="padding: 10px; border: 1px solid #cbd5e1; font-weight: 800; font-size: 13px; color: #0f172a;">
-                            ${e.title}
+                            ${window.escHTML(e.title)}
                         </td>
                         <td style="padding: 10px; border: 1px solid #cbd5e1; font-size: 12px; color: #334155; line-height: 1.6; white-space: pre-wrap;">
-                            ${e.content}
+                            ${window.escHTML(e.content)}
                         </td>
                         <td style="padding: 10px; border: 1px solid #cbd5e1; font-size: 11px; color: #475569; white-space: nowrap;">
                             <b>${e.author || 'Staff'}</b><br>
@@ -6909,7 +6929,7 @@
                 <tr style="${f.status === 'Pending' ? 'background-color: #fff1f2;' : (idx % 2 === 0 ? 'background-color: #ffffff;' : 'background-color: #f8fafc;')}">
                     <td style="padding: 8px; border: 1px solid #cbd5e1; font-weight: bold; font-family: monospace; font-size: 11px;">${f.date}</td>
                     <td style="padding: 8px; border: 1px solid #cbd5e1; font-size: 12px;"><b>${f.studentName}</b><br><span style="font-size: 10px; color: #64748b;">Adm: ${f.admNo} | Class: ${f.class}</span></td>
-                    <td style="padding: 8px; border: 1px solid #cbd5e1; font-size: 11px;"><b>${f.category}</b><br>${f.reason} ${f.remarks ? `<span style="font-size: 10px; color: #64748b; font-style: italic;"><br>Note: ${f.remarks}</span>` : ''}</td>
+                    <td style="padding: 8px; border: 1px solid #cbd5e1; font-size: 11px;"><b>${f.category}</b><br>${window.escHTML(f.reason)} ${f.remarks ? `<span style="font-size: 10px; color: #64748b; font-style: italic;"><br>Note: ${window.escHTML(f.remarks)}</span>` : ''}</td>
                     <td style="padding: 8px; border: 1px solid #cbd5e1; font-weight: 800; font-size: 12px; color: ${f.status === 'Pending' ? '#e11d48' : '#059669'};">₹${f.amount}</td>
                     <td style="padding: 8px; border: 1px solid #cbd5e1; font-size: 11px;">${f.addedBy || 'Staff'}</td>
                     <td style="padding: 8px; border: 1px solid #cbd5e1; font-weight: bold; text-align: center; font-size: 11px; color: ${f.status === 'Pending' ? '#b45309' : (f.status === 'Paid' ? '#059669' : '#64748b')};">${f.status}</td>
@@ -7228,8 +7248,8 @@
                                         <span class="text-[10px] font-bold px-2 py-0.5 rounded border ${f.category === 'Late Arrival' ? 'bg-amber-50 text-amber-800 border-amber-200' : (f.category === 'Mobile Phone Violation' ? 'bg-rose-50 text-rose-800 border-rose-200' : 'bg-slate-100 text-slate-700 border-slate-200')}">
                                             ${f.category}
                                         </span>
-                                        <p class="font-semibold text-slate-800 mt-1 leading-snug">${f.reason}</p>
-                                        ${f.remarks ? `<p class="text-[10px] text-slate-500 italic mt-0.5">Note: ${f.remarks}</p>` : ''}
+                                        <p class="font-semibold text-slate-800 mt-1 leading-snug">${window.escHTML(f.reason)}</p>
+                                        ${f.remarks ? `<p class="text-[10px] text-slate-500 italic mt-0.5">Note: ${window.escHTML(f.remarks)}</p>` : ''}
                                         ${f.waivedReason ? `<p class="text-[10px] text-indigo-600 mt-0.5 font-bold">Waiver reason: ${f.waivedReason}</p>` : ''}
                                     </td>
                                     <td class="p-4 font-mono font-black text-sm sm:text-base ${f.status === 'Pending' ? 'text-rose-600' : (f.status === 'Paid' ? 'text-emerald-600' : 'text-slate-400')}">
@@ -7893,7 +7913,7 @@
                 ${window.renderDutyTeacherCard(false)}
 
                 <div class="bg-white rounded-2xl shadow-sm border overflow-hidden"><div class="bg-[#022c22] p-6 text-white flex flex-col md:flex-row items-center gap-4 relative"><div class="relative w-24 h-24 flex-shrink-0 group"><div class="w-full h-full bg-white text-[#064e3b] rounded-full flex items-center justify-center text-4xl font-black shadow-lg overflow-hidden border-4 border-emerald-500/30">${std.photo ? `<img src="${std.photo}" class="w-full h-full object-cover">` : std.name.charAt(0)}</div><label class="absolute bottom-0 right-0 bg-amber-500 text-white rounded-full p-2 cursor-pointer shadow-lg hover:bg-amber-600 transition z-10" title="Change Profile Photo"><i class="fas fa-camera text-sm"></i><input type="file" accept="image/*" class="hidden" onchange="window.uploadStudentPhoto(this)"></label></div><div class="text-center md:text-left flex-1"><h2 class="text-2xl font-black">${std.name}</h2><p class="text-emerald-300 font-bold text-sm mt-1">Class: ${std.class} | Adm No: ${std.admNo}</p></div><div class="flex items-center gap-2 flex-wrap justify-center md:justify-end mt-3 md:mt-0"><a href="${window.getTimetableUrl()}" target="_blank" rel="noopener noreferrer" class="bg-emerald-600 hover:bg-emerald-500 border border-emerald-400 text-white px-3.5 py-2 rounded-lg text-xs md:text-sm font-bold transition flex items-center gap-2 shadow-md hover:scale-105 transform cursor-pointer" title="View Class Timetable in new tab"><i class="fas fa-calendar-alt"></i> <span>📖 Class Timetable</span> <i class="fas fa-external-link-alt text-[10px] opacity-80"></i></a><button onclick="window.changeParentPassword()" class="bg-white/10 hover:bg-white/20 border border-white/20 px-3.5 py-2 rounded-lg text-xs md:text-sm font-bold transition flex items-center gap-2 shadow-sm"><i class="fas fa-key"></i> Change Password</button></div></div>
-                <div class="flex overflow-x-auto border-b scroll-smooth">${tabs.map(t => t.isExternal ? `<a href="${t.url}" target="_blank" rel="noopener noreferrer" class="parent-tab flex-1 min-w-[95px] py-4 text-center font-bold text-sm text-emerald-700 bg-emerald-50/70 hover:bg-emerald-100 transition relative border-b-2 border-transparent"><i class="fas ${t.icon} block text-2xl mb-2 text-emerald-600"></i><span class="flex items-center justify-center gap-1">${t.title} <i class="fas fa-external-link-alt text-[9px] opacity-70"></i></span></a>` : `<button onclick="window.setParentTab('${t.id}')" class="parent-tab flex-1 min-w-[95px] py-4 text-center font-bold text-sm relative ${window.parentTab === t.id ? 'active' : 'text-slate-500 hover:bg-slate-50'}"><i class="fas ${t.icon} block text-2xl mb-2${t.alert ? 'animate-bounce text-rose-500' : ''}"></i> ${t.title}${t.alert ? `<span class="absolute top-2 right-1/4 w-3 h-3 bg-rose-500 rounded-full shadow border-2 border-white"></span>` : ''}</button>`).join('')}</div></div>
+                <div class="flex overflow-x-auto border-b scroll-smooth">${tabs.map(t => t.isExternal ? `<a href="${t.url}" target="_blank" rel="noopener noreferrer" class="parent-tab flex-1 min-w-[95px] py-4 text-center font-bold text-sm text-emerald-700 bg-emerald-50/70 hover:bg-emerald-100 transition relative border-b-2 border-transparent"><i class="fas ${t.icon} block text-2xl mb-2 text-emerald-600"></i><span class="flex items-center justify-center gap-1">${window.escHTML(t.title)} <i class="fas fa-external-link-alt text-[9px] opacity-70"></i></span></a>` : `<button onclick="window.setParentTab('${t.id}')" class="parent-tab flex-1 min-w-[95px] py-4 text-center font-bold text-sm relative ${window.parentTab === t.id ? 'active' : 'text-slate-500 hover:bg-slate-50'}"><i class="fas ${t.icon} block text-2xl mb-2${t.alert ? 'animate-bounce text-rose-500' : ''}"></i> ${window.escHTML(t.title)}${t.alert ? `<span class="absolute top-2 right-1/4 w-3 h-3 bg-rose-500 rounded-full shadow border-2 border-white"></span>` : ''}</button>`).join('')}</div></div>
                 <div class="pb-10">${content}</div></div>
             `;
         }
@@ -8234,8 +8254,8 @@
             }).join('')}</div>`;
         }
 
-        window.renderParentLeaves = function(std) { return `<div class="bg-white rounded-2xl border shadow-sm p-8 mb-6 flex justify-between items-center ${std.leaveStatus === 'On Leave' ? 'bg-amber-50 border-amber-300' : ''}"><div><p class="text-sm font-bold text-slate-500 uppercase">Current Location Status</p><h3 class="text-3xl font-black ${std.leaveStatus === 'In Campus' ? 'text-emerald-600' : 'text-amber-600'} uppercase mt-2">${std.leaveStatus}</h3></div></div><div class="bg-white rounded-2xl border shadow-sm overflow-hidden"><div class="bg-slate-50 p-5 border-b font-black text-lg">Leave History</div><table class="w-full text-left text-sm"><thead class="bg-slate-100 text-xs uppercase text-slate-500"><tr><th class="p-4">Date Out</th><th class="p-4">Reason</th><th class="p-4">Date In</th></tr></thead><tbody class="divide-y divide-slate-100">${(std.leaveHistory||[]).slice().reverse().map(l => `<tr class="hover:bg-slate-50"><td class="p-4 font-mono text-rose-500 font-bold">${l.dateOut}</td><td class="p-4">${l.reason}</td><td class="p-4 font-mono text-emerald-600 font-bold">${l.dateIn || '<span class="text-amber-600 bg-amber-100 px-2 py-1 rounded">Pending Return</span>'}</td></tr>`).join('') || '<tr><td colspan="3" class="p-8 text-center text-slate-400">No leave history.</td></tr>'}</tbody></table></div>`; }
-        window.renderParentDiscipline = function(std) { return `<div class="grid grid-cols-1 md:grid-cols-2 gap-6"><div class="bg-white rounded-2xl border border-emerald-200 shadow-sm"><div class="bg-emerald-50 p-5 border-b font-black text-emerald-800 text-lg">Achievements</div><div class="p-4 border-b bg-slate-50 flex flex-col gap-2"><input type="text" id="pNewAch" placeholder="Achievement Title..." class="border p-2.5 rounded-lg text-sm font-bold"><input type="text" id="pNewAchRem" placeholder="Remark (Optional)" class="border p-2.5 rounded-lg text-sm"><button onclick="window.parentAddAch()" class="bg-emerald-600 hover:bg-emerald-700 transition text-white px-4 py-2.5 rounded-lg text-sm font-bold shadow-sm">Save Achievement</button></div><div class="p-5 space-y-4">${(std.achievements||[]).map(a => `<div class="p-4 bg-white rounded-xl border border-emerald-100 shadow-sm"><p class="text-xs font-bold text-slate-400 bg-slate-50 inline-block px-2 py-1 rounded mb-1">${a.date}</p><p class="font-bold text-slate-800">${a.note}</p>${a.remark ? `<p class="text-xs text-slate-500 mt-1">Remark: ${a.remark}</p>` : ''}<p class="text-[10px] text-slate-400 mt-1">Added by: ${a.addedBy || 'Admin'}</p></div>`).join('') || '<p class="text-center py-6 text-slate-500 text-sm">No records.</p>'}</div></div><div class="bg-white rounded-2xl border border-rose-200 shadow-sm"><div class="bg-rose-50 p-5 border-b font-black text-rose-800 text-lg">Disciplinary Records</div><div class="p-5 space-y-4">${(std.disciplineRecords||[]).map(d => `<div class="p-4 bg-white rounded-xl border border-rose-100 shadow-sm"><p class="text-xs font-bold text-slate-400 bg-slate-50 inline-block px-2 py-1 rounded mb-1">${d.date}</p><p class="font-bold text-slate-800">${d.note}</p>${d.remark ? `<p class="text-xs text-slate-500 mt-1">Remark: ${d.remark}</p>` : ''}<p class="text-[10px] text-slate-400 mt-1">Added by: ${d.addedBy || 'Admin'}</p></div>`).join('') || '<p class="text-center py-6 text-slate-500 text-sm">No records.</p>'}</div></div></div>`; }
+        window.renderParentLeaves = function(std) { return `<div class="bg-white rounded-2xl border shadow-sm p-8 mb-6 flex justify-between items-center ${std.leaveStatus === 'On Leave' ? 'bg-amber-50 border-amber-300' : ''}"><div><p class="text-sm font-bold text-slate-500 uppercase">Current Location Status</p><h3 class="text-3xl font-black ${std.leaveStatus === 'In Campus' ? 'text-emerald-600' : 'text-amber-600'} uppercase mt-2">${std.leaveStatus}</h3></div></div><div class="bg-white rounded-2xl border shadow-sm overflow-hidden"><div class="bg-slate-50 p-5 border-b font-black text-lg">Leave History</div><table class="w-full text-left text-sm"><thead class="bg-slate-100 text-xs uppercase text-slate-500"><tr><th class="p-4">Date Out</th><th class="p-4">Reason</th><th class="p-4">Date In</th></tr></thead><tbody class="divide-y divide-slate-100">${(std.leaveHistory||[]).slice().reverse().map(l => `<tr class="hover:bg-slate-50"><td class="p-4 font-mono text-rose-500 font-bold">${l.dateOut}</td><td class="p-4">${window.escHTML(l.reason)}</td><td class="p-4 font-mono text-emerald-600 font-bold">${l.dateIn || '<span class="text-amber-600 bg-amber-100 px-2 py-1 rounded">Pending Return</span>'}</td></tr>`).join('') || '<tr><td colspan="3" class="p-8 text-center text-slate-400">No leave history.</td></tr>'}</tbody></table></div>`; }
+        window.renderParentDiscipline = function(std) { return `<div class="grid grid-cols-1 md:grid-cols-2 gap-6"><div class="bg-white rounded-2xl border border-emerald-200 shadow-sm"><div class="bg-emerald-50 p-5 border-b font-black text-emerald-800 text-lg">Achievements</div><div class="p-4 border-b bg-slate-50 flex flex-col gap-2"><input type="text" id="pNewAch" placeholder="Achievement Title..." class="border p-2.5 rounded-lg text-sm font-bold"><input type="text" id="pNewAchRem" placeholder="Remark (Optional)" class="border p-2.5 rounded-lg text-sm"><button onclick="window.parentAddAch()" class="bg-emerald-600 hover:bg-emerald-700 transition text-white px-4 py-2.5 rounded-lg text-sm font-bold shadow-sm">Save Achievement</button></div><div class="p-5 space-y-4">${(std.achievements||[]).map(a => `<div class="p-4 bg-white rounded-xl border border-emerald-100 shadow-sm"><p class="text-xs font-bold text-slate-400 bg-slate-50 inline-block px-2 py-1 rounded mb-1">${a.date}</p><p class="font-bold text-slate-800">${window.escHTML(a.note)}</p>${a.remark ? `<p class="text-xs text-slate-500 mt-1">Remark: ${window.escHTML(a.remark)}</p>` : ''}<p class="text-[10px] text-slate-400 mt-1">Added by: ${a.addedBy || 'Admin'}</p></div>`).join('') || '<p class="text-center py-6 text-slate-500 text-sm">No records.</p>'}</div></div><div class="bg-white rounded-2xl border border-rose-200 shadow-sm"><div class="bg-rose-50 p-5 border-b font-black text-rose-800 text-lg">Disciplinary Records</div><div class="p-5 space-y-4">${(std.disciplineRecords||[]).map(d => `<div class="p-4 bg-white rounded-xl border border-rose-100 shadow-sm"><p class="text-xs font-bold text-slate-400 bg-slate-50 inline-block px-2 py-1 rounded mb-1">${d.date}</p><p class="font-bold text-slate-800">${window.escHTML(d.note)}</p>${d.remark ? `<p class="text-xs text-slate-500 mt-1">Remark: ${window.escHTML(d.remark)}</p>` : ''}<p class="text-[10px] text-slate-400 mt-1">Added by: ${d.addedBy || 'Admin'}</p></div>`).join('') || '<p class="text-center py-6 text-slate-500 text-sm">No records.</p>'}</div></div></div>`; }
         window.renderParentFines = function(std) {
             const studentFines = (db.fines || []).filter(f => String(f.admNo).trim() === String(std.admNo).trim());
             const totalFines = studentFines.reduce((sum, f) => sum + (f.amount || 0), 0);
@@ -8320,9 +8340,9 @@
                                         <tr class="hover:bg-slate-50 transition">
                                             <td class="p-4 font-mono font-bold text-slate-600">${f.date}</td>
                                             <td class="p-4">
-                                                <span class="font-bold text-slate-800">${f.reason}</span>
+                                                <span class="font-bold text-slate-800">${window.escHTML(f.reason)}</span>
                                                 <span class="text-xs text-rose-600 bg-rose-50 border border-rose-200 px-2 py-0.5 rounded-md font-semibold block w-fit mt-1">${f.category}</span>
-                                                ${f.remarks ? `<p class="text-xs text-slate-500 mt-1 italic">Remarks: ${f.remarks}</p>` : ''}
+                                                ${f.remarks ? `<p class="text-xs text-slate-500 mt-1 italic">Remarks: ${window.escHTML(f.remarks)}</p>` : ''}
                                             </td>
                                             <td class="p-4 font-mono font-black text-base ${f.status === 'Pending' ? 'text-rose-600' : (f.status === 'Paid' ? 'text-emerald-600' : 'text-slate-500')}">
                                                 ₹${f.amount}
@@ -8363,7 +8383,7 @@
                 </div>
             `;
         };
-        window.renderParentTeachers = function() { if(!db.teachers || db.teachers.length === 0) return '<div class="text-center p-10 bg-white rounded-xl border text-slate-400 font-bold">No teachers added yet.</div>'; return `<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">${db.teachers.map(t => `<div class="bg-white p-6 rounded-2xl border shadow-sm flex flex-col items-center text-center"><div class="w-20 h-20 bg-indigo-50 rounded-full flex items-center justify-center text-indigo-600 text-3xl font-black uppercase mb-4 shadow-inner overflow-hidden border-2 border-indigo-100">${t.photo ? `<img src="${t.photo}" class="w-full h-full object-cover">` : t.name.charAt(0)}</div><h3 class="text-lg font-black text-slate-800">${t.name}</h3><p class="text-sm font-bold text-indigo-600 mt-1">${t.subjects}</p><p class="text-xs text-slate-500 mt-2">${t.details}</p><div class="flex flex-col gap-2 mt-5 w-full"><div class="flex gap-2 w-full"><a href="tel:${t.phone}" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 py-2.5 rounded-lg text-xs font-bold transition flex items-center justify-center gap-2"><i class="fas fa-phone"></i> Call</a><a href="https://wa.me/91${t.phone}" target="_blank" class="flex-1 bg-[#25D366] hover:bg-[#128C7E] text-white py-2.5 rounded-lg text-xs font-bold transition flex items-center justify-center gap-2 shadow-sm"><i class="fab fa-whatsapp text-sm"></i> WhatsApp</a></div><a href="https://kkhmstorage.github.io/WAFY-WAFIYYA-TIME-TABLE/?source=erp&role=teacher&id=${encodeURIComponent(t.teacherCode || t.shortName || t.id)}" target="_blank" rel="noopener noreferrer" class="w-full bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 py-2 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-sm cursor-pointer" title="Open Teacher Timetable in new tab"><i class="fas fa-calendar-alt text-indigo-500"></i> <span>View Teacher Timetable</span> <i class="fas fa-external-link-alt text-[9px] opacity-70"></i></a></div></div>`).join('')}</div>`; }
+        window.renderParentTeachers = function() { if(!db.teachers || db.teachers.length === 0) return '<div class="text-center p-10 bg-white rounded-xl border text-slate-400 font-bold">No teachers added yet.</div>'; return `<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">${db.teachers.map(t => `<div class="bg-white p-6 rounded-2xl border shadow-sm flex flex-col items-center text-center"><div class="w-20 h-20 bg-indigo-50 rounded-full flex items-center justify-center text-indigo-600 text-3xl font-black uppercase mb-4 shadow-inner overflow-hidden border-2 border-indigo-100">${t.photo ? `<img src="${t.photo}" class="w-full h-full object-cover">` : t.name.charAt(0)}</div><h3 class="text-lg font-black text-slate-800">${t.name}</h3><p class="text-sm font-bold text-indigo-600 mt-1">${t.subjects}</p><p class="text-xs text-slate-500 mt-2">${window.escHTML(t.details)}</p><div class="flex flex-col gap-2 mt-5 w-full"><div class="flex gap-2 w-full"><a href="tel:${t.phone}" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 py-2.5 rounded-lg text-xs font-bold transition flex items-center justify-center gap-2"><i class="fas fa-phone"></i> Call</a><a href="https://wa.me/91${t.phone}" target="_blank" class="flex-1 bg-[#25D366] hover:bg-[#128C7E] text-white py-2.5 rounded-lg text-xs font-bold transition flex items-center justify-center gap-2 shadow-sm"><i class="fab fa-whatsapp text-sm"></i> WhatsApp</a></div><a href="https://kkhmstorage.github.io/WAFY-WAFIYYA-TIME-TABLE/?source=erp&role=teacher&id=${encodeURIComponent(t.teacherCode || t.shortName || t.id)}" target="_blank" rel="noopener noreferrer" class="w-full bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 py-2 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-sm cursor-pointer" title="Open Teacher Timetable in new tab"><i class="fas fa-calendar-alt text-indigo-500"></i> <span>View Teacher Timetable</span> <i class="fas fa-external-link-alt text-[9px] opacity-70"></i></a></div></div>`).join('')}</div>`; }
         window.parentAddAch = function() { const note = document.getElementById('pNewAch').value.trim(); const remark = document.getElementById('pNewAchRem').value.trim(); if(!note) return window.showToast('Please enter achievement title', 'error'); const std = db.students.find(s => String(s.admNo).trim() === String(window.currentUser.data.admNo).trim()); if(!std.achievements) std.achievements = []; const addedBy = window.currentUser.name + ' (Parent)'; std.achievements.push({ date: new Date().toISOString().split('T')[0], note: note, remark: remark, addedBy: addedBy }); window.saveDB(); window.showToast('Achievement Added Successfully!'); window.renderApp(); }
         window.uploadStudentPhoto = function(input) { const file = input.files[0]; if(file) { const reader = new FileReader(); reader.onload = async function(e) { const driveUrl = await window.uploadToDrive(e.target.result, file.name); if(driveUrl) { const std = db.students.find(s => String(s.admNo).trim() === String(window.currentUser.data.admNo).trim()); std.photo = driveUrl; window.currentUser.data.photo = driveUrl; window.saveDB(); window.showToast('Photo updated!'); window.renderApp(); } }; reader.readAsDataURL(file); } }
 
